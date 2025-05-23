@@ -6,38 +6,50 @@
     <title>MVillage Hotel Receipt</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333333;
+            font-family: 'Be Vietnam Pro', Arial, sans-serif;
+            line-height: 1.7;
+            color: #232323;
             margin: 0;
             padding: 0;
+            background: #FAFAFA;
         }
         .container {
             max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 32px auto;
+            padding: 32px 20px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(241, 106, 38, 0.10), 0 1.5px 6px rgba(0,0,0,0.04);
         }
         .header {
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            border-bottom: 3px solid #F16A26;
+            padding-bottom: 18px;
+            margin-bottom: 28px;
             text-align: center;
         }
         .logo {
             display: block;
-            max-width: 150px;
-            margin: 0 auto 15px auto;
+            width: 100%;
+            max-width: 180px;
+            margin: 0 auto 18px auto;
         }
         .hotel-info {
-            margin-bottom: 20px;
-            font-size: 14px;
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+        .hotel-info h3 {
+            color: #F16A26;
+            font-size: 20px;
+            margin-bottom: 6px;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
         .reservation-details {
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            padding: 15px;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
+            border: 1.5px solid #F16A26;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 28px;
+            background-color: #FFF6F1;
         }
         .guest-info {
             margin-bottom: 20px;
@@ -45,26 +57,37 @@
         .receipt-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(241, 106, 38, 0.04);
         }
         .receipt-table th {
-            background-color: #f0f0f0;
+            background-color: #fdf0e7;
+            color: #fff;
             text-align: left;
-            padding: 10px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 10px;
+            border-bottom: 2px solid #fff;
+            font-size: 16px;
+            font-weight: 500 !important;
         }
         .receipt-table td {
-            padding: 10px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 10px;
+            border-bottom: 1px solid #F6D3C0;
+            font-size: 16px;
         }
         .total-row {
             font-weight: bold;
+            background: #FFF0E7;
+            color: #F16A26;
         }
         .footer {
-            border-top: 2px solid #f0f0f0;
-            padding-top: 15px;
-            font-size: 12px;
-            color: #666666;
+            border-top: 2px solid #F16A26;
+            padding-top: 18px;
+            font-size: 13px;
+            color: #888;
+            margin-top: 32px;
         }
         .info-table {
             width: 100%;
@@ -72,71 +95,235 @@
             margin-bottom: 10px;
         }
         .info-cell {
-            padding: 8px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 8px;
+            border-bottom: 1px solid #F6D3C0;
         }
         .info-table tr:nth-child(even) {
-            background-color: #f5f5f5;
+            background-color: #FFF0E7;
+        }
+        
+        /* New styles for language handling */
+        .bilingual-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            align-items: center;
+        }
+        .lang-en, .lang-vi {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .lang-en {
+            background-color: #F16A26;
+        }
+        .lang-vi {
+            background-color: #666666;
+        }
+        .language-tab {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        .tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: bold;
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active {
+            border-bottom: 3px solid #F16A26;
+            color: #F16A26;
+        }
+        .language-content {
+            display: flex;
+            margin-bottom: 5px;
+        }
+        .en-content, .vi-content {
+            flex: 1;
+            padding: 8px;
+        }
+        .en-content {
+            border-right: 1px dashed #F6D3C0;
+        }
+        .label-bilingual {
+            display: flex;
+        }
+        .label-en, .label-vi {
+            flex: 1;
+            padding: 5px;
+            font-weight: bold;
+        }
+        .bilingual-section {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .bilingual-row {
+            display: flex;
+            border-bottom: 1px solid #F6D3C0;
+            padding: 8px 0;
+        }
+        .bilingual-row:last-child {
+            border-bottom: none;
+        }
+        .bilingual-label {
+            width: 40%;
+            font-weight: bold;
+        }
+        .bilingual-value {
+            width: 60%;
+        }
+        .en {
+            color: #000000;
+        }
+        .vi {
+            color: #888888;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://cdn-v2.mvillage.vn/cms/More_new_logo_2_4_319dba3346.png" alt="MViLLAGE Logo" class="logo" width="60px" height="auto">
-            <!-- <h2>Hotel Stay Receipt</h2> -->
+            <img src="https://cdn-v2.mvillage.vn/cms/More_new_logo_2_4_319dba3346.png" alt="MViLLAGE Logo" class="logo" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto 18px auto;">
         </div>
 
         <div class="hotel-info">
-            <h3>MVILLAGE JOINT STOCK COMPANY</h3>
-            <p>
-                Address: Tầng 21, B-02, Tòa nhà Pearl Plaza, 561A Điện Biên Phủ (khu văn phòng), Phường 25, Quận Bình Thạnh, Thành phố Hồ Chí Minh, Việt Nam<br>
-                Phone Number: +84 908017469
-            </p>
+            <h3 style="margin: 0; padding: 0;">MVILLAGE JOINT STOCK COMPANY</h3>
+            <div class="bilingual-row">
+                <div class="bilingual-label">
+                    <span class="en">Address</span>
+                    <br>
+                    <span class="vi">Địa chỉ</span>
+                </div>
+                <div class="bilingual-value">
+                    Tầng 21, B-02, Tòa nhà Pearl Plaza, 561A Điện Biên Phủ (khu văn phòng), Phường 25, Quận Bình Thạnh, Thành phố Hồ Chí Minh, Việt Nam
+                </div>
+            </div>
+            <div class="bilingual-row">
+                <div class="bilingual-label">
+                    <span class="en">Phone Number</span>
+                    <br>
+                    <span class="vi">Số điện thoại</span>
+                </div>
+                <div class="bilingual-value">0865999850</div>
+            </div>
+            <div class="bilingual-row">
+                <div class="bilingual-label">
+                    <span class="en">Tax Number</span>
+                    <br>
+                    <span class="vi">Mã số thuế</span>
+                </div>
+                <div class="bilingual-value">0316527995</div>
+            </div>
         </div>
-
+        <h4 style="font-size: 18px; text-align: center; margin-top: 40px; margin-bottom: 10px;">
+            <span class="en">Reservation Information</span>
+            <span> / </span>
+            <span class="vi">Thông tin đặt phòng</span>
+        </h4>
         <div class="reservation-details">
-            <h4>Reservation & Guest Information</h4>
+            <!-- <h4 style="font-size: 18px; text-align: center; margin-top: 0;">
+                <span class="en">Reservation & Guest Information</span>
+                <br>
+                <span class="vi">Thông tin đặt phòng & Khách hàng</span>
+            </h4> -->
             <table class="info-table" cellspacing="0" cellpadding="0" border="0" width="100%">
                 <tr>
-                    <td width="50%" class="info-cell"><strong>Reservation Number:</strong></td>
-                    <td width="50%" class="info-cell">HR372446</td>
+                    <td width="40%" class="info-cell">
+                        <span class="en">Reservation Number</span>
+                        <br>
+                        <span class="vi">Số đặt phòng</span>
+                    </td>
+                    <td width="60%" class="info-cell">HR372446</td>
                 </tr>
                 <tr>
-                    <td width="50%" class="info-cell"><strong>Hotel Name:</strong></td>
-                    <td width="50%" class="info-cell">M VILLAGE HOTEL TAO ĐÀN PARK</td>
+                    <td width="40%" class="info-cell">
+                        <span class="en">Hotel Name</span>
+                        <br>
+                        <span class="vi">Tên khách sạn</span>
+                    </td>
+                    <td width="60%" class="info-cell">M VILLAGE HOTEL TAO ĐÀN PARK</td>
                 </tr>
                 <tr>
-                    <td class="info-cell"><strong>Arrival Date:</strong></td>
+                    <td class="info-cell">
+                        <span class="en">Arrival Date</span>
+                        <br>
+                        <span class="vi">Ngày nhận phòng</span>
+                    </td>
                     <td class="info-cell">11/04/2025</td>
                 </tr>
                 <tr>
-                    <td class="info-cell"><strong>Departure Date:</strong></td>
+                    <td class="info-cell">
+                        <span class="en">Departure Date</span>
+                        <br>
+                        <span class="vi">Ngày trả phòng</span>
+                    </td>
                     <td class="info-cell">14/04/2025</td>
                 </tr>
                 <tr>
-                    <td class="info-cell"><strong>Room Number:</strong></td>
+                    <td class="info-cell">
+                        <span class="en">Room Number</span>
+                        <br>
+                        <span class="vi">Số phòng</span>
+                    </td>
                     <td class="info-cell">308</td>
                 </tr>
                 <tr>
-                    <td class="info-cell"><strong>Guest Name:</strong></td>
+                    <td class="info-cell">
+                        <span class="en">Guest Name</span>
+                        <br>
+                        <span class="vi">Tên khách</span>
+                    </td>
                     <td class="info-cell">CHUN WRONG KWAN</td>
                 </tr>
                 <tr>
-                    <td class="info-cell"><strong>Contact:</strong></td>
-                    <td class="info-cell">NA</td>
+                    <td class="info-cell">
+                        <span class="en">Guest Phone</span>
+                        <br>
+                        <span class="vi">Số điện thoại khách</span>
+                    </td>
+                    <td class="info-cell">0987654321</td>
                 </tr>
             </table>
         </div>
 
-        <h3>Receipt Summary</h3>
+        <h4 style="font-size: 18px; text-align: center; margin-top: 40px; margin-bottom: 10px;">
+            <span class="en">Receipt Summary</span>
+            <span> / </span>
+            <span class="vi">Thông tin hóa đơn</span>
+        </h4>
         <table class="receipt-table">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Quantity</th>
-                    <th>Amount (VND)</th>
+                    <th>
+                        <div style="display: flex; flex-direction: column; align-items: flex-start; font-weight: 500 !important;">
+                            <span class="en">Date</span>
+                            <span class="vi">Ngày</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div style="display: flex; flex-direction: column; align-items: flex-start; font-weight: 500 !important;">
+                            <span class="en">Description</span>
+                            <span class="vi">Mô tả</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div style="display: flex; flex-direction: column; align-items: flex-start; font-weight: 500 !important;">
+                            <span class="en">Quantity</span>
+                            <span class="vi">Số lượng</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div style="display: flex; flex-direction: column; align-items: flex-start; font-weight: 500 !important;">
+                            <span class="en">Amount</span>
+                            <span class="vi">Số tiền</span>
+                        </div>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -147,20 +334,65 @@
                     <td>3,348,000</td>
                 </tr>
                 <tr class="total-row">
-                    <td colspan="3"><strong>TOTAL AMOUNT</strong></td>
-                    <td><strong>3,348,000</strong></td>
+                    <td colspan="3">
+                        <span style="font-weight: 500 !important;">
+                            <span class="en">TOTAL AMOUNT</span>
+                            <span> / </span>
+                            <span class="vi">TỔNG TIỀN</span>
+                        </span>
+                    </td>
+                    <td><span style="font-weight: 500 !important;">3,348,000 VND</span></td>
                 </tr>
                 <tr class="total-row">
-                    <td colspan="3"><strong>PAYMENT RECEIVED</strong></td>
-                    <td><strong>3,348,000</strong></td>
+                    <td colspan="3">
+                        <span style="font-weight: 500 !important;">
+                            <span class="en">PAYMENT RECEIVED</span>
+                            <span> / </span>
+                            <span class="vi">THANH TOÁN ĐÃ NHẬN</span>
+                        </span>
+                    </td>
+                    <td><span style="font-weight: 500 !important;">3,348,000 VND</span></td>
                 </tr>
             </tbody>
         </table>
 
         <div class="footer">
-            <p>This is an automated email receipt for your recent stay. Please keep this for your records.</p>
-            <p>If you have any questions regarding this receipt, please contact us at +84 908017469 or reply to this email.</p>
-            <p>Thank you for choosing MViLLAGE for your stay in Ho Chi Minh City. We hope to see you again soon!</p>
+            <!-- QR Code Section -->
+            <div style="margin: 0 32px 0; text-align: center;">
+                <div style="display: inline-block; text-align: center;">
+                    <p style="font-size: 16px; font-family: 'Be Vietnam Pro', Arial, sans-serif; letter-spacing: 2px; margin-bottom: 12px; color: #232323; font-weight: 500;">
+                        <span class="en">Scan QR code for VAT invoice or visit</span>
+                        <br>
+                        <span class="vi">Quét mã QR để nhập thông tin xuất hoá đơn GTGT</span>
+                    </p>
+                    <img src="https://cdn-v2.mvillage.vn/cms/frame_2d0d1a78e4.png" alt="QR Code" style="width: 200px; height: 200px; display: block; margin: 0 auto 18px auto; border: 2px solid #232323; border-radius: 8px;">
+                    <p style="font-size: 16px; margin-top: 32px; color: #232323; font-family: 'Be Vietnam Pro', Arial, sans-serif;">
+                        <span class="en">Or access link</span>
+                        <span> / </span>
+                        <span class="vi">Hoặc truy cập đường dẫn</span>: 
+                        <a href="https://mvillage.vn" style="color: #232323; text-decoration: underline; font-weight: 400;">mvillage.vn</a>
+                    </p>
+                </div>
+            </div>
+            <div style="margin: 18px 0 0 0; padding: 10px 18px; background: #FFF6F1; color: #F16A26; border-left: 4px solid #F16A26; border-radius: 6px; font-size: 15px; width: 100%; box-sizing: border-box; font-family: 'Be Vietnam Pro', Arial, sans-serif; font-weight: 500;">
+                <span class="en">QR code or link above will expire in 2 hours!</span>
+                <br>
+                <span class="vi">Mã QR hoặc link ở trên sẽ hết hạn sau 2 giờ!</span>
+            </div>
+            <div>
+                <p>
+                    <span class="en">This is an automated email receipt for your recent stay. Please keep this for your records.</span><br>
+                    <span class="vi">Đây là hóa đơn tự động cho kỳ lưu trú gần đây của bạn. Vui lòng lưu lại để tham khảo.</span>
+                </p>
+                <p>
+                    <span class="en">If you have any questions regarding this receipt, please contact us at +84 908017469 or reply to this email.</span><br>
+                    <span class="vi">Nếu bạn có bất kỳ thắc mắc nào về hóa đơn này, vui lòng liên hệ +84 908017469 hoặc trả lời email này.</span>
+                </p>
+                <p>
+                    <span class="en">Thank you for choosing M Village for your stay. We hope to see you again soon!</span><br>
+                    <span class="vi">Cảm ơn bạn đã chọn M Village cho kỳ lưu trú của mình. Hy vọng sẽ được đón tiếp bạn lần nữa!</span>
+                </p>
+            </div>
         </div>
     </div>
 </body>

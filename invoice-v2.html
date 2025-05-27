@@ -268,7 +268,8 @@
                                 </td>
                                 <td colspan="2"
                                     style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;text-align: right; white-space: nowrap; font-weight: 600;">
-                                    <t t-esc="o.amount_total" /> VND
+                                    <t t-esc="o.amount_total" 
+                                    t-options='{"widget": "monetary", "display_currency": o.currency_id}' />
                                 </td>
                             </tr>
                             <tr>
@@ -279,7 +280,7 @@
                                 <td colspan="2"
                                     style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;text-align: right; white-space: nowrap; font-weight: 600;">
                                     <t t-esc="o.amount_total - o.amount_residual"
-                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}' /> VND
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}' />
                                 </td>
                             </tr>
                         </table>
@@ -287,7 +288,7 @@
 
 
 
-                        <div style="text-align: center; margin: 24px;">
+                        <div style="text-align: center; margin: 24px; page-break-inside: avoid;">
                             <p>
                                 Scan QR code for VAT invoice or visit
                                 <br />
@@ -302,7 +303,6 @@
                             <a href="https://einvoice.mvillage.vn/?secret_code=7DP8Y2P5"
                                 style="font-weight: 600 !important;">https://einvoice.mvillage.vn/?secret_code=7DP8Y2P5</a>
                         </div>
-
 
                         <div
                             style="text-align: center; margin: 24px; background-color: #ffc1a9; padding: 4px; color: 000; border-radius: 8px;">

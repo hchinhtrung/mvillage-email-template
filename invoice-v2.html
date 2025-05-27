@@ -1,0 +1,318 @@
+<?xml version="1.0"?>
+<t t-name="mvillage_hotel.report_template_confirm_booking">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.basic_layout">
+
+                <head>
+                    <link rel="preconnect" href="https://fonts.googleapis.com" />
+                    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+                    <link
+                        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+                        rel="stylesheet" />
+                </head>
+                <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px">
+                    <!-- Check-in/Check-out Policies -->
+                    <div class="policies-section">
+                        <h3 style="color: #e24d14; font-size: 20px;">
+                            CÔNG TY CỔ PHẦN MVILLAGE
+                        </h3>
+                        <p>Address/<i style="color: #666">Địa chỉ</i>: Tầng 21, B-02, Tòa nhà Pearl Plaza, 561A Điện
+                            Biên Phủ (khu văn phòng), Phường 25, Quận Bình Thạnh, TP. Hồ Chí Minh</p>
+                        <p>Phone Number/<i style="color: #666">Số điẹn thoại</i>: 02899995559</p>
+                        <p>Tax Number/<i style="color: #666">Mã số thuế</i>: 0316527995</p>
+                    </div>
+
+                    <!-- Header Section
+                    <div style="text-align: center; padding-top: 16px">
+                        <img src="https://cdn-v2.mvillage.vn/cms/Banner_Email_1_5ec699a94c.jpg" alt=""
+                            style="width: 100%" />
+                    </div> -->
+
+                    <!-- Title Section -->
+
+                    <div style="text-align: center; margin: 24px;">
+                        <h4 style="color: #e24d14; margin-bottom: 0; text-align: center; font-weight: 400 !important">
+                            <b>Reservation Information</b>
+                        </h4>
+                        <h4 style="color: #666; margin: 0; text-align: center; font-weight: 400 !important">
+                            <b><i>Thông tin đặt phòng</i></b>
+                        </h4>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="content">
+                        <!-- Booking Details Table -->
+                        <table class="table table-bordered" style="border: 2px solid black;" width="100%"
+                            name="invoice_line_table">
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Reservation Number
+                                    <br />
+                                    <i style="color: #666;">Mã đặt phòng</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.reservation_id.reservation_no" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Hotel Name
+                                    <br />
+                                    <i style="color: #666;">Tên khách sạn</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.reservation_id.hotel_id.name" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Arrival Date
+                                    <br />
+                                    <i style="color: #666;">Ngày đến</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.reservation_id.expected_checkin_time.strftime('%d/%m/%Y')" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Departure Date
+                                    <br />
+                                    <i style="color: #666;">Ngày đi</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.reservation_id.expected_checkout_time.strftime('%d/%m/%Y')" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Room Number
+                                    <br />
+                                    <i style="color: #666;">Số phòng</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.reservation_id.reservation_line.room_id.name" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Guest Name
+                                    <br />
+                                    <i style="color: #666;">Tên khách</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.partner_id.name" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Guest Phone
+                                    <br />
+                                    <i style="color: #666;">Số điện thoại khách</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.partner_id.mobile" />
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Receipt Section -->
+
+                        <div style="text-align: center; margin: 24px;">
+                            <h4
+                                style="color: #e24d14; margin-bottom: 0; text-align: center; font-weight: 400 !important">
+                                <b>Receipt Summary</b>
+                            </h4>
+                            <h4 style="color: #666; margin: 0; text-align: center; font-weight: 400 !important">
+                                <b><i>Thông tin hóa đơn</i></b>
+                            </h4>
+                        </div>
+
+                        <!-- <table class="table table-bordered" style="border: 2px solid black;" width="100%"
+                            name="invoice_line_table">
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Date
+                                    <br />
+                                    <i style="color: #666;">Ngày</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Description
+                                    <br />
+                                    <i style="color: #666;">Mô tả</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Quantity
+                                    <br />
+                                    <i style="color: #666;">Số lượng</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Amount
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Date
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Description
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Quantity
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Amount 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 50%;padding-top: 0;padding-bottom: 0;">
+                                    TOTAL AMOUNT / TỔNG TIỀN
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 50%;padding-top: 0;padding-bottom: 0;">
+                                    100.000 VND
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 50%;padding-top: 0;padding-bottom: 0;">
+                                    PAYMENT RECEIVED / THANH TOÁN ĐÃ NHẬN
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 50%;padding-top: 0;padding-bottom: 0;">
+                                    100.000 VND
+                                </td>
+                            </tr>
+                        </table> -->
+
+                        <table class="table table-bordered" style="border: 2px solid black;" width="100%"
+                            name="invoice_line_table">
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Date
+                                    <br />
+                                    <i style="color: #666;">Ngày</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Description
+                                    <br />
+                                    <i style="color: #666;">Mô tả</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Quantity
+                                    <br />
+                                    <i style="color: #666;">Số lượng</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Amount
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Date
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Description
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Quantity
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                    Amount
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    TOTAL AMOUNT / TỔNG TIỀN
+                                </td>
+                                <td colspan="2"
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    100.000 VND
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    PAYMENT RECEIVED / THANH TOÁN ĐÃ NHẬN
+                                </td>
+                                <td colspan="2"
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    100.000 VND
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="text-align: center; margin: 24px;">
+                            <p>
+                                Scan QR code for VAT invoice or visit
+                                <br />
+                                <i style="color: #666;">Quét mã QR để nhập thông tin xuất hoá đơn GTGT</i>
+                            </p>
+                            <a href="#"><img src="https://cdn-v2.mvillage.vn/cms/frame_2d0d1a78e4.png" alt="QR Code"
+                                    style="width: 200px; height: auto;" /></a>
+                            <p>
+                                Or access link/
+                                <i style="color: #666;">Hoặc truy cập đường dẫn</i>
+                            </p>
+                            <a href="https://einvoice.mvillage.vn/?secret_code=7DP8Y2P5"
+                                style="font-weight: 600 !important;">https://einvoice.mvillage.vn/?secret_code=7DP8Y2P5</a>
+                        </div>
+
+
+                        <div
+                            style="text-align: center; margin: 24px; background-color: #ffc1a9; padding: 4px; color: 000; border-radius: 8px;">
+                            <p>
+                                QR code or link above will expire in 2 hours!
+                                <br />
+                                <i style="color: #666;">Mã QR hoặc link ở trên sẽ hết hạn sau 2 giờ!</i>
+                            </p>
+                        </div>
+
+
+
+                        <div style="text-align: center; margin: 24px;">
+                            <p>
+                                Thank you for choosing us!
+                                <br />
+                                <i style="color: #666;">Cảm ơn bạn đã lựa chọn chúng tôi!</i>
+                            </p>
+
+                        </div>
+                    </div> <!-- End of content div -->
+                </div> <!-- End of main-container div -->
+            </t> <!-- End of t-call web.basic_layout -->
+        </t> <!-- End of t-foreach -->
+    </t> <!-- End of t-call web.html_container -->
+</t> <!-- End of t-name -->

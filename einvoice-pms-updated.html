@@ -1,0 +1,548 @@
+<?xml version="1.0"?>
+<t t-name="mvillage_hotel.resend_report_invoice">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.basic_layout">
+                <div class="page">
+                    <style type="text/css">
+                        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap');
+                        
+                        .invoice-container {
+                            font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;
+                            font-size: 16px;
+                            line-height: 1.6;
+                            color: #232323;
+                            background-color: #fff;
+                        }
+                        
+                        /* .invoice-wrapper {
+                            background-color: #ffffff;
+                            border-radius: 8px;
+                            overflow: hidden;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        } */
+                        
+                        .header-section {
+                            padding: 20px;
+                            border-bottom: 3px solid #F16A26;
+                            background-color: #ffffff;
+                        }
+                        
+                        .header-content {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            gap: 30px;
+                        }
+                        
+                        .logo-section {
+                            flex: 0 0 auto;
+                            max-width: 300px;
+                        }
+                        
+                        .logo-section img {
+                            display: block;
+                            max-width: 100%;
+                            height: auto;
+                            border: 0;
+                            outline: none;
+                            text-decoration: none;
+                        }
+                        
+                        .company-info-header {
+                            flex: 1;
+                            text-align: left;
+                            min-width: 0;
+                        }
+                        
+                        .company-title {
+                            margin: 0 0 15px 0;
+                            color: #F16A26;
+                            font-size: 24px;
+                            font-weight: 700;
+                            letter-spacing: 0.5px;
+                            text-transform: uppercase;
+                        }
+                        
+                        .header-info-row {
+                            display: flex;
+                            margin-bottom: 8px;
+                            font-size: 14px;
+                            align-items: flex-start;
+                        }
+                        
+                        .header-info-label {
+                            font-weight: 600;
+                            color: #000000;
+                            width: 340px;
+                            flex-shrink: 0;
+                            padding-right: 15px;
+                        }
+                        
+                        .header-info-sublabel {
+                            color: #888888;
+                            font-size: 12px;
+                            display: block;
+                            font-weight: 400;
+                            margin-top: 2px;
+                        }
+                        
+                        .header-info-value {
+                            flex: 1;
+                            color: #232323;
+                            font-size: 14px;
+                            line-height: 1.4;
+                        }
+                        
+                        .info-row {
+                            padding: 8px 0;
+                            border-bottom: 1px solid #F6D3C0;
+                        }
+                        
+                        .info-row:last-child {
+                            border-bottom: none;
+                        }
+                        
+                        .info-label {
+                            color: #000000;
+                            font-weight: 600;
+                            font-size: 15px;
+                        }
+                        
+                        .info-sublabel {
+                            color: #888888;
+                            font-size: 13px;
+                        }
+                        
+                        .section-header {
+                            margin: 0;
+                            font-size: 18px;
+                            font-weight: 600;
+                            text-align: center;
+                            padding: 20px 20px 10px 20px;
+                        }
+                        
+                        .reservation-box {
+                            border: 1.5px solid #F16A26;
+                            border-radius: 8px;
+                            background-color: #FFF6F1;
+                            margin: 0px 20px 50px 20px;
+                            padding: 0;
+                        }
+                        
+                        .highlight-value {
+                            font-weight: 700;
+                            color: #F16A26;
+                        }
+                        
+                        .receipt-table {
+                            width: calc(100% - 40px);
+                            border-collapse: collapse;
+                            border: 1px solid #F6D3C0;
+                            border-radius: 8px;
+                            overflow: hidden;
+                            margin: 0 20px;
+                            table-layout: fixed;
+                        }
+                        
+                        .receipt-table th {
+                            background-color: #FDF0E7;
+                            padding: 10px 6px;
+                            border-bottom: 2px solid #ffffff;
+                            text-align: left;
+                            vertical-align: top;
+                        }
+                        
+                        .receipt-table th.text-center {
+                            text-align: center;
+                        }
+                        
+                        .receipt-table th.text-right {
+                            text-align: right;
+                        }
+                        
+                        .receipt-table td {
+                            padding: 10px 6px;
+                            border-bottom: 1px solid #F6D3C0;
+                            font-size: 15px;
+                            vertical-align: top;
+                            word-wrap: break-word;
+                        }
+                        
+                        .receipt-table .total-row {
+                            background-color: #FFF0E7;
+                        }
+                        
+                        .receipt-table .total-label {
+                            color: #F16A26;
+                            font-weight: 600;
+                            font-size: 15px;
+                        }
+                        
+                        .receipt-table .total-amount {
+                            color: #F16A26;
+                            font-weight: 700;
+                            font-size: 15px;
+                            text-align: right;
+                        }
+                        
+                        .qr-section {
+                            padding: 20px 20px;
+                            text-align: center;
+                            /* border-top: 2px solid #F16A26; */
+                        }
+                        
+                        .qr-code {
+                            display: block;
+                            margin: 0 auto 20px auto;
+                            border: 2px solid #232323;
+                            border-radius: 8px;
+                        }
+                        
+                        .warning-box {
+                            background-color: #FFF6F1;
+                            padding: 12px 20px;
+                            border-left: 4px solid #F16A26;
+                            border-radius: 4px;
+                            margin-top: 20px;
+                        }
+                        
+                        .warning-text {
+                            margin: 0;
+                            color: #F16A26;
+                            font-size: 15px;
+                            font-weight: 600;
+                        }
+                        
+                        .footer-section {
+                            padding: 25px;
+                            background-color: #F8F8F8;
+                        }
+                        
+                        .footer-text {
+                            margin: 0 0 15px 0;
+                            font-size: 14px;
+                            color: #666666;
+                            line-height: 1.6;
+                        }
+                        
+                        @media print {
+                            @page {
+                                margin: 0.5cm;
+                                size: auto;
+                            }
+                            
+                            .pdf-page-break {
+                                page-break-before: always;
+                                margin-top: 0px;
+                                padding-top: 20px;
+                            }
+                            
+                            .invoice-wrapper {
+                                box-shadow: none;
+                                margin: 0;
+                                padding: 0;
+                            }
+                            
+                            .header-content {
+                                display: table;
+                                width: 100%;
+                            }
+                            
+                            .logo-section {
+                                display: table-cell;
+                                vertical-align: middle;
+                                width: 120px;
+                            }
+                            
+                            .company-info-header {
+                                display: table-cell;
+                                vertical-align: middle;
+                            }
+                            
+                            .receipt-table {
+                                page-break-inside: avoid;
+                            }
+                            
+                            .receipt-table td, .receipt-table th {
+                                padding: 8px 5px;
+                                font-size: 13px;
+                            }
+                            
+                            .info-label {
+                                font-size: 14px;
+                            }
+                            
+                            .info-sublabel {
+                                font-size: 12px;
+                            }
+                            
+                            .company-title {
+                                font-size: 18px;
+                            }
+                            
+                            .section-header {
+                                font-size: 16px;
+                                padding: 15px 20px 8px 20px;
+                            }
+                        }
+                    </style>
+                    
+                    <div class="invoice-container">
+                        <div class="invoice-wrapper">
+                            <!-- Header -->
+                            <div class="header-section">
+                                <div class="header-content">
+                                    <!-- Logo Section -->
+                                    <!-- <div class="logo-section">
+                                        <t t-foreach="yourcompany" t-as="company">
+                                            <img t-if="company.logo" 
+                                                 t-att-src="image_data_uri(company.logo)" 
+                                                 alt="Company Logo"/>
+                                        </t>
+                                    </div> -->
+                                    
+                                    <!-- Company Info Section -->
+                                    <div class="company-info-header">
+                                        <t t-foreach="yourcompany" t-as="company">
+                                            <h3 class="company-title">
+                                                <t t-esc="company.name"/>
+                                            </h3>
+                                            
+                                            <div class="header-info-row">
+                                                <div class="header-info-label">
+                                                    Address / Địa chỉ
+                                                </div>
+                                                <div class="header-info-value">
+                                                    <t t-esc="company.street"/><t t-if="company.street2">, <t t-esc="company.street2"/></t><t t-if="company.city">, <t t-esc="company.city"/></t>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="header-info-row">
+                                                <div class="header-info-label">
+                                                    Phone Number / Số điện thoại
+                                                </div>
+                                                <div class="header-info-value">
+                                                    <t t-esc="company.phone"/>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="header-info-row">
+                                                <div class="header-info-label">
+                                                    Tax Number / Mã số thuế
+                                                </div>
+                                                <div class="header-info-value">
+                                                    <t t-esc="company.vat"/>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Reservation Information Header -->
+                            <h4 class="section-header">
+                                <span style="color: #000000;">Reservation Information</span>
+                                <span style="color: #666666;"> / </span>
+                                <span style="color: #888888;">Thông tin đặt phòng</span>
+                            </h4>
+                            
+                            <!-- Reservation Details (PDF-friendly table) -->
+                            <div class="reservation-box">
+                                <table class="receipt-table" style="width: 100%; margin: 0; table-layout: fixed; border: none; background: transparent;">
+                                    <colgroup>
+                                        <col style="width: 45%"/>
+                                        <col style="width: 55%"/>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <span class="info-label">Reservation Number</span><br/>
+                                                <span class="info-sublabel">Số đặt phòng</span>
+                                            </td>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <span class="highlight-value"><t t-esc="o.reservation_id.reservation_no"/></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <span class="info-label">Hotel Name</span><br/>
+                                                <span class="info-sublabel">Tên khách sạn</span>
+                                            </td>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <t t-esc="o.reservation_id.hotel_id.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <span class="info-label">Arrival Date</span><br/>
+                                                <span class="info-sublabel">Ngày nhận phòng</span>
+                                            </td>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <t t-if="o.reservation_id.expected_checkin_time">
+                                                    <t t-esc="o.reservation_id.expected_checkin_time.strftime('%d/%m/%Y')"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <span class="info-label">Departure Date</span><br/>
+                                                <span class="info-sublabel">Ngày trả phòng</span>
+                                            </td>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <t t-if="o.reservation_id.expected_checkout_time">
+                                                    <t t-esc="o.reservation_id.expected_checkout_time.strftime('%d/%m/%Y')"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <span class="info-label">Room Number</span><br/>
+                                                <span class="info-sublabel">Số phòng</span>
+                                            </td>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <strong style="font-weight: 700;">
+                                                    <t t-if="o.reservation_id.reservation_line">
+                                                        <t t-esc="o.reservation_id.reservation_line.room_id.name"/>
+                                                    </t>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <span class="info-label">Guest Name</span><br/>
+                                                <span class="info-sublabel">Tên khách</span>
+                                            </td>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <strong style="font-weight: 700;"><t t-esc="o.partner_id.name"/></strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <span class="info-label">Guest Phone</span><br/>
+                                                <span class="info-sublabel">Số điện thoại khách</span>
+                                            </td>
+                                            <td style="border: none; border-bottom: 1px solid #F6D3C0; padding: 18px 20px 8px 20px; background: transparent;">
+                                                <t t-esc="o.partner_id.mobile"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <h4 class="section-header" style="visibility: hidden">-</h4>
+                            
+                            <!-- Receipt Summary Header -->
+                            <h4 class="section-header">
+                                <span style="color: #000000;">Receipt Summary</span>
+                                <span style="color: #666666;"> / </span>
+                                <span style="color: #888888;">Thông tin hóa đơn</span>
+                            </h4>
+                            
+                            <!-- Receipt Table (PDF-friendly) -->
+                            <table class="receipt-table" style="width: 100%; margin: 0; table-layout: fixed;">
+                                <colgroup>
+                                    <col style="width: 20%"/>
+                                    <col style="width: 45%"/>
+                                    <col style="width: 15%"/>
+                                    <col style="width: 20%"/>
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <span class="info-label">Date</span><br/>
+                                            <span class="info-sublabel">Ngày</span>
+                                        </th>
+                                        <th>
+                                            <span class="info-label">Description</span><br/>
+                                            <span class="info-sublabel">Mô tả</span>
+                                        </th>
+                                        <th class="text-center">
+                                            <span class="info-label">Quantity</span><br/>
+                                            <span class="info-sublabel">Số lượng</span>
+                                        </th>
+                                        <th class="text-right">
+                                            <span class="info-label">Amount</span><br/>
+                                            <span class="info-sublabel">Số tiền</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="invoice_lines" t-as="line">
+                                        <tr>
+                                            <td><t t-esc="line['date']"/></td>
+                                            <td><t t-esc="line['name']"/></td>
+                                            <td style="text-align: center;"><t t-esc="line['quantity']"/></td>
+                                            <td style="text-align: right; white-space: nowrap;">
+                                                <span t-esc="line['price_subtotal']" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                                <span t-esc="line['price_total']" groups="account.group_show_line_subtotals_tax_included"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr class="total-row">
+                                        <td colspan="3">
+                                            <span class="total-label">TOTAL AMOUNT / TỔNG TIỀN</span>
+                                        </td>
+                                        <td class="total-amount" style="white-space: nowrap;">
+                                            <t t-esc="o.amount_total"/> VND
+                                        </td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <td colspan="3">
+                                            <span class="total-label">PAYMENT RECEIVED / THANH TOÁN ĐÃ NHẬN</span>
+                                        </td>
+                                        <td class="total-amount" style="white-space: nowrap;">
+                                            <t t-esc="o.amount_total - o.amount_residual" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/> VND
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <!-- QR Code Section -->
+                            <div class="qr-section">
+                                <p style="margin: 0 0 15px 0; font-size: 15px; color: #232323;">
+                                    <strong style="font-weight: 600;">Scan QR code for VAT invoice or visit</strong><br/>
+                                    <span style="color: #888888; font-size: 13px;">Quét mã QR để nhập thông tin xuất hoá đơn GTGT</span>
+                                </p>
+                                <img src="https://cdn-v2.mvillage.vn/cms/frame_2d0d1a78e4.png" 
+                                     alt="QR Code" 
+                                     width="180" 
+                                     height="180" 
+                                     class="qr-code"/>
+                                <p style="margin: 0 0 20px 0; font-size: 15px; color: #232323;">
+                                    <span>Or access link / Hoặc truy cập đường dẫn:</span><br/>
+                                    <a href="https://einvoice.mvillage.vn?secret_code=7DP8Y2P5" 
+                                       style="color: #F16A26; text-decoration: underline; font-size: 15px; font-weight: 600;" 
+                                       target="_blank">einvoice.mvillage.vn?secret_code=7DP8Y2P5</a>
+                                </p>
+                                <div class="warning-box">
+                                    <p class="warning-text">
+                                        QR code or link above will expire in 2 hours!<br/>
+                                        <span style="font-weight: 400; font-size: 15px;">Mã QR hoặc link ở trên sẽ hết hạn sau 2 giờ!</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="footer-section">
+                                <p class="footer-text">
+                                    This is an automated email receipt for your recent stay. Please keep this for your records.<br/>
+                                    <span style="color: #888888; font-style: italic;">Đây là hóa đơn tự động cho kỳ lưu trú gần đây của bạn. Vui lòng lưu lại để tham khảo.</span>
+                                </p>
+                                <p class="footer-text">
+                                    If you have any questions regarding this receipt, please contact us at 
+                                    <strong style="font-weight: 700; font-size: 16px;">+84 908017469</strong> or reply to this email.<br/>
+                                    <span style="color: #888888; font-style: italic;">Nếu bạn có bất kỳ thắc mắc nào về hóa đơn này, vui lòng liên hệ +84 908017469 hoặc trả lời email này.</span>
+                                </p>
+                                <p class="footer-text">
+                                    <strong style="font-weight: 700; font-size: 16px;">Thank you for choosing M Village for your stay. We hope to see you again soon!</strong><br/>
+                                    <span style="color: #888888; font-style: italic;">Cảm ơn bạn đã chọn M Village cho kỳ lưu trú của mình. Hy vọng sẽ được đón tiếp bạn lần nữa!</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </t>
+</t>

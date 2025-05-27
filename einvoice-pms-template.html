@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<t t-name="mvillage_hotel.resend_report_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.basic_layout">
+                        <div class="page">
+                            <div style="font-family: Time New Roman;font-size:13px">
+                                <div class="row">
+                                    <t t-foreach="yourcompany" t-as="company">
+                                        <div class="col-3">
+                                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height:45pt;max-width:90%" alt="Company Logo"/>
+                                        </div>
+                                        <div class="col-9">
+                                            <ul class="list-unstyled" style="list-style-type: none;">
+                                                <strong>
+                                                    <span t-field="company.name"/>
+                                                </strong>
+                                                <br/>
+                                                <strong>Địa chỉ/ Address: </strong>
+                                                <br/>
+                                                <li>
+                                                    <span t-field="company.street"/>
+,                                                    <span t-field="company.street2"/>
+,                                                    <span t-field="company.city"/>
+                                                </li>
+                                                <strong>Số Điện Thoại/ Phone Number:</strong>
+                                                <br/>
+                                                <li>
+                                                    <span t-field="company.phone"/>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </t>
+                                </div>
+                                <br/>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <ul class="list-unstyled" style="list-style-type: none;">
+                                            <li>
+                                                <b>Tên khách/ Guest Name:</b>
+                                            </li>
+                                            <li>
+                                                <t t-esc="o.partner_id.name"/>
+                                            </li>
+                                        </ul>
+                                        <ul class="list-unstyled" style="list-style-type: none;">
+                                            <li>
+                                                <b>Liên hệ/ Contacts:</b>
+                                            </li>
+                                            <li>
+                                                <t t-esc="o.partner_id.mobile"/>
+                                            </li>
+                                        </ul>
+                                        <ul class="list-unstyled" style="list-style-type: none;">
+                                            <li>
+                                                <b>Công ty/ Company (VAT):</b>
+                                            </li>
+                                            <li>
+                                                <t t-esc="o.company_vat_id.name"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-4">
+                                    </div>
+                                    <div class="col-4">
+                                        <ul class="list-unstyled" style="list-style-type: none;">
+                                            <li>
+                                                <b>Mã đặt chỗ/ Reservation Detai:</b>
+                                            </li>
+                                            <li>
+                                                <t t-esc="o.reservation_id.reservation_no"/>
+                                            </li>
+                                            <li>
+                                                <b>Ngày nhận phòng/ Arrival Date:</b>
+                                                <t t-if="o.reservation_id.expected_checkin_time">
+                                                    <t t-esc="o.reservation_id.expected_checkin_time.strftime('%d/%m/%Y')"/>
+                                                </t>
+                                            </li>
+                                            <li>
+                                                <b>Ngày trả phòng/ Departure Date:</b>
+                                                <t t-if="o.reservation_id.expected_checkout_time">
+                                                    <t t-esc="o.reservation_id.expected_checkout_time.strftime('%d/%m/%Y')"/>
+                                                </t>
+                                            </li>
+                                            <li>
+                                                <b>Số phòng/ Room Number:</b>
+                                                <t t-if="o.reservation_id.reservation_line">
+                                                    <t t-esc="o.reservation_id.reservation_line.room_id.name"/>
+                                                </t>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <br/>
+                                <table class="table table-sm o_main_table" name="invoice_line_table">
+                                    <thead>
+                                        <tr>
+                                            <th name="th_date" class="text-left">
+                                                <span>Ngày/ Date  </span>
+                                            </th>
+                                            <th name="th_description" class="text-left">
+                                                <span>Chi tiết/ Descriptions </span>
+                                            </th>
+                                            <th name="th_quantity" class="text-right">
+                                                <span>SL/Quantity</span>
+                                            </th>
+                                            <th groups="account.group_show_line_subtotals_tax_excluded" name="th_subtotal" class="text-right">
+                                                <span>Taxed/Thuế</span>
+                                            </th>
+                                            <th name="th_subtotal" class="text-right">
+                                                <span groups="account.group_show_line_subtotals_tax_excluded">Số tiền/ Amount</span>
+                                                <span groups="account.group_show_line_subtotals_tax_included">Total Price</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="invoice_tbody">
+                                        <t t-foreach="invoice_lines" t-as="line">
+                                            <tr>
+                                                <td class="text-left">
+                                                    <p>
+                                                        <t t-esc="line['date']"/>
+                                                    </p>
+                                                </td>
+                                                <td class="text-left">
+                                                    <p>
+                                                        <t t-esc="line['name']"/>
+                                                    </p>
+                                                </td>
+                                                <td class="text-right">
+                                                    <p>
+                                                        <t t-esc="line['quantity']"/>
+                                                    </p>
+                                                </td>
+                                                <td class="text-right" groups="account.group_show_line_subtotals_tax_excluded">
+                                                    <p>
+                                                        <t t-esc="line['tax_amount']"/>
+                                                    </p>
+                                                </td>
+                                                <td class="text-right o_price_total">
+                                                    <span class="text-nowrap" t-esc="line['price_subtotal']" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                                    <span class="text-nowrap" t-esc="line['price_total']" groups="account.group_show_line_subtotals_tax_included"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                                <div class="clearfix">
+                                    <div id="total" class="row">
+                                        <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ml-auto">
+                                            <table class="table table-sm" style="page-break-inside: avoid;">
+                                                <tr>
+                                                    <td>
+                                                        <strong>TỔNG (CHƯA THUẾ )/ UNTAXED AMOUNT</strong>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <!-- <span t-field="o.amount_untaxed"/> -->
+                                                        <span t-esc="total_untaxed"/>
+                                                    </td>
+                                                </tr>
+                                                <t t-foreach="o.amount_by_group" t-as="amount_by_group">
+                                                    <tr style="">
+                                                        <t t-if="len(o.line_ids.filtered(lambda line: line.tax_line_id)) in [0, 1] and float_compare(o.amount_untaxed, amount_by_group[2], precision_rounding=o.currency_id.rounding) == 0">
+                                                            <td>
+                                                                <span class="text-nowrap" t-esc="amount_by_group[0]"/>
+                                                            </td>
+                                                            <td class="text-right o_price_total">
+                                                                <span class="text-nowrap" t-esc="amount_by_group[3]"/>
+                                                            </td>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <td>
+                                                                <span t-esc="amount_by_group[0]"/>
+                                                                <span class="text-nowrap"> on
+                                                                    <t t-esc="amount_by_group[4]"/>
+                                                                </span>
+                                                            </td>
+                                                            <td class="text-right o_price_total">
+                                                                <span class="text-nowrap" t-esc="amount_by_group[3]"/>
+                                                            </td>
+                                                        </t>
+                                                    </tr>
+                                                </t>
+                                                <tr>
+                                                    <td>
+                                                        <strong>TỔNG/ TOTAL AMOUNT</strong>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span class="text-nowrap" t-field="o.amount_total"/>
+                                                    </td>
+                                                </tr>
+                                                <t>
+                                                    <tr>
+                                                        <td>
+                                                            <strong>THANH TOÁN/ PAYMENT RECEIVED</strong>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span t-esc="o.amount_total - o.amount_residual" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: currency_id}"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </t>
+        

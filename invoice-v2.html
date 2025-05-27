@@ -184,30 +184,31 @@
                                 </td>
                                 <td
                                     style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
-                                    Amount 
+                                    Amount
                                 </td>
                             </tr>
                             <tr>
-                                <td
-                                    style="border: 2px solid black;height: 10px;width: 50%;padding-top: 0;padding-bottom: 0;">
+                                <td colspan="2"
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
                                     TOTAL AMOUNT / TỔNG TIỀN
                                 </td>
-                                <td
-                                    style="border: 2px solid black;height: 10px;width: 50%;padding-top: 0;padding-bottom: 0;">
+                                <td colspan="2"
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
                                     100.000 VND
                                 </td>
                             </tr>
                             <tr>
-                                <td
-                                    style="border: 2px solid black;height: 10px;width: 50%;padding-top: 0;padding-bottom: 0;">
+                                <td colspan="2"
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
                                     PAYMENT RECEIVED / THANH TOÁN ĐÃ NHẬN
                                 </td>
-                                <td
-                                    style="border: 2px solid black;height: 10px;width: 50%;padding-top: 0;padding-bottom: 0;">
+                                <td colspan="2"
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
                                     100.000 VND
                                 </td>
                             </tr>
                         </table> -->
+
 
                         <table class="table table-bordered" style="border: 2px solid black;" width="100%"
                             name="invoice_line_table">
@@ -233,34 +234,41 @@
                                 <td
                                     style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
                                     Amount
+                                    <br />
+                                    <i style="color: #666;">Số tiền</i>
                                 </td>
                             </tr>
-                            <tr>
-                                <td
-                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
-                                    Date
-                                </td>
-                                <td
-                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
-                                    Description
-                                </td>
-                                <td
-                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
-                                    Quantity
-                                </td>
-                                <td
-                                    style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
-                                    Amount
-                                </td>
-                            </tr>
+                            <t t-foreach="invoice_lines" t-as="line">
+                                <tr>
+                                    <td
+                                        style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;">
+                                        <t t-esc="line['date']" />
+                                    </td>
+                                    <td
+                                        style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                        <t t-esc="line['name']" />
+                                    </td>
+                                    <td
+                                        style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;text-align: center;">
+                                        <t t-esc="line['quantity']" />
+                                    </td>
+                                    <td
+                                        style="border: 2px solid black;height: 10px;width: 20%;padding-top: 0;padding-bottom: 0;text-align: right; white-space: nowrap;">
+                                        <span t-esc="line['price_subtotal']"
+                                            groups="account.group_show_line_subtotals_tax_excluded" />
+                                        <span t-esc="line['price_total']"
+                                            groups="account.group_show_line_subtotals_tax_included" />
+                                    </td>
+                                </tr>
+                            </t>
                             <tr>
                                 <td colspan="2"
                                     style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
                                     TOTAL AMOUNT / TỔNG TIỀN
                                 </td>
                                 <td colspan="2"
-                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
-                                    100.000 VND
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;text-align: right; white-space: nowrap;">
+                                    <t t-esc="o.amount_total" /> VND
                                 </td>
                             </tr>
                             <tr>
@@ -269,11 +277,16 @@
                                     PAYMENT RECEIVED / THANH TOÁN ĐÃ NHẬN
                                 </td>
                                 <td colspan="2"
-                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
-                                    100.000 VND
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;text-align: right; white-space: nowrap;">
+                                    <t t-esc="o.amount_total - o.amount_residual"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}' /> VND
                                 </td>
                             </tr>
                         </table>
+
+
+
+
                         <div style="text-align: center; margin: 24px;">
                             <p>
                                 Scan QR code for VAT invoice or visit

@@ -11,6 +11,7 @@
                         href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
                         rel="stylesheet" />
                 </head>
+
                 <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px">
                     <!-- Check-in/Check-out Policies -->
                     <div class="policies-section">
@@ -194,8 +195,8 @@
                                 </td>
                                 <td colspan="2"
                                     style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;text-align: right; white-space: nowrap; font-weight: 600;">
-                                    <t t-esc="o.amount_total" 
-                                    t-options='{"widget": "monetary", "display_currency": o.currency_id}' />
+                                    <t t-esc="o.amount_total"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}' />
                                 </td>
                             </tr>
                             <tr>
@@ -213,14 +214,15 @@
 
 
 
-
+                        <!-- QR CODE -->
                         <div style="text-align: center; margin: 24px; page-break-inside: avoid;">
                             <p>
                                 Scan QR code for VAT invoice or visit
                                 <br />
                                 <i style="color: #666;">Quét mã QR để nhập thông tin xuất hoá đơn GTGT</i>
                             </p>
-                            <a href="einvoice.mvillage.vn/?secret_code=7DP8Y2P5"><img src="https://cdn-v2.mvillage.vn/cms/frame_2d0d1a78e4.png" alt="QR Code"
+                            <a href="einvoice.mvillage.vn/?secret_code=7DP8Y2P5"><img
+                                    src="https://cdn-v2.mvillage.vn/cms/frame_2d0d1a78e4.png" alt="QR Code"
                                     style="width: 200px; height: auto;" /></a>
                             <p style="margin: 0">
                                 Or access link/
@@ -240,7 +242,7 @@
                         </div>
 
 
-
+                        <!-- Thank You Message -->
                         <div style="text-align: center; margin: 24px;">
                             <p>
                                 Thank you for choosing us!

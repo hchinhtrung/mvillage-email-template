@@ -154,9 +154,9 @@
                         <!-- Header Image -->
                         <tr>
                             <td style="padding: 0; text-align: center; background-color: #ffffff;">
-                                <a href="https://mvillage.vn/en/?signUp=true&utm_source=EDM&utm_medium=Bookingconfirmation&utm_campaign=B2C
-"><img src="https://cdn-v2.mvillage.vn/cms/B2_B_Loyalty_Toolkit_07_2_840e996449.png" alt="Welcome to M Village"
-                                        width="600"
+                                <a href="https://mvillage.vn/en"><img
+                                        src="https://cdn-v2.mvillage.vn/cms/B2_B_Loyalty_Toolkit_07_2_840e996449.png"
+                                        alt="Welcome to M Village" width="600"
                                         style="width: 100%; max-width: 600px; height: auto; display: block; border: 0; outline: none; text-decoration: none;"></a>
                             </td>
                         </tr>
@@ -176,12 +176,13 @@
                                             </p>
                                         </td>
                                     </tr>
-                                    
+
                                     <tr>
                                         <td style="padding: 0 0 30px 0; text-align: center;">
                                             <p
                                                 style="margin: 0; font-size: 16px; line-height: 24px; color: #333333; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                                                As a New Citizen, you're invited to explore your member perks as below:
+                                                As a {{.CitizenLevel}}, you're invited to explore your member perks as
+                                                below:
                                             </p>
                                         </td>
                                     </tr>
@@ -198,24 +199,7 @@
                                                     <td style="padding: 8px 0; text-align: center;">
                                                         <p
                                                             style="margin: 0; font-size: 16px; line-height: 24px; color: #333333; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                                                            ✓ Early Check-in
-                                                        </p>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding: 8px 0; text-align: center;">
-                                                        <p
-                                                            style="margin: 0; font-size: 16px; line-height: 24px; color: #333333; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                                                            ✓ Late Check-out until 1PM
-                                                        </p>
-                                                    </td>
-                                                </tr>
-
-                                                <tr>
-                                                    <td style="padding: 8px 0; text-align: center;">
-                                                        <p
-                                                            style="margin: 0; font-size: 16px; line-height: 24px; color: #333333; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                                                            {{.MemberBenefit}}
+                                                            {{.MembershipTier}}
                                                         </p>
                                                     </td>
                                                 </tr>
@@ -245,8 +229,7 @@
                                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                     <tr>
                                         <td style="padding: 0; text-align: center;">
-                                            <a href="https://mvillage.vn/en/?signUp=true&utm_source=EDM&utm_medium=Bookingconfirmation&utm_campaign=B2C"
-                                                target="_blank"
+                                            <a href="https://mvillage.vn/en" target="_blank"
                                                 style="display: inline-block; background-color: #000000; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 600; line-height: 48px; text-align: center; text-decoration: none; padding: 0 60px; border-radius: 8px; -webkit-text-size-adjust: none;">
                                                 Discover Now
                                             </a>
@@ -289,7 +272,7 @@
 
                         <!-- Bottom Image -->
                         <tr>
-                            <td style="padding: 0; text-align: center; background-color: #fdf7ef;";">
+                            <td style="padding: 0; text-align: center; background-color: #fdf7ef;" ;">
                                 <img src="https://cdn-v2.mvillage.vn/cms/B2_B_Loyalty_Toolkit_06_1_9bdfb1db25.png"
                                     alt="M Village Community" width="600"
                                     style="width: 100%; max-width: 600px; height: auto; display: block; border: 0; outline: none; text-decoration: none;">

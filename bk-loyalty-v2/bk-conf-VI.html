@@ -99,7 +99,8 @@
 	style="font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; line-height: 1.5; color: #333; background-color: #f5f7fa; font-size: 16px; margin: 0; padding: 0;">
 	<table border="0" cellpadding="0" cellspacing="0"
 		style="max-width: 600px; margin: 0 auto; background-color: #fff; border-radius: 0px; overflow: hidden;"
-		width="100%"><!-- Header -->
+		width="100%">
+		<!-- Header -->
 		<tbody>
 			<tr>
 				<td style="padding: 20px; border-bottom: 1px solid #eaeaea; background-color: #fff;">
@@ -113,7 +114,7 @@
 
 									<p
 										style="margin: 4px 0 0 0; padding: 0; font-size: 13px; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; color: #666;">
-										Address: <a href="#"
+										Địa chỉ: <a href="#"
 											style="color: #666; text-decoration: none;">{{.HotelAddress}}</a></p>
 
 									<p
@@ -136,11 +137,12 @@
 				<td style="padding: 20px; margin-bottom: 20px;">
 					<h1
 						style="text-align: center; font-size: 22px; font-weight: 700; margin: 15px 0; padding-bottom: 15px; border-bottom: 1px solid #eaeaea; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-						YOUR BOOKING CONFIRMATION</h1>
+						XÁC NHẬN ĐẶT PHÒNG</h1>
 
 					<p
 						style="margin: 0 0 15px 0; padding: 0; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-						Thank you for booking with us, {{.Name}} &mdash; here are your reservation details:</p>
+						Cảm ơn bạn đã đặt phòng với chúng tôi, {{.Name}} &mdash; dưới đây là thông tin đặt phòng của
+						bạn:</p>
 
 					<!-- table 1 -->
 					<table border="0" cellpadding="0" cellspacing="0"
@@ -149,35 +151,35 @@
 						<tbody>
 							<tr style="background-color: rgba(0,0,0,0.02);">
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Reservation Number</strong></td>
+									width="50%"><strong>Mã đặt phòng</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
 									{{.ReservationNumber}}</td>
 							</tr>
 							<tr>
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Number of Guest</strong></td>
+									width="50%"><strong>Số lượng khách</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
 									{{.NumberOfGuest}}</td>
 							</tr>
 							<tr style="background-color: rgba(0,0,0,0.02);">
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Check-in</strong></td>
+									width="50%"><strong>Ngày nhận phòng</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-									{{.Checkin}} (from 2PM)</td>
+									{{.Checkin}} (từ 2PM)</td>
 							</tr>
 							<tr>
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Check-out</strong></td>
+									width="50%"><strong>Ngày trả phòng</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-									{{.Checkout}} (by 12PM)</td>
+									{{.Checkout}} (trước 12PM)</td>
 							</tr>
 							<tr style="background-color: rgba(0,0,0,0.02);">
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Stay Duration</strong></td>
+									width="50%"><strong>Số đêm lưu trú</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
 									{{.NumberNight}}</td>
@@ -192,14 +194,14 @@
 						<tbody>
 							<tr style="background-color: rgba(0,0,0,0.02);">
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Room Type</strong></td>
+									width="50%"><strong>Loại phòng</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
 									{{.RoomType}}</td>
 							</tr>
 							<tr>
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Room Number</strong></td>
+									width="50%"><strong>Số phòng</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
 									{{.RoomNumber}}</td>
@@ -214,35 +216,35 @@
 						<tbody>
 							<tr style="background-color: rgba(0,0,0,0.02);">
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Total Amount</strong></td>
+									width="50%"><strong>Tổng tiền</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
 									{{.TotalAmount}} VND</td>
 							</tr>
 							<tr>
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Paid</strong></td>
+									width="50%"><strong>Đã thanh toán</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
 									{{.Paid}} VND</td>
 							</tr>
 							<tr style="background-color: rgba(0,0,0,0.02);">
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Remaining</strong></td>
+									width="50%"><strong>Còn lại</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
 									{{.Remaining}} VND</td>
 							</tr>
 							<tr>
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Payment Method</strong></td>
+									width="50%"><strong>Phương thức thanh toán</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
 									{{.PaymentMethod}}</td>
 							</tr>
 							<tr style="background-color: rgba(0,0,0,0.02);">
 								<td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-									width="50%"><strong>Special Requirements</strong></td>
+									width="50%"><strong>Yêu cầu đặc biệt</strong></td>
 								<td
 									style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
 									{{.SpecialRequirements}}</td>
@@ -259,12 +261,12 @@
 								<td style="padding: 15px;">
 									<p
 										style="margin: 0; padding: 0; color: #666; font-size: 14px !important; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; font-style: italic;">
-										A one-night deposit is required to secure your reservation, the remaining
-										balance is due at check-in. For more details, please review our policies here.
-										<a href="https://mvillage.vn/en/checkin-policy/"
+										Để đảm bảo giữ chỗ, quý khách vui lòng thanh toán trước một khoản đặt cọc tương
+										đương với giá trị của một đêm lưu trú. Phần chi phí còn lại sẽ được thanh toán
+										khi nhận phòng. Quý khách vui lòng tham khảo chính sách đặt phòng chi tiết <a
+											href="https://mvillage.vn/vi/chinh-sach-nhan-phong/"
 											style="color: #666; text-decoration: underline; font-size: 14px !important; font-style: italic;"
-											target="_blank">Tap here</a> for all the details.
-									</p>
+											target="_blank">tại đây</a>.</p>
 								</td>
 							</tr>
 						</tbody>
@@ -274,7 +276,7 @@
 			<!-- Local Guide -->
 			<tr>
 				<td style="padding: 0;"><a href="https://me-qr.com/wKZ0ZzeI"><img alt="Insider's Guide Banner"
-							src="https://cdn-v2.mvillage.vn/cms/B2_B_Loyalty_Toolkit_09_b4c7cbb66e.png"
+							src="https://cdn-v2.mvillage.vn/cms/B2_B_Loyalty_Toolkit_08_3_4742216945.png"
 							style="width: 100%; height: auto; display: block; border-radius: 8px 8px 0 0;" /> </a> </td>
 			</tr>
 
@@ -294,13 +296,13 @@
 									<td style="vertical-align: middle; text-align: left; padding: 0;">
 										<h2
 											style="font-weight: 600; color: #1F3048; font-size: 18px !important; margin: 0; padding: 0; text-align: left; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-											YOUR ACCOUNT</h2>
+											TÀI KHOẢN</h2>
 									</td>
 									<td style="vertical-align: middle; text-align: right; padding: 0;"><a
-											href="https://mvillage.vn/en/?signUp=true&amp;utm_source=EDM&amp;utm_medium=Bookingconfirmation&amp;utm_campaign=B2C"
+											href="https://mvillage.vn/vi/?signUp=true&amp;utm_source=EDM&amp;utm_medium=Bookingconfirmation&amp;utm_campaign=B2C"
 											rel="noopener"
 											style="color: #000; font-size: 14px !important; padding: 8px 20px; border-radius: 8px; text-decoration: underline; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; display: inline-block; vertical-align: middle;"
-											target="_blank">View Account <img alt="View More Icon" height="16"
+											target="_blank">Xem tài khoản <img alt="View More Icon" height="16"
 												src="https://cdn-icons-png.flaticon.com/512/545/545682.png"
 												style="vertical-align: middle; margin-left: 6px; display: inline-block;"
 												width="16" /> </a></td>
@@ -315,13 +317,13 @@
 								<tr>
 									<th
 										style="background-color: #fff; color: #000; padding: 12px 10px; text-align: center; font-weight: 600; font-size: 16px; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-right: 1px solid #fff; border-bottom: 1px solid #888;">
-										Membership Tier</th>
+										Hạng hội viên</th>
 									<th
 										style="background-color: #fff; color: #000; padding: 12px 10px; text-align: center; font-weight: 600; font-size: 16px; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-right: 1px solid #fff; border-bottom: 1px solid #888;">
-										Nights Stayed</th>
+										Tổng đêm lưu trú</th>
 									<th
 										style="background-color: #fff; color: #000; padding: 12px 10px; text-align: center; font-weight: 600; font-size: 16px; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-right: 1px solid #fff; border-bottom: 1px solid #888;">
-										Booking(s)</th>
+										Tổng đơn đặt phòng</th>
 								</tr>
 								<tr style="background-color: #fff; color: #000;">
 									<td
@@ -351,10 +353,10 @@
 
 						<p
 							style="margin: 15px 0 8px 0; padding: 0; font-size: 14px !important; font-style: italic; color: #666; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-							<span style="font-style: italic;">Benefits are subject to availability at time of stay. <a
-									href="https://mvillage.vn/en/about-citizen-program/"
+							<span style="font-style: italic;">(*) Một số quyền lợi có thể thay đổi tùy theo tình trạng
+								phòng. Xem chi tiết điều khoản <a href="https://mvillage.vn/vi/ve-citizen-program/"
 									style="color: #666; text-decoration: underline; font-size: 14px !important; font-style: italic;"
-									target="_blank">See full terms</a> for details</span>
+									target="_blank">tại đây</a></span>
 						</p>
 					</div>
 				</td>
@@ -362,15 +364,15 @@
 			<!-- Request for a VAT Invoice -->
 			<tr>
 				<td style="padding: 0">
-					<div style="padding: 20px">
+					<div style="padding: 0 20px">
 						<table cellpadding="0" cellspacing="0"
 							style="margin: 15px 0 0 0; border-collapse: separate; border-spacing: 0;" width="100%">
 							<tbody>
 								<tr>
 									<td style="vertical-align: middle; text-align: left; padding: 0;">
 										<h2
-											style="font-weight: 600; color: #E24D14; font-size: 18px !important; margin: 0; padding: 0; text-align: left; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; margin-bottom: 20px">
-											Request for a VAT Invoice</h2>
+											style="font-weight: 600; color: #000; font-size: 18px !important; margin: 0; padding: 0; text-align: left; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; margin-bottom: 10px">
+											Yêu cầu xuất hóa đơn VAT</h2>
 									</td>
 								</tr>
 							</tbody>
@@ -380,17 +382,19 @@
 						<table border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;" width="100%">
 							<tbody>
 								<tr>
-									<td style="padding: 0; background-color: #fff;">To request receipt of a VAT invoice,
-										please reach out to <strong>booking@mvillage.vn</strong> before the check-out
-										date.</td>
+									<td style="padding: 0; background-color: #fff;">Trong trường hợp cần xuất hóa đơn
+										VAT, vui lòng gửi thông tin đến <strong>booking@mvillage.vn</strong> trước thời
+										gian trả phòng.
+									</td>
 								</tr>
 							</tbody>
 						</table>
 
 						<p
 							style="margin: 15px 0 8px 0; padding: 0; font-size: 14px !important; font-style: italic; color: #666; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-							<span style="font-style: italic;"><strong style="color: #E24D14;">Notice: </strong> VAT
-								Invoice issuance is only supported if customers make payments directly to M Village
+							<span style="font-style: italic;"><strong style="color: #E24D14;">Lưu ý: </strong> Chỉ hỗ
+								trợ xuất hoá đơn với trường hợp khách hàng thanh toán trực tiếp với M
+								Village.
 						</p>
 					</div>
 				</td>
@@ -406,8 +410,8 @@
 								<tr>
 									<td style="vertical-align: middle; text-align: left; padding: 0;">
 										<h2
-											style="font-weight: 600; color: #E24D14; font-size: 18px !important; margin: 0; padding: 0; text-align: left; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; margin-bottom: 20px">
-											Arrival & Departure Policy</h2>
+											style="font-weight: 600; color: #000; font-size: 18px !important; margin: 0; padding: 0; text-align: left; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; margin-bottom: 10px">
+											Quy định nhận và trả phòng</h2>
 									</td>
 								</tr>
 							</tbody>
@@ -417,24 +421,25 @@
 						<table border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;" width="100%">
 							<tbody>
 								<ul style="margin: 0;">
-									<li>Check-in: 2pm</li>
-									<li>Check-out: 12pm</li>
-									<li>Early check-in is subject to availability. All extras or incidental charges will
-										be charged at the time of check-out</li>
-									<li>Infants under 2 years old may share their parent's room at no extra charge</li>
+									<li>Nhận phòng: 2PM</li>
+									<li>Trả phòng: 12PM</li>
+									<li>Việc nhận phòng sớm tùy theo tình trạng phòng trống tại M Village</li>
+									<li>Mọi chi phí phát sinh trong thời gian lưu trú, quý khách vui lòng thanh
+										toán khi trả phòng</li>
+									<li>Trẻ em dưới 2 tuổi khi đi cùng bố mẹ không cần trả thêm phí</li>
 								</ul>
 							</tbody>
 						</table>
 
 						<p
 							style="margin: 0; padding: 0; font-size: 16px; color: #333; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-							We&#39;re excited to welcome you soon!</p>
+							M Village vui mừng chào đón bạn</p>
 
 						<p
 							style="margin: 50px 0 8px 0; padding: 0; font-size: 14px !important; font-style: italic; color: #666; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-							<span style="font-style: italic;"><strong style="color: #E24D14;">Note: </strong> You are
-								not authorized to upload this format to any online/offline medium without the permission
-								of mvillage.vn
+							<span style="font-style: italic;"><strong style="color: #E24D14;">Lưu ý: </strong> Vui lòng
+								không chia sẻ hoặc đăng tải nội dung này dưới bất kỳ hình thức nào, trực tuyến hay ngoại
+								tuyến, nếu chưa được sự cho phép của mvillage.vn.
 						</p>
 
 					</div>

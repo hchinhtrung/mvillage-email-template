@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Deletion Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
+        }
+
+        .warning-box h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .warning-box p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            box-shadow: 0 4px 15px rgba(238, 90, 82, 0.4);
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(238, 90, 82, 0.6);
+        }
+
+        .btn-delete:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .result.success {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+        }
+
+        .result.error {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e1e5e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .step.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .step.completed {
+            background: #51cf66;
+            color: white;
+        }
+
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: #e1e5e9;
+            align-self: center;
+        }
+
+        .step-line.completed {
+            background: #51cf66;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗑️ Account Deletion Tool</h1>
+            <p>Công cụ xóa tài khoản MVillage</p>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step" id="step1">1</div>
+            <div class="step-line" id="line1"></div>
+            <div class="step" id="step2">2</div>
+        </div>
+
+        <div class="warning-box">
+            <h3>⚠️ Cảnh báo quan trọng!</h3>
+            <p>Việc xóa tài khoản là <strong>không thể hoàn tác</strong>. Tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn. Hãy chắc chắn bạn muốn thực hiện hành động này.</p>
+        </div>
+
+        <form id="deleteForm">
+            <div class="form-group">
+                <label for="email">Email đăng nhập:</label>
+                <input type="email" id="email" name="email" required placeholder="Nhập email của bạn">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mật khẩu:</label>
+                <input type="password" id="password" name="password" required placeholder="Nhập mật khẩu của bạn">
+            </div>
+
+            <button type="submit" class="btn btn-delete" id="deleteBtn">
+                Xóa tài khoản vĩnh viễn
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p id="loadingText">Đang xử lý...</p>
+        </div>
+
+        <div class="result" id="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://api-user-staging.mvillage.vn/api';
+        
+        const elements = {
+            form: document.getElementById('deleteForm'),
+            deleteBtn: document.getElementById('deleteBtn'),
+            loading: document.getElementById('loading'),
+            loadingText: document.getElementById('loadingText'),
+            result: document.getElementById('result'),
+            step1: document.getElementById('step1'),
+            step2: document.getElementById('step2'),
+            line1: document.getElementById('line1')
+        };
+
+        async function login(email, password) {
+            elements.loadingText.textContent = 'Bước 1: Đăng nhập để lấy token...';
+            elements.step1.classList.add('active');
+
+            try {
+                console.log('Attempting login for:', email);
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cookie': 'session_id=e1c7f3cd4741d3204ded9d5d1735095d4e22f150'
+                    },
+                    body: JSON.stringify({
+                        login: email,
+                        password: password,
+                        method: 'email'
+                    })
+                });
+
+                console.log('Login response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.log('Login error response:', errorText);
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(errorText);
+                    } catch {
+                        errorData = { message: errorText };
+                    }
+                    throw new Error(errorData.message || `Đăng nhập thất bại (${response.status})`);
+                }
+
+                const dataText = await response.text();
+                console.log('Login success response RAW:', dataText);
+                
+                let data;
+                try {
+                    data = JSON.parse(dataText);
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    throw new Error('Phản hồi không hợp lệ từ server: ' + dataText.substring(0, 100));
+                }
+                
+                console.log('Parsed login data:', JSON.stringify(data, null, 2));
+                console.log('Data type:', typeof data);
+                console.log('Is array:', Array.isArray(data));
+                
+                // Tìm access token trong nhiều cấu trúc có thể
+                let accessToken = null;
+                
+                // Kiểm tra trực tiếp
+                if (data.access_token) accessToken = data.access_token;
+                else if (data.accessToken) accessToken = data.accessToken;
+                else if (data.token) accessToken = data.token;
+                else if (data.access) accessToken = data.access;
+                
+                // Kiểm tra trong nested object
+                if (!accessToken && data.data) {
+                    if (data.data.access_token) accessToken = data.data.access_token;
+                    else if (data.data.accessToken) accessToken = data.data.accessToken;
+                    else if (data.data.token) accessToken = data.data.token;
+                }
+                
+                // Kiểm tra trong result object
+                if (!accessToken && data.result) {
+                    if (data.result.access_token) accessToken = data.result.access_token;
+                    else if (data.result.accessToken) accessToken = data.result.accessToken;
+                    else if (data.result.token) accessToken = data.result.token;
+                }
+                
+                if (!accessToken) {
+                    console.log('❌ No access token found!');
+                    console.log('Available top-level fields:', Object.keys(data));
+                    if (data.data) console.log('Available data fields:', Object.keys(data.data));
+                    if (data.result) console.log('Available result fields:', Object.keys(data.result));
+                    
+                    // Hiển thị toàn bộ response để debug
+                    alert('Response từ API:\n' + JSON.stringify(data, null, 2));
+                    throw new Error('Không tìm thấy access token trong phản hồi');
+                }
+                
+                console.log('✅ Found access token:', accessToken.substring(0, 50) + '...');
+
+                elements.step1.classList.remove('active');
+                elements.step1.classList.add('completed');
+                elements.line1.classList.add('completed');
+
+                return accessToken;
+            } catch (error) {
+                console.error('Login error:', error);
+                throw error;
+            }
+        }
+
+        async function deleteAccount(accessToken) {
+            elements.loadingText.textContent = 'Bước 2: Đang xóa tài khoản...';
+            elements.step2.classList.add('active');
+
+            try {
+                console.log('Attempting to delete account with token:', accessToken.substring(0, 30) + '...');
+                
+                // Đảm bảo token được format đúng với Bearer
+                const authHeader = accessToken.startsWith('Bearer ') ? accessToken : `Bearer ${accessToken}`;
+                console.log('Authorization header:', authHeader.substring(0, 50) + '...');
+                
+                const response = await fetch(`${API_BASE}/user`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': authHeader,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('Delete response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.log('Delete error response:', errorText);
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(errorText);
+                    } catch {
+                        errorData = { message: errorText };
+                    }
+                    throw new Error(errorData.message || `Xóa tài khoản thất bại (${response.status})`);
+                }
+
+                const responseText = await response.text();
+                console.log('Delete success response:', responseText);
+
+                elements.step2.classList.remove('active');
+                elements.step2.classList.add('completed');
+
+                return true;
+            } catch (error) {
+                console.error('Delete error:', error);
+                throw error;
+            }
+        }
+
+        function showResult(message, isSuccess) {
+            elements.result.style.display = 'block';
+            elements.result.textContent = message;
+            elements.result.className = `result ${isSuccess ? 'success' : 'error'}`;
+        }
+
+        function resetUI() {
+            elements.loading.style.display = 'none';
+            elements.deleteBtn.disabled = false;
+            elements.deleteBtn.textContent = 'Xóa tài khoản vĩnh viễn';
+            
+            // Reset steps
+            elements.step1.classList.remove('active', 'completed');
+            elements.step2.classList.remove('active', 'completed');
+            elements.line1.classList.remove('completed');
+        }
+
+        elements.form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showResult('Vui lòng nhập đầy đủ thông tin!', false);
+                return;
+            }
+
+            // Show loading state
+            elements.loading.style.display = 'block';
+            elements.deleteBtn.disabled = true;
+            elements.deleteBtn.textContent = 'Đang xử lý...';
+            elements.result.style.display = 'none';
+
+            console.log('Starting account deletion process...');
+
+            try {
+                // Step 1: Login to get access token
+                console.log('Step 1: Login');
+                const accessToken = await login(email, password);
+                console.log('Login successful, got token');
+                
+                // Small delay for better UX
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Step 2: Delete account
+                console.log('Step 2: Delete account');
+                await deleteAccount(accessToken);
+                console.log('Account deletion successful');
+                
+                showResult('✅ Tài khoản đã được xóa thành công!', true);
+                
+                // Clear form
+                elements.form.reset();
+                
+            } catch (error) {
+                console.error('Error during account deletion:', error);
+                showResult(`❌ Lỗi: ${error.message}`, false);
+            } finally {
+                console.log('Process completed, resetting UI');
+                resetUI();
+            }
+        });
+
+        // Add some visual feedback for form inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', () => {
+                input.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

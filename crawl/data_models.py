@@ -18,9 +18,20 @@ class RoomInfo:
     room_size: Optional[str] = None
     amenities: Optional[List[str]] = None
     cancellation_policy: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
+
+    def get_formatted_display(self) -> str:
+        """Get formatted display string: Room Name - Price VND"""
+        from utils import format_vnd_price
+
+        if self.currency == "VND":
+            formatted_price = format_vnd_price(self.price)
+        else:
+            formatted_price = f"{self.price:,.0f} {self.currency}"
+
+        return f"{self.room_type} - {formatted_price}"
 
 @dataclass
 class HotelPricing:

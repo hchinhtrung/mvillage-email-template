@@ -24,3 +24,21 @@
 2025-06-09 20:33:58,794 - scheduler - INFO - Starting scheduled scraping job
 2025-06-09 20:40:18,455 - scheduler - INFO - Received signal 2, shutting down gracefully...
 2025-06-09 20:40:18,456 - scheduler - WARNING - Scheduler is not running
+2025-06-09 21:29:09,633 - scheduler - INFO - Scheduler initialized with 2 hotels
+2025-06-09 21:29:09,633 - scheduler - INFO - Daily scraping scheduled for 09:00
+2025-06-09 21:29:09,634 - scheduler - INFO - Configuration saved to /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/scheduler_config.json
+2025-06-09 21:29:09,634 - scheduler - INFO - Running scraping job once
+2025-06-09 21:29:09,634 - scheduler - INFO - Starting scheduled scraping job
+2025-06-09 21:55:00,642 - scheduler - INFO - Scraping job completed. Session ID: c155f5f6-8410-48ed-b7fd-9d29e5587fbf
+2025-06-09 21:55:00,642 - scheduler - INFO - Hotels scraped: 0
+2025-06-09 21:55:00,642 - scheduler - INFO - Errors: 6
+2025-06-09 21:55:00,642 - scheduler - WARNING - Errors occurred during scraping: ['Failed to extract data for 2025-06-09', 'Failed to extract data for 2025-06-16', 'Failed to extract data for 2025-06-24', 'Failed to extract data for 2025-06-09', 'Failed to extract data for 2025-06-16', 'Failed to extract data for 2025-06-24']
+2025-06-09 22:18:33,760 - scheduler - INFO - Scheduler initialized with 2 hotels
+2025-06-09 22:18:33,760 - scheduler - INFO - Daily scraping scheduled for 09:00
+2025-06-09 22:18:33,760 - scheduler - INFO - Configuration loaded from /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/scheduler_config.json
+2025-06-09 22:18:33,760 - scheduler - INFO - Running scraping job once
+2025-06-09 22:18:33,760 - scheduler - INFO - Starting scheduled scraping job
+2025-06-09 23:00:56,073 - scheduler - INFO - Received signal 2, shutting down gracefully...
+2025-06-09 23:00:56,073 - scheduler - WARNING - Scheduler is not running
+2025-06-09 23:01:09,512 - scheduler - INFO - Received signal 2, shutting down gracefully...
+2025-06-09 23:01:09,512 - scheduler - WARNING - Scheduler is not running

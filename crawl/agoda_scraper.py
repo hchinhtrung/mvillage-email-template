@@ -395,25 +395,38 @@ class AgodaScraper:
     def _extract_single_room_info(self, room_element) -> Optional[RoomInfo]:
         """Extract information for a single room"""
         try:
-            # Extract room type/name
+            # Extract room type/name - try multiple approaches
             room_type = self._extract_room_type(room_element)
-            if not room_type:
+
+            # Extract price first - this is most important
+            price, currency = self._extract_room_price(room_element)
+
+            # If we can't get price, try to get it from the element text
+            if price == 0.0:
+                element_text = safe_get_text(room_element)
+                if element_text:
+                    price, currency = extract_price_from_text(element_text)
+
+            # If still no price, skip this room
+            if price == 0.0:
+                self.logger.warning(f"No price found for room element")
                 return None
 
-            # Extract price
-            price, currency = self._extract_room_price(room_element)
+            # If no room type, create a generic one
+            if not room_type or room_type == "Unknown Room Type":
+                room_type = f"Room - {price} {currency}"
 
             # Extract availability
             availability = self._extract_room_availability(room_element)
 
-            # Extract additional room details
+            # Extract additional room details (optional)
             max_guests = self._extract_max_guests(room_element)
             bed_type = self._extract_bed_type(room_element)
             room_size = self._extract_room_size(room_element)
             amenities = self._extract_amenities(room_element)
             cancellation_policy = self._extract_cancellation_policy(room_element)
 
-            return RoomInfo(
+            room_info = RoomInfo(
                 room_type=room_type,
                 price=price,
                 currency=currency,
@@ -424,6 +437,9 @@ class AgodaScraper:
                 amenities=amenities,
                 cancellation_policy=cancellation_policy
             )
+
+            self.logger.info(f"Successfully extracted room: {room_type} - {price} {currency}")
+            return room_info
 
         except Exception as e:
             self.logger.error(f"Error extracting single room info: {e}")
@@ -436,16 +452,48 @@ class AgodaScraper:
             ".MasterRoom__Name",
             "[data-selenium='room-name']",
             "h3",
+            "h4",
+            "h5",
             ".room-title",
-            "[data-testid='room-name']"
+            "[data-testid='room-name']",
+            ".room-name",
+            ".RoomName",
+            ".room-info h3",
+            ".room-info h4",
+            ".PropertyRoomName",
+            "[data-selenium*='room']",
+            ".room-details h3",
+            ".room-details h4"
         ]
 
         for selector in selectors:
-            element = room_element.find_element(By.CSS_SELECTOR, selector) if room_element else None
-            if element:
-                room_type = safe_get_text(element)
-                if room_type:
-                    return room_type
+            try:
+                element = room_element.find_element(By.CSS_SELECTOR, selector)
+                if element:
+                    room_type = safe_get_text(element)
+                    if room_type and len(room_type.strip()) > 2:
+                        self.logger.info(f"Found room type with selector '{selector}': {room_type}")
+                        return room_type.strip()
+            except:
+                continue
+
+        # Fallback: try to extract from any text in the room element
+        try:
+            element_text = safe_get_text(room_element)
+            if element_text:
+                # Look for room-like text patterns
+                lines = element_text.split('\n')
+                for line in lines[:5]:  # Check first 5 lines
+                    line = line.strip()
+                    if line and len(line) > 5 and len(line) < 100:
+                        # Skip if it looks like a price
+                        if not any(char in line for char in ['₫', '$', '€', '£', 'VND', 'USD']):
+                            # Skip if it's just numbers
+                            if not line.replace(',', '').replace('.', '').isdigit():
+                                self.logger.info(f"Found room type from text: {line}")
+                                return line
+        except:
+            pass
 
         return "Unknown Room Type"
 
@@ -457,18 +505,66 @@ class AgodaScraper:
             "[data-selenium='display-price']",
             ".price-display",
             "[data-testid='price']",
-            ".price"
+            "[data-testid*='price']",
+            ".price",
+            ".Price",
+            ".room-rate",
+            ".rate",
+            ".cost",
+            ".amount",
+            "[data-selenium*='price']",
+            ".PropertyPrice",
+            ".RoomPrice",
+            ".price-amount",
+            ".final-price",
+            ".total-price"
         ]
 
         for selector in price_selectors:
             try:
-                element = room_element.find_element(By.CSS_SELECTOR, selector)
-                if element:
+                elements = room_element.find_elements(By.CSS_SELECTOR, selector)
+                for element in elements:
                     price_text = safe_get_text(element)
-                    if price_text:
-                        return extract_price_from_text(price_text)
+                    if price_text and price_text.strip():
+                        price, currency = extract_price_from_text(price_text)
+                        if price > 0:
+                            self.logger.info(f"Found price with selector '{selector}': {price} {currency}")
+                            return price, currency
             except:
                 continue
+
+        # Fallback: search for price patterns in the entire room element text
+        try:
+            element_text = safe_get_text(room_element)
+            if element_text:
+                # Look for VND prices specifically
+                import re
+                vnd_patterns = [
+                    r'([\d,\.]+)\s*₫',
+                    r'([\d,\.]+)\s*VND',
+                    r'₫\s*([\d,\.]+)',
+                    r'VND\s*([\d,\.]+)'
+                ]
+
+                for pattern in vnd_patterns:
+                    matches = re.findall(pattern, element_text)
+                    for match in matches:
+                        try:
+                            price_str = match.replace(',', '').replace('.', '')
+                            price = float(price_str)
+                            if price > 1000:  # Reasonable VND price
+                                self.logger.info(f"Found VND price from text: {price}")
+                                return price, "VND"
+                        except:
+                            continue
+
+                # General price extraction
+                price, currency = extract_price_from_text(element_text)
+                if price > 0:
+                    self.logger.info(f"Found price from element text: {price} {currency}")
+                    return price, currency
+        except:
+            pass
 
         return 0.0, ""
 

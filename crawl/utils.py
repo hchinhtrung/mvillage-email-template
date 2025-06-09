@@ -84,13 +84,53 @@ def safe_get_attribute(element, attribute, default="") -> str:
         return default
 
 def extract_price_from_text(text: str) -> tuple[float, str]:
-    """Extract price and currency from text"""
+    """Extract price and currency from text - optimized for Vietnamese VND format"""
     if not text:
         return 0.0, ""
 
-    # Common currency symbols and codes
+    # Enhanced VND patterns for Vietnamese Agoda pages
+    vnd_patterns = [
+        r'([\d,\.]+)\s*₫',  # 2.896.188 ₫
+        r'([\d,\.]+)\s*VND',  # 2896188 VND
+        r'₫\s*([\d,\.]+)',  # ₫ 2.896.188
+        r'VND\s*([\d,\.]+)',  # VND 2896188
+        r'([\d,\.]+)\s*đ',  # 2.896.188 đ
+        r'đ\s*([\d,\.]+)',  # đ 2.896.188
+    ]
+
+    # First try VND patterns specifically
+    for pattern in vnd_patterns:
+        matches = re.findall(pattern, text, re.IGNORECASE)
+        for match in matches:
+            try:
+                # Handle Vietnamese number format: 2.896.188
+                price_str = match.strip()
+
+                # Remove commas first
+                price_str = price_str.replace(',', '')
+
+                # Handle dots as thousands separators in Vietnamese format
+                if '.' in price_str:
+                    # Count dots to determine if they're thousands separators
+                    dot_count = price_str.count('.')
+                    if dot_count >= 1:
+                        # Check if last part after dot has 3 digits (thousands separator)
+                        parts = price_str.split('.')
+                        if len(parts[-1]) == 3 and all(len(part) <= 3 for part in parts[1:]):
+                            # This is thousands separator format: 2.896.188
+                            price_str = ''.join(parts)
+                        else:
+                            # This might be decimal: 2896.50
+                            price_str = price_str  # Keep as is
+
+                price = float(price_str)
+                if price > 1000:  # Reasonable VND price
+                    return price, "VND"
+            except ValueError:
+                continue
+
+    # Fallback to other currencies
     currency_patterns = {
-        'VND': r'[₫]|VND|VNĐ|đ\s*$|^\s*đ',  # Enhanced VND detection
         'USD': r'[\$]|USD',
         'EUR': r'[€]|EUR',
         'GBP': r'[£]|GBP',
@@ -102,87 +142,87 @@ def extract_price_from_text(text: str) -> tuple[float, str]:
         'CNY': r'[¥]|CNY|RMB'
     }
 
-    # Clean text but preserve currency symbols
-    original_text = text
-    clean_text = re.sub(r'[,\s]+', '', text)
-
-    # Try to find currency and extract price
     for currency, pattern in currency_patterns.items():
-        if re.search(pattern, original_text, re.IGNORECASE):
-            # Extract numbers - handle Vietnamese number format
-            price_matches = re.findall(r'[\d,\.]+', clean_text)
+        if re.search(pattern, text, re.IGNORECASE):
+            price_matches = re.findall(r'[\d,\.]+', text)
             for price_match in price_matches:
                 try:
-                    # Handle different number formats
                     price_str = price_match.replace(',', '')
-
-                    # For VND, numbers are often large (millions)
-                    if '.' in price_str and currency == 'VND':
-                        # In Vietnamese format, . might be thousands separator
-                        parts = price_str.split('.')
-                        if len(parts) == 2 and len(parts[1]) == 3:
-                            # Likely thousands separator
-                            price_str = parts[0] + parts[1]
-
                     price = float(price_str)
                     if price > 0:
                         return price, currency
                 except ValueError:
                     continue
 
-    # Fallback: try to extract any number
-    price_matches = re.findall(r'[\d,\.]+', clean_text)
+    # Final fallback: extract any number and guess currency
+    price_matches = re.findall(r'[\d,\.]+', text)
     for price_match in price_matches:
         try:
             price_str = price_match.replace(',', '')
+
+            # Handle Vietnamese dot format
             if '.' in price_str:
                 parts = price_str.split('.')
-                if len(parts) == 2 and len(parts[1]) == 3:
-                    # Likely thousands separator
-                    price_str = parts[0] + parts[1]
+                if len(parts) >= 2 and all(len(part) <= 3 for part in parts[1:]):
+                    price_str = ''.join(parts)
 
             price = float(price_str)
-            if price > 0:
-                # Guess currency based on price range
-                if price > 10000:  # Likely VND
-                    return price, "VND"
-                else:
-                    return price, "UNKNOWN"
+            if price > 10000:  # Likely VND
+                return price, "VND"
+            elif price > 0:
+                return price, "UNKNOWN"
         except ValueError:
             continue
 
     return 0.0, ""
 
-def build_agoda_search_url(hotel_url: str, check_in: date, check_out: date, 
+def format_vnd_price(price: float) -> str:
+    """Format price in Vietnamese VND format with dots as thousands separators"""
+    if price <= 0:
+        return "0 ₫"
+
+    # Convert to integer for VND
+    price_int = int(price)
+
+    # Format with dots as thousands separators
+    price_str = f"{price_int:,}".replace(',', '.')
+
+    return f"{price_str} ₫"
+
+def build_agoda_search_url(hotel_url: str, check_in: date, check_out: date,
                           adults: int = 2, children: int = 0, rooms: int = 1) -> str:
-    """Build Agoda search URL with specific dates"""
+    """Build Agoda search URL with specific dates using the provided URL pattern"""
     try:
         # Parse the original URL
         parsed = urlparse(hotel_url)
-        
-        # Extract hotel ID from URL if possible
-        hotel_id_match = re.search(r'/hotel/([^/]+)', parsed.path)
-        if not hotel_id_match:
-            # Try alternative patterns
-            hotel_id_match = re.search(r'hotelid=(\d+)', parsed.query)
-        
-        # Build new query parameters
-        query_params = {
-            'checkIn': check_in.strftime('%Y-%m-%d'),
-            'checkOut': check_out.strftime('%Y-%m-%d'),
+
+        # Parse existing query parameters
+        existing_params = parse_qs(parsed.query)
+
+        # Convert to single values (parse_qs returns lists)
+        query_params = {}
+        for key, value_list in existing_params.items():
+            if value_list:
+                query_params[key] = value_list[0]
+
+        # Update/add the date parameters
+        query_params['checkIn'] = check_in.strftime('%Y-%m-%d')
+        query_params['checkOut'] = check_out.strftime('%Y-%m-%d')
+
+        # Update the checkin parameter if it exists (for the specific format you provided)
+        if 'checkin' in query_params:
+            query_params['checkin'] = check_in.strftime('%Y-%m-%d')
+
+        # Ensure other important parameters
+        query_params.update({
             'adults': str(adults),
             'children': str(children),
             'rooms': str(rooms),
-            'cid': '1844104',  # Common Agoda tracking ID
-            'tag': 'f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a'  # Sample tracking tag
-        }
-        
-        # Merge with existing query parameters
-        existing_params = parse_qs(parsed.query)
-        for key, value in existing_params.items():
-            if key not in query_params and value:
-                query_params[key] = value[0]
-        
+            'currencyCode': 'VND',  # Force VND currency
+            'finalPriceView': '1',
+            'isShowMobileAppPrice': 'false'
+        })
+
         # Rebuild URL
         new_query = urlencode(query_params)
         new_url = urlunparse((
@@ -193,9 +233,9 @@ def build_agoda_search_url(hotel_url: str, check_in: date, check_out: date,
             new_query,
             parsed.fragment
         ))
-        
+
         return new_url
-    
+
     except Exception as e:
         logging.error(f"Error building Agoda URL: {e}")
         return hotel_url

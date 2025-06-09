@@ -1,0 +1,21 @@
+{
+  "session_id": "ecde5f79-ce3b-4949-a53f-21d5ecac2e50",
+  "start_time": "2025-06-09T21:03:20.966500",
+  "end_time": "2025-06-09T21:29:09.627687",
+  "hotels_scraped": [],
+  "target_dates": [
+    "2025-06-09",
+    "2025-06-16",
+    "2025-06-24"
+  ],
+  "success_count": 0,
+  "error_count": 6,
+  "errors": [
+    "Failed to extract data for 2025-06-09",
+    "Failed to extract data for 2025-06-16",
+    "Failed to extract data for 2025-06-24",
+    "Failed to extract data for 2025-06-09",
+    "Failed to extract data for 2025-06-16",
+    "Failed to extract data for 2025-06-24"
+  ]
+}

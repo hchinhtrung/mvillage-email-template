@@ -18,7 +18,7 @@ def example_single_hotel():
     print("=== Example: Single Hotel Scraping ===")
     
     # Example Agoda hotel URL (replace with actual competitor URL)
-    hotel_url = "https://www.agoda.com/centara-grand-beach-resort-samui/hotel/koh-samui-th.html"
+    hotel_url = "https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?countryId=38&finalPriceView=1&isShowMobileAppPrice=false&cid=1844104&numberOfBedrooms=&familyMode=false&adults=2&children=0&rooms=1&maxRooms=0&isCalendarCallout=false&childAges=&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10"
     
     logger = setup_logging("example")
     logger.info("Starting single hotel scraping example")
@@ -63,7 +63,7 @@ def example_multiple_hotels():
     
     # Example hotel URLs (replace with actual competitor URLs)
     hotel_urls = [
-        "https://www.agoda.com/centara-grand-beach-resort-samui/hotel/koh-samui-th.html",
+        "https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?countryId=38&finalPriceView=1&isShowMobileAppPrice=false&cid=1844104&numberOfBedrooms=&familyMode=false&adults=2&children=0&rooms=1&maxRooms=0&isCalendarCallout=false&childAges=&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10",
         "https://www.agoda.com/four-seasons-resort-koh-samui/hotel/koh-samui-th.html"
     ]
     
@@ -101,7 +101,7 @@ def example_scheduler_setup():
     
     # Example hotel URLs
     hotel_urls = [
-        "https://www.agoda.com/centara-grand-beach-resort-samui/hotel/koh-samui-th.html",
+        "https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?countryId=38&finalPriceView=1&isShowMobileAppPrice=false&cid=1844104&numberOfBedrooms=&familyMode=false&adults=2&children=0&rooms=1&maxRooms=0&isCalendarCallout=false&childAges=&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10",
         "https://www.agoda.com/four-seasons-resort-koh-samui/hotel/koh-samui-th.html"
     ]
     

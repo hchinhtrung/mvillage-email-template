@@ -1,0 +1,402 @@
+2025-06-09 20:13:14,692 - agoda_scraper - INFO - WebDriver setup completed successfully
+2025-06-09 20:24:48,735 - agoda_scraper - INFO - Scraping for dates: 2025-06-09 to 2025-06-10
+2025-06-09 20:24:48,735 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-09&checkOut=2025-06-10&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:24:49,741 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-09&checkOut=2025-06-10&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:24:51,746 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-09&checkOut=2025-06-10&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:24:51,746 - agoda_scraper - ERROR - Error extracting hotel info: 'NoneType' object has no attribute 'get'
+2025-06-09 20:24:51,746 - agoda_scraper - ERROR - Failed to extract data for 2025-06-09
+2025-06-09 20:24:55,667 - agoda_scraper - INFO - Scraping for dates: 2025-06-16 to 2025-06-17
+2025-06-09 20:24:55,667 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-16&checkOut=2025-06-17&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:24:56,668 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-16&checkOut=2025-06-17&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:24:58,673 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-16&checkOut=2025-06-17&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:24:58,673 - agoda_scraper - ERROR - Error extracting hotel info: 'NoneType' object has no attribute 'get'
+2025-06-09 20:24:58,673 - agoda_scraper - ERROR - Failed to extract data for 2025-06-16
+2025-06-09 20:25:01,753 - agoda_scraper - INFO - Scraping for dates: 2025-06-24 to 2025-06-25
+2025-06-09 20:25:01,754 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-24&checkOut=2025-06-25&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:25:02,755 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-24&checkOut=2025-06-25&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:25:04,759 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-24&checkOut=2025-06-25&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:25:04,759 - agoda_scraper - ERROR - Error extracting hotel info: 'NoneType' object has no attribute 'get'
+2025-06-09 20:25:04,759 - agoda_scraper - ERROR - Failed to extract data for 2025-06-24
+2025-06-09 20:27:00,133 - agoda_scraper - INFO - Scraping for dates: 2025-06-15 to 2025-06-16
+2025-06-09 20:27:00,133 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:27:01,138 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:27:03,144 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:27:03,144 - agoda_scraper - ERROR - Error extracting hotel info: 'NoneType' object has no attribute 'get'
+2025-06-09 20:27:03,144 - agoda_scraper - ERROR - Failed to extract data for 2025-06-15
+2025-06-09 20:29:01,412 - agoda_scraper - INFO - Scraping for dates: 2025-06-15 to 2025-06-16
+2025-06-09 20:29:01,412 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:29:02,417 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:29:04,421 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:29:04,421 - agoda_scraper - ERROR - Error extracting hotel info: 'NoneType' object has no attribute 'get'
+2025-06-09 20:29:04,421 - agoda_scraper - ERROR - Failed to extract data for 2025-06-15
+2025-06-09 20:30:06,520 - agoda_scraper - INFO - Scraping for dates: 2025-06-15 to 2025-06-16
+2025-06-09 20:30:06,520 - agoda_scraper - INFO - Building search URL...
+2025-06-09 20:30:06,520 - agoda_scraper - INFO - Built search URL: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:30:06,520 - agoda_scraper - INFO - Loading page...
+2025-06-09 20:30:06,520 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:30:07,524 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:30:09,530 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:30:09,530 - agoda_scraper - ERROR - Error extracting hotel info: 'NoneType' object has no attribute 'get'
+2025-06-09 20:30:09,538 - agoda_scraper - ERROR - Traceback: Traceback (most recent call last):
+  File "/Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/agoda_scraper.py", line 138, in extract_hotel_info
+    if not self.load_page(search_url):
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/utils.py", line 237, in wrapper
+    raise last_exception
+  File "/Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/utils.py", line 228, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/agoda_scraper.py", line 96, in load_page
+    self.driver.get(url)
+    ^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+
+2025-06-09 20:30:09,538 - agoda_scraper - ERROR - Failed to extract data for 2025-06-15
+2025-06-09 20:30:46,883 - agoda_scraper - INFO - Setting up WebDriver...
+2025-06-09 20:30:49,096 - agoda_scraper - INFO - WebDriver setup completed successfully
+2025-06-09 20:30:49,096 - agoda_scraper - INFO - Scraping for dates: 2025-06-15 to 2025-06-16
+2025-06-09 20:30:49,097 - agoda_scraper - INFO - Building search URL...
+2025-06-09 20:30:49,097 - agoda_scraper - INFO - Built search URL: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:30:49,097 - agoda_scraper - INFO - Loading page...
+2025-06-09 20:30:49,097 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a
+2025-06-09 20:31:00,628 - agoda_scraper - INFO - Page title: Pullman Saigon Centre Hotel, Quận 1, Hồ Chí Minh
+2025-06-09 20:31:00,634 - agoda_scraper - INFO - Current URL: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-15&checkOut=2025-06-16&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a&ds=dV%2BrvuTroFzosMMX
+2025-06-09 20:31:00,738 - agoda_scraper - WARNING - Robot/CAPTCHA detection found, but continuing...
+2025-06-09 20:31:00,738 - agoda_scraper - INFO - Page loaded successfully
+2025-06-09 20:31:00,738 - agoda_scraper - INFO - Waiting for content to load...
+2025-06-09 20:31:02,741 - agoda_scraper - INFO - Extracting hotel name...
+2025-06-09 20:31:02,768 - agoda_scraper - INFO - Found hotel name with selector 'h1[data-selenium='hotel-header-name']': Pullman Saigon Centre Hotel
+2025-06-09 20:31:02,768 - agoda_scraper - INFO - Extracting location...
+2025-06-09 20:31:02,790 - agoda_scraper - INFO - Extracting rating...
+2025-06-09 20:31:32,902 - agoda_scraper - INFO - Extracting review count...
+2025-06-09 20:32:12,965 - agoda_scraper - INFO - Extracting room information...
+2025-06-09 20:33:46,211 - agoda_scraper - WARNING - No room elements found, trying alternative approach
+2025-06-09 20:33:46,224 - agoda_scraper - INFO - Found 10 price elements with selector: [data-testid*='price']
+2025-06-09 20:33:46,248 - agoda_scraper - INFO - Extracted price room 1: 130365.0 VND
+2025-06-09 20:33:46,257 - agoda_scraper - INFO - Extracted price room 2: 579208.0 VND
+2025-06-09 20:33:46,264 - agoda_scraper - INFO - Extracted price room 3: 830120.0 VND
+2025-06-09 20:33:46,271 - agoda_scraper - INFO - Extracted price room 4: 600052.0 VND
+2025-06-09 20:33:46,279 - agoda_scraper - INFO - Extracted price room 5: 625326.0 VND
+2025-06-09 20:33:46,284 - agoda_scraper - INFO - Extracted price room 6: 280094.0 VND
+2025-06-09 20:33:46,290 - agoda_scraper - INFO - Extracted price room 7: 150078.0 VND
+2025-06-09 20:33:46,298 - agoda_scraper - INFO - Extracted price room 8: 68004.0 VND
+2025-06-09 20:33:46,305 - agoda_scraper - INFO - Extracted price room 9: 449974.0 VND
+2025-06-09 20:33:46,313 - agoda_scraper - INFO - Extracted price room 10: 169880.0 VND
+2025-06-09 20:33:46,313 - agoda_scraper - INFO - Successfully extracted 10 rooms using price fallback
+2025-06-09 20:33:46,313 - agoda_scraper - INFO - Creating hotel pricing object...
+2025-06-09 20:33:46,317 - agoda_scraper - INFO - Successfully extracted data for Pullman Saigon Centre Hotel
+2025-06-09 20:33:49,573 - agoda_scraper - INFO - WebDriver closed successfully
+2025-06-09 20:33:58,794 - agoda_scraper - INFO - Starting daily scraping run
+2025-06-09 20:33:58,794 - agoda_scraper - INFO - Target dates: ['2025-06-09', '2025-06-16', '2025-06-24']
+2025-06-09 20:33:58,794 - agoda_scraper - INFO - Starting scraping session 1458f028-4857-4399-aeef-bf67f8afc557 for 1 hotels
+2025-06-09 20:34:00,828 - agoda_scraper - INFO - WebDriver setup completed successfully
+2025-06-09 20:34:00,828 - agoda_scraper - INFO - Processing hotel 1/1: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?countryId=38&finalPriceView=1&isShowMobileAppPrice=false&cid=1844104&numberOfBedrooms=&familyMode=false&adults=2&children=0&rooms=1&maxRooms=0&isCalendarCallout=false&childAges=&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10
+2025-06-09 20:34:00,828 - agoda_scraper - INFO - Scraping for dates: 2025-06-09 to 2025-06-10
+2025-06-09 20:34:00,828 - agoda_scraper - INFO - Building search URL...
+2025-06-09 20:34:00,829 - agoda_scraper - INFO - Built search URL: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-09&checkOut=2025-06-10&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a&countryId=38&finalPriceView=1&isShowMobileAppPrice=false&familyMode=false&maxRooms=0&isCalendarCallout=false&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10
+2025-06-09 20:34:00,829 - agoda_scraper - INFO - Loading page...
+2025-06-09 20:34:00,829 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-09&checkOut=2025-06-10&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a&countryId=38&finalPriceView=1&isShowMobileAppPrice=false&familyMode=false&maxRooms=0&isCalendarCallout=false&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10
+2025-06-09 20:34:14,563 - agoda_scraper - INFO - Page title: Pullman Saigon Centre Hotel, Quận 1, Hồ Chí Minh
+2025-06-09 20:34:14,568 - agoda_scraper - INFO - Current URL: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-09&checkOut=2025-06-10&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a&countryId=38&finalPriceView=1&isShowMobileAppPrice=false&familyMode=false&maxRooms=0&isCalendarCallout=false&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10&ds=nUc6LhUW2sFajcu1
+2025-06-09 20:34:14,632 - agoda_scraper - WARNING - Robot/CAPTCHA detection found, but continuing...
+2025-06-09 20:34:14,632 - agoda_scraper - INFO - Page loaded successfully
+2025-06-09 20:34:14,632 - agoda_scraper - INFO - Waiting for content to load...
+2025-06-09 20:34:17,276 - agoda_scraper - INFO - Extracting hotel name...
+2025-06-09 20:34:17,298 - agoda_scraper - INFO - Found hotel name with selector 'h1[data-selenium='hotel-header-name']': Pullman Saigon Centre Hotel
+2025-06-09 20:34:17,299 - agoda_scraper - INFO - Extracting location...
+2025-06-09 20:34:17,315 - agoda_scraper - INFO - Extracting rating...
+2025-06-09 20:34:47,414 - agoda_scraper - INFO - Extracting review count...
+2025-06-09 20:35:27,538 - agoda_scraper - INFO - Extracting room information...
+2025-06-09 20:35:40,605 - agoda_scraper - INFO - Found 6 room elements with selector: .MasterRoom
+2025-06-09 20:35:50,634 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:36:00,678 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:36:10,739 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:36:20,786 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:36:30,834 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:36:40,860 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:36:40,860 - agoda_scraper - INFO - Total rooms extracted: 0
+2025-06-09 20:36:40,860 - agoda_scraper - WARNING - No room information found
+2025-06-09 20:36:40,860 - agoda_scraper - ERROR - Failed to extract data for 2025-06-09
+2025-06-09 20:36:45,205 - agoda_scraper - INFO - Scraping for dates: 2025-06-16 to 2025-06-17
+2025-06-09 20:36:45,205 - agoda_scraper - INFO - Building search URL...
+2025-06-09 20:36:45,205 - agoda_scraper - INFO - Built search URL: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-16&checkOut=2025-06-17&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a&countryId=38&finalPriceView=1&isShowMobileAppPrice=false&familyMode=false&maxRooms=0&isCalendarCallout=false&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10
+2025-06-09 20:36:45,205 - agoda_scraper - INFO - Loading page...
+2025-06-09 20:36:45,205 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-16&checkOut=2025-06-17&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a&countryId=38&finalPriceView=1&isShowMobileAppPrice=false&familyMode=false&maxRooms=0&isCalendarCallout=false&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10
+2025-06-09 20:36:54,320 - agoda_scraper - INFO - Page title: Pullman Saigon Centre Hotel, Quận 1, Hồ Chí Minh
+2025-06-09 20:36:54,325 - agoda_scraper - INFO - Current URL: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-16&checkOut=2025-06-17&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a&countryId=38&finalPriceView=1&isShowMobileAppPrice=false&familyMode=false&maxRooms=0&isCalendarCallout=false&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10&ds=nUc6LhUW2sFajcu1
+2025-06-09 20:36:54,384 - agoda_scraper - WARNING - Robot/CAPTCHA detection found, but continuing...
+2025-06-09 20:36:54,384 - agoda_scraper - INFO - Page loaded successfully
+2025-06-09 20:36:54,384 - agoda_scraper - INFO - Waiting for content to load...
+2025-06-09 20:36:56,664 - agoda_scraper - INFO - Extracting hotel name...
+2025-06-09 20:36:56,684 - agoda_scraper - INFO - Found hotel name with selector 'h1[data-selenium='hotel-header-name']': Pullman Saigon Centre Hotel
+2025-06-09 20:36:56,685 - agoda_scraper - INFO - Extracting location...
+2025-06-09 20:36:56,702 - agoda_scraper - INFO - Extracting rating...
+2025-06-09 20:37:26,809 - agoda_scraper - INFO - Extracting review count...
+2025-06-09 20:38:06,944 - agoda_scraper - INFO - Extracting room information...
+2025-06-09 20:38:20,018 - agoda_scraper - INFO - Found 6 room elements with selector: .MasterRoom
+2025-06-09 20:38:30,052 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:38:40,068 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:38:50,102 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:39:00,110 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:39:10,144 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:39:20,165 - agoda_scraper - ERROR - Error extracting single room info: Message: no such element: Unable to locate element: {"method":"css selector","selector":".room-type-name"}
+  (Session info: chrome=137.0.7151.69); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102aee654 cxxbridge1$str$ptr + 2723108
+1   chromedriver                        0x0000000102ae68c8 cxxbridge1$str$ptr + 2690968
+2   chromedriver                        0x000000010263a714 cxxbridge1$string$len + 90428
+3   chromedriver                        0x00000001026817c0 cxxbridge1$string$len + 381416
+4   chromedriver                        0x0000000102676f94 cxxbridge1$string$len + 338364
+5   chromedriver                        0x00000001026c2de8 cxxbridge1$string$len + 649232
+6   chromedriver                        0x00000001026759c8 cxxbridge1$string$len + 332784
+7   chromedriver                        0x0000000102ab2278 cxxbridge1$str$ptr + 2476360
+8   chromedriver                        0x0000000102ab550c cxxbridge1$str$ptr + 2489308
+9   chromedriver                        0x0000000102a93a64 cxxbridge1$str$ptr + 2351412
+10  chromedriver                        0x0000000102ab5d94 cxxbridge1$str$ptr + 2491492
+11  chromedriver                        0x0000000102a84d58 cxxbridge1$str$ptr + 2290728
+12  chromedriver                        0x0000000102ad5d60 cxxbridge1$str$ptr + 2622512
+13  chromedriver                        0x0000000102ad5eec cxxbridge1$str$ptr + 2622908
+14  chromedriver                        0x0000000102ae6514 cxxbridge1$str$ptr + 2690020
+15  libsystem_pthread.dylib             0x000000019d8dac0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000019d8d5b80 thread_start + 8
+
+2025-06-09 20:39:20,165 - agoda_scraper - INFO - Total rooms extracted: 0
+2025-06-09 20:39:20,166 - agoda_scraper - WARNING - No room information found
+2025-06-09 20:39:20,166 - agoda_scraper - ERROR - Failed to extract data for 2025-06-16
+2025-06-09 20:39:21,686 - agoda_scraper - INFO - Scraping for dates: 2025-06-24 to 2025-06-25
+2025-06-09 20:39:21,686 - agoda_scraper - INFO - Building search URL...
+2025-06-09 20:39:21,686 - agoda_scraper - INFO - Built search URL: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-24&checkOut=2025-06-25&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a&countryId=38&finalPriceView=1&isShowMobileAppPrice=false&familyMode=false&maxRooms=0&isCalendarCallout=false&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10
+2025-06-09 20:39:21,686 - agoda_scraper - INFO - Loading page...
+2025-06-09 20:39:21,686 - agoda_scraper - INFO - Loading page: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-24&checkOut=2025-06-25&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a&countryId=38&finalPriceView=1&isShowMobileAppPrice=false&familyMode=false&maxRooms=0&isCalendarCallout=false&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10
+2025-06-09 20:39:32,328 - agoda_scraper - INFO - Page title: Pullman Saigon Centre Hotel, Quận 1, Hồ Chí Minh
+2025-06-09 20:39:32,334 - agoda_scraper - INFO - Current URL: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?checkIn=2025-06-24&checkOut=2025-06-25&adults=2&children=0&rooms=1&cid=1844104&tag=f19c4b9c-5d0b-4b8a-9c1a-7b8f9e0d1c2a&countryId=38&finalPriceView=1&isShowMobileAppPrice=false&familyMode=false&maxRooms=0&isCalendarCallout=false&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10&ds=nUc6LhUW2sFajcu1
+2025-06-09 20:39:32,395 - agoda_scraper - WARNING - Robot/CAPTCHA detection found, but continuing...
+2025-06-09 20:39:32,395 - agoda_scraper - INFO - Page loaded successfully
+2025-06-09 20:39:32,395 - agoda_scraper - INFO - Waiting for content to load...
+2025-06-09 20:39:34,617 - agoda_scraper - INFO - Extracting hotel name...
+2025-06-09 20:39:34,636 - agoda_scraper - INFO - Found hotel name with selector 'h1[data-selenium='hotel-header-name']': Pullman Saigon Centre Hotel
+2025-06-09 20:39:34,636 - agoda_scraper - INFO - Extracting location...
+2025-06-09 20:39:34,651 - agoda_scraper - INFO - Extracting rating...
+2025-06-09 20:40:04,741 - agoda_scraper - INFO - Extracting review count...
+2025-06-09 20:40:18,485 - agoda_scraper - INFO - WebDriver closed successfully
+2025-06-09 20:40:18,490 - agoda_scraper - INFO - Session data saved to JSON: /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/agoda_pricing_session_20250609_203358.json
+2025-06-09 20:40:18,500 - agoda_scraper - INFO - WebDriver closed successfully

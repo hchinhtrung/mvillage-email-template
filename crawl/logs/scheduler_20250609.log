@@ -1,0 +1,26 @@
+2025-06-09 20:13:08,868 - scheduler - INFO - Scheduler initialized with 1 hotels
+2025-06-09 20:13:08,868 - scheduler - INFO - Daily scraping scheduled for 10:00
+2025-06-09 20:13:08,868 - scheduler - INFO - Configuration saved to /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/scheduler_config.json
+2025-06-09 20:13:08,868 - scheduler - INFO - Scheduler initialized with 1 hotels
+2025-06-09 20:13:08,868 - scheduler - INFO - Daily scraping scheduled for 10:00
+2025-06-09 20:13:08,868 - scheduler - INFO - Configuration loaded from /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/scheduler_config.json
+2025-06-09 20:22:29,541 - scheduler - INFO - Scheduler initialized with 1 hotels
+2025-06-09 20:22:29,541 - scheduler - INFO - Daily scraping scheduled for 10:00
+2025-06-09 20:22:29,541 - scheduler - INFO - Configuration loaded from /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/scheduler_config.json
+2025-06-09 20:22:29,541 - scheduler - INFO - Added hotel URL: https://www.agoda.com/vi-vn/pullman-saigon-centre-hotel/hotel/ho-chi-minh-city-vn.html?countryId=38&finalPriceView=1&isShowMobileAppPrice=false&cid=1844104&numberOfBedrooms=&familyMode=false&adults=2&children=0&rooms=1&maxRooms=0&isCalendarCallout=false&childAges=&numberOfGuest=0&missingChildAges=false&travellerType=1&showReviewSubmissionEntry=false&currencyCode=VND&isFreeOccSearch=false&los=1&searchrequestid=616107f0-75f0-4319-923d-cc9a79de71df&checkin=2025-07-10
+2025-06-09 20:22:29,541 - scheduler - INFO - Configuration saved to /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/scheduler_config.json
+2025-06-09 20:22:36,090 - scheduler - INFO - Scheduler initialized with 2 hotels
+2025-06-09 20:22:36,091 - scheduler - INFO - Daily scraping scheduled for 10:00
+2025-06-09 20:22:36,091 - scheduler - INFO - Configuration loaded from /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/scheduler_config.json
+2025-06-09 20:22:41,514 - scheduler - INFO - Scheduler initialized with 2 hotels
+2025-06-09 20:22:41,514 - scheduler - INFO - Daily scraping scheduled for 10:00
+2025-06-09 20:22:41,514 - scheduler - INFO - Configuration loaded from /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/scheduler_config.json
+2025-06-09 20:22:41,514 - scheduler - INFO - Removed hotel URL: https://www.agoda.com/hotel/test
+2025-06-09 20:22:41,514 - scheduler - INFO - Configuration saved to /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/scheduler_config.json
+2025-06-09 20:33:58,793 - scheduler - INFO - Scheduler initialized with 1 hotels
+2025-06-09 20:33:58,794 - scheduler - INFO - Daily scraping scheduled for 10:00
+2025-06-09 20:33:58,794 - scheduler - INFO - Configuration loaded from /Users/chinhtrung/Documents/GitHub/mvillage-email-template/crawl/data/scheduler_config.json
+2025-06-09 20:33:58,794 - scheduler - INFO - Running scraping job once
+2025-06-09 20:33:58,794 - scheduler - INFO - Starting scheduled scraping job
+2025-06-09 20:40:18,455 - scheduler - INFO - Received signal 2, shutting down gracefully...
+2025-06-09 20:40:18,456 - scheduler - WARNING - Scheduler is not running

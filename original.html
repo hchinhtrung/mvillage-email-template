@@ -1,0 +1,500 @@
+<?xml version="1.0"?>
+<t t-name="mvillage_hotel.report_template_hotel_registration_form">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.basic_layout">
+                <div style="font-family: Roboto; font-size: 16px">
+                    <div class="header">
+                        <div style="text-align: right; padding-top: 16px">
+                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 28pt"
+                                alt="Company Logo" />
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-12" style="text-align: center">
+                                <h1
+                                    style="                     padding-top: 1pt;                     text-indent: 0pt;                     text-align: center;                     color: black;                     font-family: Roboto;                     font-weight: bold;                     font-size: 12pt;                     margin: 0pt;                   ">
+                                    HOTEL REGISTRATION FORM
+                                </h1>
+                                <p
+                                    style="                     padding: 2pt 0 0 2pt;                     text-indent: 0pt;                     text-align: center;                     color: #595959;                     font-family: Roboto;                     font-style: italic;                     font-size: 12pt;                     margin: 0pt;                   ">
+                                    PHIẾU ĐĂNG KÝ LƯU TRÚ TẠI KHÁCH SẠN
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <table
+                                style="                   border-collapse: collapse;                   margin-left: 1pt;                   width: 100%;                   margin-top: 8px;                 "
+                                cellspacing="0">
+                                <tr>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            Title /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Danh xưng
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            <input type="checkbox"
+                                                t-att-checked="'checked' if o.tenant_id.title_type == 'mr' else None" />
+                                            Mr. /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Ông
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            <input type="checkbox"
+                                                t-att-checked="'checked' if o.tenant_id.title_type == 'mrs' else None" />
+                                            Mrs. /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Bà
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            <input type="checkbox"
+                                                t-att-checked="'checked' if o.tenant_id.title_type == 'miss' else None" />
+                                            Ms. /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Cô
+                                            </span>
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            Full Name /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Họ và Tên
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid" colspan="3">
+                                        <p
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                       ">
+                                            <t t-esc="o.reservation_line.tenant_id.name" />
+                                        </p>
+                                        <p
+                                            style="                         padding-left: 10pt;                         text-indent: 0pt;                         text-align: left;                         color: #595959;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                       ">
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         line-height: 120%;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                       ">
+                                            Do you need a VAT invoice?
+                                        </p>
+                                        <p class="s2"
+                                            style="                         padding-left: 10pt;                         text-indent: 0pt;                         line-height: 120%;                         text-align: left;                         color: #595959;                         font-family: Roboto;                         font-style: italic;                         font-size: 8.5pt;                         margin: 0;                       ">
+                                            Yêu cầu xuất hóa đơn VAT?
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid" colspan="2">
+                                        <p class="s3"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                       ">
+                                            <span class="s1"
+                                                style="                           color: black;                           font-family: Roboto;                           font-size: 8.5pt;                           margin: 0;                         ">
+                                                <input type="checkbox" t-att-checked="o.vat and 'checked' or None" />
+                                                Yes /
+                                            </span>
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                         ">
+                                                Có
+                                            </span>
+                                        </p>
+                                        <p class="s1"
+                                            style="                         padding: 0pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            Tax number /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                         ">
+                                                Mã số thuế
+                                                <br />
+                                                <t t-esc="o.code_vat" />
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p class="s3"
+                                            style="                         padding: 7pt 0 0 5pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                       ">
+                                            <span class="s1"
+                                                style="                           color: black;                           font-family: Roboto;                           font-size: 8.5pt;                           margin: 0;                         ">
+                                                <input type="checkbox"
+                                                    t-att-checked="not o.vat and 'checked' or None" />
+                                                No /
+                                            </span>
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                         ">Không</span>
+                                        </p>
+                                        <p class="s1"
+                                            style="                         padding: 2pt 0 0 4pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                       ">
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                         " />
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 1pt 2pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                       ">
+                                            Email
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p
+                                            style="                         padding: 1pt 2pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                       ">
+                                            <t t-esc="o.reservation_line.tenant_id.parent_id.email" />
+                                            <br />
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 1pt 2pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 2pt;                       ">
+                                            Telephone /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Số điện thoại
+                                            </span>
+                                        </p>
+                                    </td>
+
+                                    <td style="border: 1pt solid">
+                                        <p
+                                            style="                         padding: 1pt 2pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                         margin: 0;                         margin-bottom: 2pt;                       ">
+                                            <t t-esc="o.reservation_line.tenant_id.mobile" />
+                                            <br />
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            Arrival Date /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Ngày đến
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                       ">
+                                            <t t-if="o.expected_checkin_time">
+                                                <t t-esc="o.expected_checkin_time.strftime('%d/%m/%Y')" />
+                                            </t>
+                                            <br />
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            Departure Date /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Ngày đi
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                       ">
+                                            <t t-if="o.expected_checkout_time">
+                                                <t t-esc="o.expected_checkout_time.strftime('%d/%m/%Y')" />
+                                            </t>
+                                            <br />
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            Room Number /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Số phòng
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                       ">
+                                            <br />
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            Number of Guest’s /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Số lượng khách
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                       ">
+                                            <t t-esc="o.adults + o.childs" />
+                                            <br />
+                                        </p>
+                                    </td>
+                                </tr>
+                                <!-- <tr style="">
+                      <td style="border: 1pt solid">
+                        <p class="s1" style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                      Room Type /
+                          <span class="s2" style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                        Loại phòng
+                          </span>
+                        </p>
+                      </td>
+                      <td style="border: 1pt solid" colspan="3">
+                        <p style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                       ">
+                          <t t-esc="o.reservation_line.original_room_type.cat_id.name"/>
+                          <br/>
+                        </p>
+                      </td> -->
+
+                                <tr>
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            Booked Room Type /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Loại phòng đã đặt
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                       ">
+                                            <t t-esc="o.reservation_line.original_room_type.cat_id.name" />
+                                            <br />
+                                        </p>
+                                    </td>
+
+                                    <td style="border: 1pt solid">
+                                        <p class="s1"
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         margin: 0;                         margin-bottom: 4pt;                       ">
+                                            Room Type /
+                                            <span class="s2"
+                                                style="                           color: #595959;                           font-family: Roboto;                           font-style: italic;                           font-size: 8.5pt;                           margin: 0;                           margin-bottom: 4pt;                         ">
+                                                Loại phòng
+                                            </span>
+                                        </p>
+                                    </td>
+                                    <td style="border: 1pt solid">
+                                        <p
+                                            style="                         padding: 5pt 10pt 0 10pt;                         text-indent: 0pt;                         text-align: left;                         color: black;                         font-family: Roboto;                         font-size: 8.5pt;                         text-decoration: none;                       ">
+                                            <t t-esc="o.reservation_line.room_type.cat_id.name" />
+                                            <br />
+                                        </p>
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                            <p class="s4"
+                                style="                   padding-left: 10pt;                   text-indent: 0pt;                   text-align: justify;                   color: black;                   font-family: Roboto;                   font-size: 8.5pt;                   margin: 0;                   margin-top: 4px;                 ">
+                                I authorize the hotel to /
+                                <span class="p"
+                                    style="                     color: #595959;                     font-family: Roboto;                     font-style: italic;                     font-size: 8.5pt;                     margin: 0pt;                   ">Tôi
+                                    đồng ý uỷ quyền cho khách sạn:
+                                </span>
+                            </p>
+                            <ul id="l1" style="margin: 0">
+                                <li data-list-text="-">
+                                    <p class="s4"
+                                        style="                       padding: 2pt 0 0 0pt;                       line-height: 120%;                       text-align: justify;                       color: black;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        Use my debit/credit card (provided online or directly at the
+                                        hotel) to settle my account for prepaid bookings (full
+                                        reservations or incidentals).
+                                    </p>
+                                    <p
+                                        style="                       padding-left: 0pt;                       font-style: italic;                       line-height: 120%;                       text-align: justify;                       color: #595959;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0pt;                     ">
+                                        Sử dụng thẻ ghi nợ / thẻ tín dụng (được cung cấp online hoặc
+                                        trực tiếp tại khách sạn) để thanh toán khoản đặt phòng trước
+                                        (thanh toán toàn bộ hoặc thanh toán chi phí phát sinh).
+                                    </p>
+                                </li>
+                                <li data-list-text="-">
+                                    <p class="s4"
+                                        style="                       padding: 2pt 0 0 0pt;                       line-height: 120%;                       text-align: justify;                       color: black;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        M Village will not be responsible for any valuables left in
+                                        the room. Safety deposit boxes are available in each
+                                        guestroom. In case they are unavailable, you can ask our
+                                        staff for assistance.
+                                    </p>
+                                    <p
+                                        style="                       padding-left: 0pt;                       font-style: italic;                       line-height: 120%;                       text-align: justify;                       color: #595959;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0pt;                     ">
+                                        M Village sẽ không chịu trách nhiệm cho bất kỳ tư trang cá
+                                        nhân nào có giá trị của quý khách trong phòng. Quý khách có
+                                        thể sử dụng két sắt có sẵn. Trong trường hợp nếu không có
+                                        sẵn két sắt trong phòng, quý khách có thể liên hệ nhân viên
+                                        để được hỗ trợ lưu trữ tại quầy trong thời gian lưu trú.
+                                    </p>
+                                </li>
+                                <li data-list-text="-">
+                                    <p class="s4"
+                                        style="                       padding: 2pt 0 0 0pt;                       line-height: 120%;                       text-align: justify;                       color: black;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        Please be informed that check-out time is by 12 noon.
+                                    </p>
+                                    <p
+                                        style="                       padding-left: 0pt;                       font-style: italic;                       line-height: 120%;                       text-align: justify;                       color: #595959;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0pt;                     ">
+                                        Thời gian trả phòng quy định: Trước 12:00 trưa.
+                                    </p>
+                                </li>
+                                <li data-list-text="-">
+                                    <p class="s4"
+                                        style="                       padding: 2pt 0 0 0pt;                       line-height: 120%;                       text-align: justify;                       color: black;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        Please be informed that a fee of 100,000 VND will be charged
+                                        for each lost key card.
+                                    </p>
+                                    <p
+                                        style="                       padding-left: 0pt;                       font-style: italic;                       line-height: 120%;                       text-align: justify;                       color: #595959;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0pt;                     ">
+                                        Trong trường hợp làm mất thẻ phòng, chi phí 100,000 VND sẽ
+                                        được tính cho mỗi thẻ.
+                                    </p>
+                                </li>
+                                <li data-list-text="-">
+                                    <p class="s4"
+                                        style="                       padding: 2pt 0 0 0pt;                       line-height: 120%;                       text-align: justify;                       color: black;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        M Village collects and processes your personal information
+                                        requested in this form to manage your stay, providing
+                                        personalized services and comply with local law
+                                        requirements.
+                                    </p>
+                                    <p
+                                        style="                       padding-left: 0pt;                       font-style: italic;                       line-height: 120%;                       text-align: justify;                       color: #595959;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0pt;                     ">
+                                        M Village được phép thu thập và sử dụng thông tin cá nhân mà
+                                        quý khách đã điền trong mẫu này để phục vụ cho mục đích lưu
+                                        trú, cung cấp các dịch vụ dành riêng cho khách hàng, và tuân
+                                        thủ theo quy định của luật pháp địa phương.
+                                    </p>
+                                </li>
+                                <li data-list-text="-">
+                                    <p class="s4"
+                                        style="                       padding: 2pt 0 0 0pt;                       line-height: 120%;                       text-align: justify;                       color: black;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        For the guest's comfort, smoking or eating strong-smelt food
+                                        is not allowed inside the rooms. There will be an additional
+                                        cleaning charge of 2,000,000 VND for any incident found.
+                                    </p>
+                                    <p
+                                        style="                       padding-left: 0pt;                       font-style: italic;                       line-height: 120%;                       text-align: justify;                       color: #595959;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0pt;                     ">
+                                        Nhằm đảm bảo cho các khách hàng đến sau, quý khách vui lòng
+                                        không hút thuốc hoặc sử dụng thức ăn có mùi trong phòng.
+                                        Trường hợp bị phát hiện, quý khách sẽ được yêu cầu đóng một
+                                        khoản phụ phí là 2.000.000 VND.
+                                    </p>
+
+                                    <div style="display: table; width: 100%; margin: 0.5rem">
+                                        <div style="display: table-cell; text-align: center">
+                                            <img width="61" height="61" t-if="warning2"
+                                                t-att-src="image_data_uri(warning2)" />
+                                        </div>
+                                        <div style="display: table-cell; text-align: center">
+                                            <img width="60" height="60" t-if="warning1"
+                                                t-att-src="image_data_uri(warning1)" />
+                                        </div>
+                                        <div style="display: table-cell; text-align: center">
+                                            <img width="60" height="60" t-if="warning3"
+                                                t-att-src="image_data_uri(warning3)" />
+                                        </div>
+                                    </div>
+                                </li>
+                                <li data-list-text="-">
+                                    <p class="s4"
+                                        style="                       padding: 2pt 0 0 0pt;                       line-height: 120%;                       text-align: justify;                       color: black;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        You are responsible for any damages (in any case) to the
+                                        hotel's facilities caused by yourself or others in your
+                                        group, as prescribed by the hotel.
+                                    </p>
+                                    <p
+                                        style="                       padding-left: 0pt;                       font-style: italic;                       line-height: 120%;                       text-align: justify;                       color: #595959;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0pt;                     ">
+                                        Quý khách phải chịu trách nhiệm đền bù cho bất cứ thiệt hại
+                                        nào (bao gồm cả vô tình hoặc cố ý) đối với cơ sở vật chất
+                                        của Khách sạn do chính Quý khách hoặc người khác trong nhóm
+                                        của Quý khách gây ra theo quy định của Khách sạn.
+                                    </p>
+                                </li>
+                                <li data-list-text="-">
+                                    <p class="s4"
+                                        style="                       padding: 2pt 0 0 0pt;                       line-height: 120%;                       text-align: justify;                       color: black;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        In consideration for accepting my reservation and providing
+                                        me with accommodation and/or Hotel services, I hereby
+                                        confirm that all the information on this form, including my
+                                        arrival &amp; and departure dates, is correct. I agree that
+                                        any dispute or claim that arises out of or is related to
+                                        such accommodation and/or services shall be subject to the
+                                        law of the court of Vietnam and the exclusive jurisdiction
+                                        of the courts of Ho Chi Minh City.
+                                    </p>
+                                    <p
+                                        style="                       padding-left: 0pt;                       font-style: italic;                       line-height: 120%;                       text-align: justify;                       color: #595959;                       font-family: Roboto;                       font-size: 8.5pt;                       margin: 0pt;                     ">
+                                        Để xem xét việc chấp nhận đặt phòng và cung cấp cho tôi chỗ
+                                        ở và/hoặc dịch vụ Khách sạn, tôi xác nhận rằng tất cả thông
+                                        tin trên mẫu này, bao gồm cả ngày đến và đi của tôi là chính
+                                        xác. Tôi đồng ý rằng mọi tranh chấp hoặc khiếu nại phát sinh
+                                        từ hoặc liên quan đến chỗ ở và/hoặc dịch vụ đó sẽ phải tuân
+                                        theo luật pháp của tòa án Việt Nam và thẩm quyền xét xử
+                                        riêng của tòa án Thành phố Hồ Chí Minh.
+                                    </p>
+                                </li>
+                            </ul>
+
+                            <div style="display: table; width: 100%;">
+                                <div style="display: table-cell; text-align: center; width: 50%">
+                                    <p class="s7"
+                                        style="                       padding-top: 25pt;                       text-indent: 0pt;                       color: black;                       font-family: Roboto;                       font-style: normal;                       font-weight: normal;                       text-decoration: none;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        Guest’s Signature
+                                    </p>
+                                    <p class="s8"
+                                        style="                       padding-top: 4pt;                       text-indent: 0pt;                       color: #595959;                       font-family: Roboto;                       font-style: italic;                       font-weight: normal;                       text-decoration: none;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        Chữ ký của Khách hàng
+                                    </p>
+                                </div>
+                                <div style="display: table-cell; text-align: center; width: 50%">
+                                    <p class="s7"
+                                        style="                       padding-top: 25pt;                       text-indent: 0pt;                       color: black;                       font-family: Roboto;                       font-style: normal;                       font-weight: normal;                       text-decoration: none;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        Front Desk Supervisor
+                                    </p>
+                                    <p class="s8"
+                                        style="                       padding-top: 4pt;                       text-indent: 0pt;                       color: #595959;                       font-family: Roboto;                       font-style: italic;                       font-weight: normal;                       text-decoration: none;                       font-size: 8.5pt;                       margin: 0;                     ">
+                                        Nhân viên lễ tân
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </t>
+</t>
+
+    

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Feedback from Survey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .feedback-card {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .field-group {
+            margin-bottom: 20px;
+        }
+        
+        .field-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        .field-value {
+            font-size: 16px;
+            color: #1e293b;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        
+        .field-value.booking {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .field-value.date {
+            color: #475569;
+            font-weight: 300;
+        }
+        
+        .feedback-text {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+            color: #374151;
+            line-height: 1.6;
+        }
+        
+        .cta-section {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: transform 0.2s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .footer {
+            background-color: #f8fafc;
+            padding: 20px 30px;
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 20px 0;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .content {
+                padding: 24px 20px;
+            }
+            
+            .feedback-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>New Feedback Received</h1>
+            <div class="subtitle">Survey Response Alert</div>
+        </div>
+        
+        <div class="content">
+            <div class="feedback-card">
+                <div class="field-group">
+                    <div class="field-label">Submit Date</div>
+                    <div class="field-value date">{{306696777__submitted_at}}</div>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="field-group">
+                    <div class="field-label">Booking Reference</div>
+                    <div class="field-value booking">{{306696777__hidden_booking}}</div>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="field-group">
+                    <div class="field-label">Customer Feedback</div>
+                    <div class="feedback-text">{{306696777__field_8CGYzjYVRoQY}}</div>
+                </div>
+            </div>
+            
+            <div class="cta-section">
+                <a href="https://admin.typeform.com/form/BVChnUr1/results#responses" class="cta-button">
+                    View Full Details →
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            This is an automated notification from your feedback system.
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+flowchart TD
+    A[User Signup] --> B{Email exists in system?}
+    
+    B -->|Yes| D{Phone provided?}
+    B -->|No| C{Phone provided?}
+    
+    D -->|Yes| E{Phone matches email's profile?}
+    D -->|No| F{Email + Name exact match & unique?}
+    
+    E -->|Yes| G[Pickup Profile - High Confidence]
+    E -->|No| H{Multiple profiles with same email?}
+    
+    H -->|No| I[Pickup Profile - Medium Confidence]
+    H -->|Yes| J{Only 1 profile matches name?}
+    
+    J -->|Yes| K[Pickup Profile - Medium Confidence]
+    J -->|No| L[Create New Profile]
+    
+    F -->|Yes| M[Pickup Profile - Low Confidence]
+    F -->|No| N[Create New Profile]
+    
+    C -->|Yes| O{Phone exists in system?}
+    C -->|No| P[Create New Profile]
+    
+    O -->|Yes| Q{Phone + Name match?}
+    O -->|No| R[Create New Profile]
+    
+    Q -->|Yes & Unique| S[Pickup Profile - Medium Confidence]
+    Q -->|No or Multiple| T[Create New Profile]
+    
+    style G fill:#90EE90
+    style I fill:#98FB98
+    style K fill:#98FB98
+    style S fill:#98FB98
+    style M fill:#F0E68C
+    style L fill:#FFB6C1
+    style N fill:#FFB6C1
+    style P fill:#FFB6C1
+    style R fill:#FFB6C1
+    style T fill:#FFB6C1

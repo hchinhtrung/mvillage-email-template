@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>M Village Landlord – Nền tảng BĐS cho thuê thông minh</title>
+  <meta name="description" content="Tối ưu hóa lợi nhuận từ bất động sản cho thuê với công nghệ AI và quản lý chuyên nghiệp. Tăng 40% doanh thu, giảm 60% thời gian vận hành." />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
+          },
+          colors: {
+            'brand': {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+              900: '#9a3412',
+            },
+            'neutral': {
+              850: '#1f1f23',
+              950: '#0c0c0e',
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.6s ease-out',
+            'slide-up': 'slideUp 0.8s ease-out',
+            'slide-down': 'slideDown 0.8s ease-out',
+            'slide-left': 'slideLeft 0.8s ease-out',
+            'slide-right': 'slideRight 0.8s ease-out',
+            'scale-in': 'scaleIn 0.5s ease-out',
+            'bounce-in': 'bounceIn 0.8s ease-out',
+            'float': 'float 3s ease-in-out infinite',
+            'pulse-slow': 'pulse 3s ease-in-out infinite',
+            'wiggle': 'wiggle 1s ease-in-out infinite',
+            'rotate-slow': 'rotateSlow 8s linear infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+            'typing': 'typing 4s steps(40) infinite',
+            'blink': 'blink 1s infinite',
+            'gradient': 'gradient 3s ease infinite',
+            'shake': 'shake 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(30px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            slideDown: {
+              '0%': { opacity: '0', transform: 'translateY(-30px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            slideLeft: {
+              '0%': { opacity: '0', transform: 'translateX(-30px)' },
+              '100%': { opacity: '1', transform: 'translateX(0)' },
+            },
+            slideRight: {
+              '0%': { opacity: '0', transform: 'translateX(30px)' },
+              '100%': { opacity: '1', transform: 'translateX(0)' },
+            },
+            scaleIn: {
+              '0%': { opacity: '0', transform: 'scale(0.9)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            },
+            bounceIn: {
+              '0%': { opacity: '0', transform: 'scale(0.3)' },
+              '50%': { opacity: '1', transform: 'scale(1.05)' },
+              '70%': { transform: 'scale(0.9)' },
+              '100%': { transform: 'scale(1)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            wiggle: {
+              '0%, 100%': { transform: 'rotate(-3deg)' },
+              '50%': { transform: 'rotate(3deg)' },
+            },
+            rotateSlow: {
+              '0%': { transform: 'rotate(0deg)' },
+              '100%': { transform: 'rotate(360deg)' },
+            },
+            glow: {
+              '0%': { boxShadow: '0 0 5px rgba(249, 115, 22, 0.5)' },
+              '100%': { boxShadow: '0 0 20px rgba(249, 115, 22, 0.8)' },
+            },
+            typing: {
+              '0%': { width: '0' },
+              '50%': { width: '100%' },
+              '100%': { width: '0' },
+            },
+            blink: {
+              '0%, 50%': { opacity: '1' },
+              '51%, 100%': { opacity: '0' },
+            },
+            gradient: {
+              '0%': { backgroundPosition: '0% 50%' },
+              '50%': { backgroundPosition: '100% 50%' },
+              '100%': { backgroundPosition: '0% 50%' },
+            },
+            shake: {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '25%': { transform: 'translateX(-5px)' },
+              '75%': { transform: 'translateX(5px)' },
+            }
+          },
+          backgroundImage: {
+            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    .glass-effect {
+      backdrop-filter: blur(16px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.125);
+    }
+    
+    .text-gradient {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .animated-gradient {
+      background: linear-gradient(-45deg, #f97316, #ea580c, #c2410c, #f97316);
+      background-size: 400% 400%;
+      animation: gradient 3s ease infinite;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Disable hover effects on mobile */
+    @media (hover: hover) {
+      .card-hover:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      box-shadow: 0 4px 15px 0 rgba(249, 115, 22, 0.4);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    @media (hover: hover) {
+      .btn-primary:hover::before {
+        left: 100%;
+      }
+      
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px 0 rgba(249, 115, 22, 0.6);
+      }
+    }
+    
+    /* Mobile-optimized touch interactions */
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+    
+    .section-divider {
+      background: linear-gradient(90deg, transparent 0%, #e5e7eb 50%, transparent 100%);
+      height: 1px;
+    }
+    
+    /* Optimized parallax effect for smoother scrolling */
+    .parallax-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 120%;
+      background-image: url('https://cdn-v2.mvillage.vn/cms/andreas_maier_7_MFN_Gr0b_Wm_U_unsplash_d02841c729.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      will-change: transform;
+      transform: translateZ(0);
+      z-index: -2;
+    }
+    
+    /* Enhanced mobile responsiveness */
+    @media (max-width: 768px) {
+      .parallax-bg {
+        position: absolute;
+        background-attachment: scroll;
+        height: 100%;
+        background-position: center top;
+      }
+      
+      /* Reduce animation intensity on mobile */
+      .animate-float {
+        animation-duration: 6s;
+      }
+      
+      /* Better text readability on small screens */
+      .text-shadow-strong {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      }
+    }
+    
+    /* Fixed Mobile navigation improvements */
+    .mobile-menu {
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .mobile-menu.open {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    /* Hide mobile menu by default */
+    #mobile-menu {
+      display: none;
+    }
+    
+    #mobile-menu.open {
+      display: block;
+    }
+    
+    .bounce-on-hover:hover {
+      animation: bounceIn 0.6s ease-out;
+    }
+    
+    .rotate-on-hover:hover {
+      animation: rotateSlow 2s linear;
+    }
+    
+    .glow-effect {
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    
+    /* Hardware acceleration for smooth animations */
+    .smooth-scroll * {
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      perspective: 1000;
+    }
+    
+    @keyframes slideInFromLeft {
+      0% { transform: translateX(-100%); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideInFromRight {
+      0% { transform: translateX(100%); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    
+    .slide-in-left {
+      animation: slideInFromLeft 0.8s ease-out;
+    }
+    
+    .slide-in-right {
+      animation: slideInFromRight 0.8s ease-out;
+    }
+    
+    /* Additional mobile menu fixes */
+    @media (max-width: 767px) {
+      .mobile-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #e5e7eb;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+      }
+    }
+  </style>
+</head>
+
+<body class="font-sans text-neutral-900 bg-white antialiased overflow-x-hidden smooth-scroll">
+  
+  <!-- Navigation - Fixed Mobile Menu -->
+  <nav class="fixed top-0 w-full z-50 glass-effect">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-base sm:text-lg">M</span>
+          </div>
+          <span class="text-lg sm:text-xl font-bold text-neutral-900">M Village</span>
+        </div>
+        
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#features" class="text-neutral-700 hover:text-brand-600 font-medium transition-colors">Trang chủ</a>
+          <a href="#benefits" class="text-neutral-700 hover:text-brand-600 font-medium transition-colors">Về M Village</a>
+          <a href="#process" class="text-neutral-700 hover:text-brand-600 font-medium transition-colors">Thương hiệu thành viên</a>
+        </div>
+        
+        <!-- CTA Button -->
+        <div class="hidden md:block">
+          <a href="#contact" class="btn-primary text-white px-6 py-2.5 rounded-xl font-semibold text-sm lg:text-base">
+            Tư vấn miễn phí
+          </a>
+        </div>
+        
+        <!-- Mobile menu button -->
+        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Menu - Fixed positioning -->
+    <div id="mobile-menu" class="md:hidden">
+      <div class="bg-white border-t border-gray-200 shadow-lg">
+        <div class="px-4 py-6 space-y-4">
+          <a href="#features" class="block text-neutral-700 font-medium py-2 border-b border-gray-100 mobile-menu-link">Trang chủ</a>
+          <a href="#benefits" class="block text-neutral-700 font-medium py-2 border-b border-gray-100 mobile-menu-link">Về M Village</a>
+          <a href="#process" class="block text-neutral-700 font-medium py-2 border-b border-gray-100 mobile-menu-link">Thương hiệu thành viên</a>
+          <a href="#contact" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold text-center block mt-4 mobile-menu-link">
+            Tư vấn miễn phí
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section - Mobile Optimized -->
+  <section class="relative flex items-center justify-center overflow-hidden min-h-screen sm:min-h-[800px] lg:min-h-[1000px] lg:max-h-[1200px]">
+    <!-- Optimized Background Image -->
+    <div class="parallax-bg"></div>
+    <!-- Dark overlay for better text readability -->
+    <div class="absolute inset-0 bg-black/60 z-[-1]"></div>
+    
+    <!-- Background Elements with enhanced animations -->
+    <div class="absolute inset-0 overflow-hidden z-0">
+      <div class="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-40 h-40 sm:w-80 sm:h-80 bg-brand-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-float"></div>
+      <div class="absolute -bottom-20 -left-20 sm:-bottom-40 sm:-left-40 w-40 h-40 sm:w-80 sm:h-80 bg-brand-600 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-float" style="animation-delay: 2s;"></div>
+      <div class="absolute top-1/2 left-1/4 w-20 h-20 sm:w-40 sm:h-40 bg-brand-400 rounded-full mix-blend-multiply filter blur-2xl opacity-5 animate-pulse-slow" style="animation-delay: 1s;"></div>
+      <div class="absolute bottom-1/4 right-1/3 w-30 h-30 sm:w-60 sm:h-60 bg-brand-300 rounded-full mix-blend-multiply filter blur-3xl opacity-5 animate-float" style="animation-delay: 3s;"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 z-10">
+      <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+        <!-- Content -->
+        <div class="animate-slide-up text-center lg:text-left">
+          <!-- Badge -->
+          <div class="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 rounded-full bg-white/10 backdrop-blur border border-white/20 mb-6 sm:mb-8 animate-bounce-in" style="animation-delay: 0.2s;">
+            <span class="w-2 h-2 bg-brand-500 rounded-full mr-2 animate-pulse"></span>
+            <span class="text-white text-xs sm:text-sm font-medium">Nền tảng BĐS thông minh #1 Việt Nam</span>
+          </div>
+          
+          <!-- Headline -->
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6 text-white text-shadow-strong animate-slide-left" style="animation-delay: 0.4s;">
+            Tối ưu hóa 
+            <span class="animated-gradient">lợi nhuận</span>
+            từ BĐS cho thuê
+          </h1>
+          
+          <!-- Subheadline -->
+          <p class="text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 leading-relaxed animate-slide-up px-2 sm:px-0" style="animation-delay: 0.6s;">
+            Công nghệ AI kết hợp quản lý chuyên nghiệp giúp tăng 40% doanh thu, 
+            giảm 60% thời gian vận hành và đảm bảo lấp đầy 95%+
+          </p>
+          
+          <!-- Stats -->
+          <div class="flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
+            <div class="text-center animate-bounce-in" style="animation-delay: 0.8s;">
+              <div class="text-2xl sm:text-3xl font-bold text-white counter" data-target="1500">0</div>
+              <div class="text-xs sm:text-sm text-white/80">Căn hộ được quản lý</div>
+            </div>
+            <div class="text-center animate-bounce-in" style="animation-delay: 1s;">
+              <div class="text-2xl sm:text-3xl font-bold text-white counter" data-target="95">0</div>
+              <div class="text-xs sm:text-sm text-white/80">Tỷ lệ lấp đầy</div>
+            </div>
+            <div class="text-center animate-bounce-in" style="animation-delay: 1.2s;">
+              <div class="text-2xl sm:text-3xl font-bold text-white counter" data-target="40">0</div>
+              <div class="text-xs sm:text-sm text-white/80">Tăng doanh thu</div>
+            </div>
+          </div>
+          
+          <!-- CTA Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-scale-in px-4 sm:px-0" style="animation-delay: 1.4s;">
+            <a href="#contact" class="btn-primary text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg inline-flex items-center justify-center glow-effect">
+              Nhận tư vấn miễn phí
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 ml-2 animate-wiggle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
+            </a>
+            <a href="#demo" class="border border-white/30 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-white/10 transition-colors inline-flex items-center justify-center backdrop-blur bounce-on-hover">
+              Xem demo
+            </a>
+          </div>
+        </div>
+        
+        <!-- Hero Image/Form -->
+        <div class="animate-scale-in mt-8 lg:mt-0" style="animation-delay: 0.3s;">
+          <div id="contact" class="glass-effect rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl card-hover">
+            <h3 class="text-xl sm:text-2xl font-bold mb-2 animate-slide-down">Đăng ký tư vấn miễn phí</h3>
+            <p class="text-neutral-600 mb-4 sm:mb-6 animate-fade-in text-sm sm:text-base" style="animation-delay: 0.2s;">Chuyên gia sẽ liên hệ trong vòng 2 giờ</p>
+            
+            <form action="https://formspree.io/f/xwpqadba" method="POST" class="space-y-3 sm:space-y-4">
+              <input type="hidden" name="_subject" value="Tư vấn từ M Village Landing" />
+              
+              <div class="animate-slide-right" style="animation-delay: 0.1s;">
+                <input 
+                  type="text" 
+                  name="name" 
+                  placeholder="Họ và tên *" 
+                  required 
+                  class="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all hover:shadow-md text-base"
+                />
+              </div>
+              
+              <div class="animate-slide-left" style="animation-delay: 0.2s;">
+                <input 
+                  type="tel" 
+                  name="phone" 
+                  placeholder="Số điện thoại *" 
+                  required 
+                  class="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all hover:shadow-md text-base"
+                />
+              </div>
+              
+              <div class="animate-slide-right" style="animation-delay: 0.3s;">
+                <input 
+                  type="email" 
+                  name="email" 
+                  placeholder="Email *" 
+                  required 
+                  class="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all hover:shadow-md text-base"
+                />
+              </div>
+              
+              <div class="animate-slide-left" style="animation-delay: 0.4s;">
+                <input 
+                  type="text" 
+                  name="area" 
+                  placeholder="Khu vực *" 
+                  required 
+                  class="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all hover:shadow-md text-base"
+                />
+              </div>
+              
+              <button 
+                type="submit" 
+                class="w-full btn-primary text-white py-3 rounded-xl font-semibold text-base sm:text-lg animate-bounce-in" style="animation-delay: 0.5s;"
+              >
+                Nhận tư vấn ngay
+              </button>
+              
+              <p class="text-xs text-neutral-500 text-center animate-fade-in" style="animation-delay: 0.6s;">
+                Bằng việc đăng ký, bạn đồng ý với 
+                <a href="#" class="text-brand-600 hover:underline">Điều khoản dịch vụ</a>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Indicators - Mobile Responsive -->
+  <section class="py-12 sm:py-16 bg-white border-b border-neutral-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8 sm:mb-12">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
+          Được tin tưởng bởi <span class="text-gradient">500+ chủ nhà</span> trên toàn quốc
+        </h2>
+        <p class="text-base sm:text-lg lg:text-xl text-neutral-600 max-w-3xl mx-auto px-4 sm:px-0">
+          Hàng nghìn chủ nhà đã tin tưởng và đạt được kết quả vượt mong đợi cùng M Village
+        </p>
+      </div>
+    </div>
+    <!-- Full width banner without container wrapper -->
+    <div class="w-full">
+      <img 
+        src="https://dummyimage.com/1200x500/f3f4f6/6b7280.png&text=Trust+Partners+Banner" 
+        alt="Đối tác tin tưởng M Village" 
+        class="w-full h-auto opacity-80 hover:opacity-100 transition-opacity duration-300"
+      />
+    </div>
+  </section>
+
+  <!-- Features Section - Mobile Optimized -->
+  <section id="features" class="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-b from-white to-neutral-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section Header -->
+      <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 px-2 sm:px-0 animate-slide-up">
+          Giải pháp <span class="animated-gradient">đầu tư linh hoạt – lợi nhuận ổn định – vận hành chuyên nghiệp</span>
+        </h2>
+        <p class="text-base sm:text-lg md:text-xl text-neutral-600 max-w-3xl mx-auto px-4 sm:px-0 animate-fade-in" style="animation-delay: 0.2s;">
+          Từ marketing thông minh đến quản lý tự động, chúng tôi giúp bạn tối ưu hóa mọi khía cạnh của việc cho thuê bất động sản
+        </p>
+      </div>
+
+      <!-- Features Grid - Mobile First -->
+      <div class="grid gap-6 sm:gap-8 md:grid-cols-2">
+        <!-- Feature 1 -->
+        <div class="card-hover bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-lg border border-neutral-100 animate-slide-up" style="animation-delay: 0.1s;">
+          <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6 rotate-on-hover">
+            <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-3 sm:mb-4">Marketing thông minh</h3>
+          <p class="text-sm sm:text-base text-neutral-600 mb-4 sm:mb-6 leading-relaxed">AI tự động tối ưu giá thuê, phân phối tin đăng đa kênh và nhắm mục tiêu khách hàng chính xác</p>
+          <img src="https://dummyimage.com/400x250/f97316/ffffff.png&text=Marketing+AI" alt="Marketing AI" class="w-full rounded-lg sm:rounded-xl hover:scale-105 transition-transform duration-300">
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="card-hover bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-lg border border-neutral-100 animate-slide-up" style="animation-delay: 0.3s;">
+          <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6 rotate-on-hover">
+            <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-3 sm:mb-4">Quản lý tự động</h3>
+          <p class="text-sm sm:text-base text-neutral-600 mb-4 sm:mb-6 leading-relaxed">Hệ thống thu tiền, báo cáo tài chính, bảo trì định kỳ và chăm sóc khách hàng hoàn toàn tự động</p>
+          <img src="https://dummyimage.com/400x250/ea580c/ffffff.png&text=Auto+Management" alt="Auto Management" class="w-full rounded-lg sm:rounded-xl hover:scale-105 transition-transform duration-300">
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="card-hover bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-lg border border-neutral-100 animate-slide-up" style="animation-delay: 0.5s;">
+          <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6 rotate-on-hover">
+            <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-3 sm:mb-4">Tối ưu lợi nhuận</h3>
+          <p class="text-sm sm:text-base text-neutral-600 mb-4 sm:mb-6 leading-relaxed">Phân tích dữ liệu thị trường real-time để điều chỉnh giá thuê và tối đa hóa ROI của bạn</p>
+          <img src="https://dummyimage.com/400x250/c2410c/ffffff.png&text=Profit+Optimization" alt="Profit Optimization" class="w-full rounded-lg sm:rounded-xl hover:scale-105 transition-transform duration-300">
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="card-hover bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-lg border border-neutral-100 animate-slide-up" style="animation-delay: 0.7s;">
+          <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6 rotate-on-hover">
+            <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-3 sm:mb-4">Bảo vệ tài sản</h3>
+          <p class="text-sm sm:text-base text-neutral-600 mb-4 sm:mb-6 leading-relaxed">Screening khách thuê chuyên nghiệp, bảo hiểm tài sản và hỗ trợ pháp lý toàn diện</p>
+          <img src="https://dummyimage.com/400x250/9a3412/ffffff.png&text=Asset+Protection" alt="Asset Protection" class="w-full rounded-lg sm:rounded-xl hover:scale-105 transition-transform duration-300">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section - Mobile Optimized -->
+  <section id="benefits" class="py-12 sm:py-16 md:py-20 lg:py-24 bg-neutral-950 text-white relative overflow-hidden">
+    <!-- Background Elements -->
+    <div class="absolute inset-0">
+      <div class="absolute top-0 left-1/4 w-48 h-48 sm:w-72 sm:h-72 bg-brand-500 rounded-full mix-blend-multiply filter blur-xl opacity-20"></div>
+      <div class="absolute bottom-0 right-1/4 w-48 h-48 sm:w-72 sm:h-72 bg-brand-600 rounded-full mix-blend-multiply filter blur-xl opacity-20"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section Header -->
+      <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 px-2 sm:px-0">
+          Tại sao chọn <span class="text-brand-400">M Village</span>?
+        </h2>
+        <p class="text-base sm:text-lg md:text-xl text-neutral-300 max-w-3xl mx-auto px-4 sm:px-0">
+          So sánh với các phương pháp truyền thống để thấy sự khác biệt vượt trội
+        </p>
+      </div>
+
+      <!-- Comparison Image -->
+      <div class="mb-8 sm:mb-12 lg:mb-16 px-2 sm:px-0">
+        <img src="https://dummyimage.com/1200x600/1f1f23/f97316.png&text=Comparison+Chart" alt="So sánh lợi ích" class="w-full rounded-xl sm:rounded-2xl shadow-2xl">
+      </div>
+
+      <!-- Key Benefits Grid - Mobile First -->
+      <div class="grid gap-6 sm:gap-8 md:grid-cols-3">
+        <div class="text-center px-4 sm:px-0">
+          <div class="w-16 h-16 sm:w-20 sm:h-20 bg-brand-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+            <span class="text-2xl sm:text-3xl font-bold">95%</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold mb-2">Tỷ lệ lấp đầy</h3>
+          <p class="text-sm sm:text-base text-neutral-400">Cao hơn 30% so với tự quản lý</p>
+        </div>
+        
+        <div class="text-center px-4 sm:px-0">
+          <div class="w-16 h-16 sm:w-20 sm:h-20 bg-brand-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+            <span class="text-2xl sm:text-3xl font-bold">40%</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold mb-2">Tăng doanh thu</h3>
+          <p class="text-sm sm:text-base text-neutral-400">Nhờ tối ưu giá và marketing</p>
+        </div>
+        
+        <div class="text-center px-4 sm:px-0 md:col-span-1 md:mx-auto md:max-w-xs">
+          <div class="w-16 h-16 sm:w-20 sm:h-20 bg-brand-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+            <span class="text-2xl sm:text-3xl font-bold">60%</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold mb-2">Tiết kiệm thời gian</h3>
+          <p class="text-sm sm:text-base text-neutral-400">Quản lý hoàn toàn tự động</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process Section - Mobile Optimized -->
+  <section id="process" class="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-b from-neutral-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section Header -->
+      <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 px-2 sm:px-0">
+          Quy trình <span class="text-gradient">đơn giản</span> 5 bước
+        </h2>
+        <p class="text-base sm:text-lg md:text-xl text-neutral-600 max-w-3xl mx-auto px-4 sm:px-0">
+          Từ tư vấn đến vận hành, chúng tôi đồng hành cùng bạn trong suốt hành trình
+        </p>
+      </div>
+
+      <!-- Process Steps - Mobile First -->
+      <div class="relative">
+        <!-- Connection Line - Hidden on mobile, visible on large screens -->
+        <div class="hidden lg:block absolute top-8 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-200 via-brand-300 to-brand-200"></div>
+        
+        <div class="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-5">
+          <!-- Step 1 -->
+          <div class="text-center relative lg:col-span-1">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-brand-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 relative z-10">
+              <span class="text-white text-lg sm:text-xl font-bold">1</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 px-2 sm:px-0">Tư vấn miễn phí</h3>
+            <p class="text-sm sm:text-base text-neutral-600 px-4 sm:px-0">Phân tích tài sản và đưa ra chiến lược tối ưu</p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="text-center relative lg:col-span-1">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-brand-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 relative z-10">
+              <span class="text-white text-lg sm:text-xl font-bold">2</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 px-2 sm:px-0">Thiết lập hệ thống</h3>
+            <p class="text-sm sm:text-base text-neutral-600 px-4 sm:px-0">Cài đặt công nghệ và quy trình quản lý</p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="text-center relative lg:col-span-1">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-brand-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 relative z-10">
+              <span class="text-white text-lg sm:text-xl font-bold">3</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 px-2 sm:px-0">Marketing & đăng tin</h3>
+            <p class="text-sm sm:text-base text-neutral-600 px-4 sm:px-0">Phân phối tin đăng trên 20+ kênh</p>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="text-center relative lg:col-span-1">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-brand-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 relative z-10">
+              <span class="text-white text-lg sm:text-xl font-bold">4</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 px-2 sm:px-0">Quản lý khách thuê</h3>
+            <p class="text-sm sm:text-base text-neutral-600 px-4 sm:px-0">Screening, hợp đồng và onboarding</p>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="text-center relative lg:col-span-1 md:col-span-2 md:mx-auto md:max-w-xs lg:col-span-1 lg:max-w-none lg:mx-0">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-brand-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 relative z-10">
+              <span class="text-white text-lg sm:text-xl font-bold">5</span>
+            </div>
+            <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 px-2 sm:px-0">Vận hành & báo cáo</h3>
+            <p class="text-sm sm:text-base text-neutral-600 px-4 sm:px-0">Thu tiền, bảo trì và báo cáo minh bạch</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section - Mobile Optimized -->
+  <section id="faq" class="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section Header -->
+      <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 px-2 sm:px-0">
+          Câu hỏi <span class="text-gradient">thường gặp</span>
+        </h2>
+        <p class="text-base sm:text-lg md:text-xl text-neutral-600 px-4 sm:px-0">
+          Giải đáp những thắc mắc phổ biến từ chủ nhà
+        </p>
+      </div>
+
+      <!-- FAQ Items - Mobile Optimized -->
+      <div class="space-y-3 sm:space-y-4">
+        <details class="group bg-neutral-50 rounded-lg sm:rounded-xl border border-neutral-200 overflow-hidden">
+          <summary class="flex justify-between items-center p-4 sm:p-6 cursor-pointer font-semibold text-base sm:text-lg">
+            <span class="pr-4">Chi phí dịch vụ của M Village như thế nào?</span>
+            <svg class="w-5 h-5 text-neutral-500 group-open:rotate-45 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </summary>
+          <div class="px-4 pb-4 sm:px-6 sm:pb-6 text-sm sm:text-base text-neutral-600 leading-relaxed">
+            Chúng tôi chỉ tính phí dựa trên kết quả - % doanh thu thực tế. Không có phí thiết lập hay phí cố định hàng tháng. Bạn chỉ trả khi có kết quả.
+          </div>
+        </details>
+
+        <details class="group bg-neutral-50 rounded-lg sm:rounded-xl border border-neutral-200 overflow-hidden">
+          <summary class="flex justify-between items-center p-4 sm:p-6 cursor-pointer font-semibold text-base sm:text-lg">
+            <span class="pr-4">M Village có quản lý tất cả loại hình BĐS không?</span>
+            <svg class="w-5 h-5 text-neutral-500 group-open:rotate-45 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </summary>
+          <div class="px-4 pb-4 sm:px-6 sm:pb-6 text-sm sm:text-base text-neutral-600 leading-relaxed">
+            Có, chúng tôi quản lý căn hộ chung cư, nhà riêng, studio, shophouse và các loại hình thương mại. Mỗi loại có chiến lược riêng biệt.
+          </div>
+        </details>
+
+        <details class="group bg-neutral-50 rounded-lg sm:rounded-xl border border-neutral-200 overflow-hidden">
+          <summary class="flex justify-between items-center p-4 sm:p-6 cursor-pointer font-semibold text-base sm:text-lg">
+            <span class="pr-4">Thời gian cam kết hợp đồng tối thiểu là bao lâu?</span>
+            <svg class="w-5 h-5 text-neutral-500 group-open:rotate-45 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </summary>
+          <div class="px-4 pb-4 sm:px-6 sm:pb-6 text-sm sm:text-base text-neutral-600 leading-relaxed">
+            Hợp đồng tối thiểu 12 tháng để đảm bảo ROI cho cả hai bên. Tuy nhiên, bạn có thể chấm dứt sớm với thông báo trước 60 ngày.
+          </div>
+        </details>
+
+        <details class="group bg-neutral-50 rounded-lg sm:rounded-xl border border-neutral-200 overflow-hidden">
+          <summary class="flex justify-between items-center p-4 sm:p-6 cursor-pointer font-semibold text-base sm:text-lg">
+            <span class="pr-4">Tôi có thể theo dõi tình hình tài sản như thế nào?</span>
+            <svg class="w-5 h-5 text-neutral-500 group-open:rotate-45 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </summary>
+          <div class="px-4 pb-4 sm:px-6 sm:pb-6 text-sm sm:text-base text-neutral-600 leading-relaxed">
+            Dashboard real-time 24/7, báo cáo tự động hàng tuần/tháng, và ứng dụng mobile để theo dõi mọi lúc mọi nơi.
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA Section - Mobile Optimized -->
+  <section class="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-brand-500 to-brand-700 text-white relative overflow-hidden">
+    <!-- Background Elements -->
+    <div class="absolute inset-0">
+      <div class="absolute top-0 left-0 w-48 h-48 sm:w-72 sm:h-72 bg-white rounded-full mix-blend-overlay filter blur-xl opacity-10"></div>
+      <div class="absolute bottom-0 right-0 w-48 h-48 sm:w-72 sm:h-72 bg-white rounded-full mix-blend-overlay filter blur-xl opacity-10"></div>
+    </div>
+    
+    <div class="relative max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 px-2 sm:px-0">
+        Sẵn sàng tối ưu hóa BĐS của bạn?
+      </h2>
+      <p class="text-base sm:text-lg md:text-xl text-brand-100 mb-6 sm:mb-8 max-w-2xl mx-auto px-4 sm:px-0">
+        Gia nhập cùng 500+ chủ nhà thông minh đã tăng 40% lợi nhuận với M Village
+      </p>
+      
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 sm:px-0">
+        <a href="#contact" class="w-full sm:w-auto bg-white text-brand-600 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:bg-neutral-100 transition-colors inline-flex items-center justify-center">
+          Tư vấn miễn phí ngay
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+          </svg>
+        </a>
+        <a href="tel:1900000000" class="w-full sm:w-auto border border-white/30 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-white/10 transition-colors">
+          Hotline: 1900 000 000
+        </a>
+      </div>
+      
+      <div class="mt-6 sm:mt-8 text-xs sm:text-sm text-brand-100 px-4 sm:px-0">
+        ✓ Tư vấn miễn phí ✓ Không ràng buộc ✓ Chuyên gia 10+ năm kinh nghiệm
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer - Mobile Optimized -->
+  <footer class="bg-neutral-950 text-neutral-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div class="grid gap-8 lg:grid-cols-4">
+        <!-- Company Info -->
+        <div class="lg:col-span-2">
+          <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-lg sm:rounded-xl flex items-center justify-center">
+              <span class="text-white font-bold text-base sm:text-lg">M</span>
+            </div>
+            <span class="text-lg sm:text-xl font-bold text-white">M Village</span>
+          </div>
+          <p class="text-sm sm:text-base text-neutral-400 max-w-md mb-4 sm:mb-6 leading-relaxed">
+            Nền tảng quản lý bất động sản cho thuê thông minh hàng đầu Việt Nam. 
+            Tối ưu hóa lợi nhuận với công nghệ AI và dịch vụ chuyên nghiệp.
+          </p>
+          <div class="flex space-x-3 sm:space-x-4">
+            <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 bg-neutral-800 rounded-lg flex items-center justify-center hover:bg-brand-500 transition-colors">
+              <span class="text-xs sm:text-sm font-bold">f</span>
+            </a>
+            <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 bg-neutral-800 rounded-lg flex items-center justify-center hover:bg-brand-500 transition-colors">
+              <span class="text-xs sm:text-sm font-bold">in</span>
+            </a>
+            <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 bg-neutral-800 rounded-lg flex items-center justify-center hover:bg-brand-500 transition-colors">
+              <span class="text-xs sm:text-sm font-bold">yt</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="lg:col-span-2">
+          <h4 class="text-white font-semibold mb-3 sm:mb-4 text-base sm:text-lg">Liên hệ</h4>
+          <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base">
+            <li class="flex items-center">
+              <svg class="w-4 h-4 mr-2 text-brand-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+              </svg>
+              Hotline: 1900 000 000
+            </li>
+            <li class="flex items-center">
+              <svg class="w-4 h-4 mr-2 text-brand-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+              Email: support@mvillage.vn
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 mr-2 mt-0.5 text-brand-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              Địa chỉ: TP. Hồ Chí Minh
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="border-t border-neutral-800 mt-8 sm:mt-12 pt-6 sm:pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <p class="text-neutral-500 text-xs sm:text-sm text-center md:text-left">
+          © 2025 M Village. Tất cả quyền được bảo lưu.
+        </p>
+        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6">
+          <a href="#" class="text-neutral-500 hover:text-brand-400 text-xs sm:text-sm transition-colors text-center">Chính sách bảo mật</a>
+          <a href="#" class="text-neutral-500 hover:text-brand-400 text-xs sm:text-sm transition-colors text-center">Điều khoản dịch vụ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile Sticky CTA - Enhanced -->
+  <div class="fixed bottom-4 left-4 right-4 z-50 md:hidden">
+    <a href="#contact" class="btn-primary text-white w-full py-3 sm:py-4 rounded-xl font-bold text-base text-center block shadow-lg">
+      Tư vấn miễn phí
+    </a>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // Fixed Mobile menu toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+      
+      // Toggle mobile menu
+      mobileMenuBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        mobileMenu.classList.toggle('open');
+        
+        // Update aria-expanded for accessibility
+        const isOpen = mobileMenu.classList.contains('open');
+        mobileMenuBtn.setAttribute('aria-expanded', isOpen);
+      });
+
+      // Close mobile menu when clicking on links
+      mobileMenuLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          mobileMenu.classList.remove('open');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        });
+      });
+      
+      // Close menu when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+          mobileMenu.classList.remove('open');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+      
+      // Close menu on escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+          mobileMenu.classList.remove('open');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+          mobileMenuBtn.focus();
+        }
+      });
+    });
+
+    // Counter animation
+    function animateCounters() {
+      const counters = document.querySelectorAll('.counter');
+      
+      counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const increment = target / 50;
+        let current = 0;
+        
+        const updateCounter = () => {
+          if (current < target) {
+            current += increment;
+            counter.textContent = Math.ceil(current) + (target > 100 ? '+' : '%+');
+            setTimeout(updateCounter, 40);
+          } else {
+            counter.textContent = target + (target > 100 ? '+' : '%+');
+          }
+        };
+        
+        updateCounter();
+      });
+    }
+    
+    // Optimized parallax effect with mobile consideration
+    function optimizedParallaxEffect() {
+      const parallaxBg = document.querySelector('.parallax-bg');
+      let ticking = false;
+      
+      // Disable parallax on mobile for performance
+      if (window.innerWidth <= 768) {
+        return;
+      }
+      
+      function updateParallax() {
+        const scrolled = window.pageYOffset;
+        const speed = 0.3;
+        
+        if (parallaxBg && scrolled < window.innerHeight * 1.5) {
+          parallaxBg.style.transform = `translate3d(0, ${scrolled * speed}px, 0)`;
+        }
+        
+        ticking = false;
+      }
+      
+      function requestTick() {
+        if (!ticking) {
+          requestAnimationFrame(updateParallax);
+          ticking = true;
+        }
+      }
+      
+      window.addEventListener('scroll', requestTick, { passive: true });
+    }
+    
+    // Initialize animations
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(animateCounters, 1000);
+      optimizedParallaxEffect();
+    });
+  </script>
+</body>
+</html>

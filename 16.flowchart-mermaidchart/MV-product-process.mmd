@@ -1,0 +1,50 @@
+graph TD
+    A[Problem Discovery<br/>PM/Data/Designer] --> A1{Enough data?}
+    A1 -->|Yes| B[Scope & Priority<br/>PM + Team]
+    A1 -->|No| A2[Add research]
+    A2 --> A
+    
+    B --> B1{Need design?}
+    B1 -->|Yes| C[Design Solution<br/>Designer]
+    B1 -->|No| D
+    
+    C --> C1[Figma Prototype]
+    C1 --> C2[Analytics Setup<br/>Designer to Data]
+    C2 --> D[Development<br/>Dev Team]
+    
+    D --> D1[Code Complete]
+    D1 --> D2[Internal Testing]
+    D2 --> D3{Pass QA?}
+    D3 -->|No| D
+    D3 -->|Yes| E[Launch<br/>PM + QC]
+    
+    E --> E1[Feature Live]
+    E1 --> E2[Monitor X weeks]
+    E2 --> F[Impact Review<br/>PM/Data/Designer]
+    
+    F --> F1{Goal achieved?}
+    F1 -->|Yes| F2[Document learnings]
+    F1 -->|No| F3[Identify issues]
+    F2 --> G[Next iteration]
+    F3 --> B
+    G --> A
+    
+    
+    %% Styling
+    classDef discovery fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef planning fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef design fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef development fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef launch fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef review fill:#f1f8e9,stroke:#689f38,stroke-width:2px
+    classDef decision fill:#fff9c4,stroke:#f9a825,stroke-width:2px
+    classDef action fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px
+    
+    class A,A2 discovery
+    class B planning
+    class C,C1,C2 design
+    class D,D1,D2 development
+    class E,E1,E2 launch
+    class F,F2,G review
+    class A1,B1,D3,F1 decision
+    class F3 action

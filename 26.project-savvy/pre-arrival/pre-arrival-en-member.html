@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation | M Village</title>
+</head>
+
+<body
+    style="font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; line-height: 1.5; color: #333; background-color: #f5f7fa; font-size: 16px; margin: 0; padding: 0;">
+    <table border="0" cellpadding="0" cellspacing="0"
+        style="max-width: 600px; margin: 0 auto; background-color: #fff; border-radius: 0px; overflow: hidden;"
+        width="100%">
+        <!-- Header -->
+        <tbody>
+            <!-- Banner -->
+            <tr>
+                <td style="padding: 0;"><img alt="Hotel Banner"
+                        src="https://cdn-v2.mvillage.vn/cms/EDM_Pre_arrival_Hero_banner_Eng_c668df056c.jpg"
+                        style="width: 100%; height: auto; display: block;" /></td>
+            </tr>
+
+
+            <!-- Booking Details -->
+            <tr>
+                <td style="padding: 20px 20px 0 20px">
+
+                    <p
+                        style="margin: 0 0 15px 0; padding: 0; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-align: center;">
+                        Hi {{.Name}},</p>
+                    <p
+                        style="margin: 0 0 15px 0; padding: 0; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-align: center;">
+                        Everything’s ready - in the most SAVVY way.
+                    <br>
+                        We’re just waiting for you to step in and let the unordinary begin.</p>
+
+                    <hr style="border: 2px solid #0D1B3A; margin: 0 150px;">
+
+                    <!-- table 1 -->
+                    <table border="0" cellpadding="0" cellspacing="0"
+                        style="margin: 20px 0; background-color: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #aaa;"
+                        width="100%">
+                        <tbody>
+                            <tr>
+                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
+                                    width="50%"><strong>Reservation Number</strong></td>
+                                <td
+                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                                    {{.ReservationNumber}}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
+                                    width="50%"><strong>Check-in</strong></td>
+                                <td
+                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                                    {{.Checkin}} (from 2PM)</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
+                                    width="50%"><strong>Check-out</strong></td>
+                                <td
+                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                                    {{.Checkout}} (by 12PM)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <!-- Local Guide -->
+            <tr>
+                <td style="padding: 0;"><a href="https://me-qr.com/wKZ0ZzeI"><img alt="Insider's Guide Banner"
+                            src="https://cdn-v2.mvillage.vn/cms/EDM_Pre_arrival_member_Eng_21c3a1b599.jpg"
+                            style="width: 100%; height: auto; display: block; border-radius: 8px 8px 0 0; margin-bottom: 20px" /> </a> </td>
+            </tr>
+
+
+            <!-- Bottom Image -->
+            <tr>
+                <td style="padding: 0; text-align: center; background-color: #0D1B3A;">
+                    <img src="https://cdn-v2.mvillage.vn/cms/New_White_footer_email_loyalty_8a15b57f09.png"
+                        alt="M Village Community" width="600"
+                        style="width: 100%; max-width: 600px; height: auto; display: block; border: 0; outline: none; text-decoration: none;">
+                </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+                <td style="padding: 40px 30px; background-color: #0D1B3A;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                        <tr>
+                            <td style="padding: 0 0 20px 0; text-align: center;">
+                                <p
+                                    style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                                    If you have any questions or need assistance, please feel free to
+                                    contact our Customer Service via the following channels:
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0; text-align: center;">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
+                                    <tr>
+                                        <td style="padding: 5px 0;">
+                                            <p
+                                                style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                                                Visit us: <a href="https://mvillage.vn" target="_blank"
+                                                    style="color: #ffffff; text-decoration: underline;">mvillage.vn</a>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0;">
+                                            <p
+                                                style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                                                Follow us: <a href="https://www.instagram.com/savvybymvillage"
+                                                    target="_blank"
+                                                    style="color: #ffffff; text-decoration: underline;">SAVVY by M Village</a>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0;">
+                                            <p
+                                                style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                                                Email us: <a href="mailto:booking@mvillage.vn"
+                                                    style="color: #ffffff; text-decoration: underline;">booking@mvillage.vn</a>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0;">
+                                            <p
+                                                style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                                                Call us: <a href="tel:19003311"
+                                                    style="color: #ffffff; text-decoration: underline;">1900
+                                                    3311</a>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 20px 0 0 0; text-align: center;">
+                                <p
+                                    style="margin: 0; font-size: 12px; line-height: 18px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                                    If you'd like to unsubscribe and stop receiving these emails <a href="#"
+                                        target="_blank" style="color: #ffffff; text-decoration: underline;">click
+                                        here</a>.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+    </table>
+    </tbody>
+    </table>
+</body>
+
+</html>

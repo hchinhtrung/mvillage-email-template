@@ -2,369 +2,299 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Confirmation | M Village</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Confirmation | M Village</title>
 </head>
 
-<body
-    style="font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; line-height: 1.5; color: #333; background-color: #f5f7fa; font-size: 16px; margin: 0; padding: 0;">
-    <table border="0" cellpadding="0" cellspacing="0"
-        style="max-width: 600px; margin: 0 auto; background-color: #fff; border-radius: 0px; overflow: hidden;"
-        width="100%">
-        <!-- Header -->
-        <tbody>
-            <tr>
-                <td style="padding: 20px; border-bottom: 1px solid #eaeaea; background-color: #fff;">
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                        <tbody>
-                            <tr>
-                                <td align="left" style="vertical-align: middle;">
-                                    <p
-                                        style="margin: 0; padding: 0; font-weight: bold; color: #333; font-size: 14px; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-transform: uppercase;">
-                                        {{.HotelName}}</p>
+<body style="font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; line-height: 1.5; color: #333; background-color: #f5f7fa; font-size: 16px; margin: 0; padding: 0;">
+  <table border="0" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #fff; border-radius: 0px; overflow: hidden;" width="100%">
+    <!-- Header -->
+    <tbody>
+      <tr>
+        <td style="padding: 20px; border-bottom: 1px solid #eaeaea; background-color: #fff;">
+          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tbody>
+              <tr>
+                <td align="left" style="vertical-align: middle;">
+                  <p style="margin: 0; padding: 0; font-weight: bold; color: #333; font-size: 14px; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-transform: uppercase;">
+                    {{.HotelName}}</p>
 
-                                    <p
-                                        style="margin: 4px 0 0 0; padding: 0; font-size: 13px; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; color: #666;">
-                                        Địa chỉ: <a href="#"
-                                            style="color: #666; text-decoration: none;">{{.HotelAddress}}</a></p>
+                  <p style="margin: 4px 0 0 0; padding: 0; font-size: 13px; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; color: #666;">
+                    Địa chỉ: <a href="#" style="color: #666; text-decoration: none;">{{.HotelAddress}}</a></p>
 
-                                    <p
-                                        style="margin: 4px 0 0 0; padding: 0; font-size: 13px; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; color: #666;">
-                                        Hotline: <a href="tel:{{.HotelHotline}}"
-                                            style="color: #666; text-decoration: none;">{{.HotelHotline}}</a></p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                  <p style="margin: 4px 0 0 0; padding: 0; font-size: 13px; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; color: #666;">
+                    Hotline: <a href="tel:{{.HotelHotline}}" style="color: #666; text-decoration: none;">{{.HotelHotline}}</a></p>
                 </td>
-            </tr>
-            <!-- Banner -->
-            <tr>
-                <td style="padding: 0;"><img alt="Hotel Banner"
-                        src="https://cdn-v2.mvillage.vn/cms/EDM_BC_Hero_banner_VN_ed9dd7b3cf.jpg"
-                        style="width: 100%; height: auto; display: block;" /></td>
-            </tr>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <!-- Banner -->
+      <tr>
+        <td style="padding: 0;"><img alt="Hotel Banner" src="https://cdn-v2.mvillage.vn/cms/EDM_BC_Hero_banner_VN_ed9dd7b3cf.jpg" style="width: 100%; height: auto; display: block;" /></td>
+      </tr>
 
-            <!-- Booking Details -->
-            <tr>
-                <td style="padding: 20px 20px 0 20px">
-                    <p
-                        style="margin: 0 0 15px 0; padding: 0; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                        Chuyến lưu trú “phi truyền thống” của {{.Name}} đã được xác nhận. Sẵn sàng để tận hưởng hết mình
-                        tại SAVVY nhé.</p>
+      <!-- Booking Details -->
+      <tr>
+        <td style="padding: 20px 20px 0 20px">
+          <p style="margin: 0 0 15px 0; padding: 0; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+            Chuyến lưu trú “phi truyền thống” của {{.Name}} đã được xác nhận. Sẵn sàng để tận hưởng hết mình
+            tại SAVVY nhé.</p>
 
-                    <hr style="border: 2px solid #0D1B3A; margin: 0 150px;">
+          <hr style="border: 2px solid #0D1B3A; width: 70%; max-width: 520px; margin: 0 auto;">
 
+          <h1 style="text-align: center; font-size: 22px; font-weight: 700; margin: 15px 0; padding-bottom: 15px; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+            XÁC NHẬN ĐẶT PHÒNG</h1>
 
-                    <h1
-                        style="text-align: center; font-size: 22px; font-weight: 700; margin: 15px 0; padding-bottom: 15px; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                        XÁC NHẬN ĐẶT PHÒNG</h1>
+          <!-- table 1 -->
+          <table border="0" cellpadding="0" cellspacing="0" style="margin: 20px 0; background-color: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #aaa;" width="100%">
+            <tbody>
+              <tr style="border: 1px solid #aaa;">
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Tên người đặt phòng</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                  {{.Name}}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Mã đặt phòng</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                  {{.ReservationNumber}}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Số lượng khách</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                  {{.NumberOfGuest}}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Ngày nhận phòng</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                  {{.Checkin}} (sau 14h)</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Ngày trả phòng</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                  {{.Checkout}} (trước 12h)</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Số đêm lưu trú</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                  {{.NumberNight}}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Loại phòng</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                  {{.RoomType}}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Số lượng phòng</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+                  1</td>
+              </tr>
+            </tbody>
+          </table>
+          <table>
+            <tbody>
+              <a href="https://mvillage.vn/en/?signUp=true&amp;utm_source=EDM&amp;utm_medium=Bookingconfirmation&amp;utm_campaign=B2C" target="_blank">
+                <img src="https://cdn-v2.mvillage.vn/cms/EDM_BC_Banner_2_member_VN_1f7d20b7a0.jpg" alt="Booking Confirmation Banner" style="width: 100%; height: auto; display: block;">
+              </a>
+            </tbody>
+          </table>
 
-                    <!-- table 1 -->
-                    <table border="0" cellpadding="0" cellspacing="0"
-                        style="margin: 20px 0; background-color: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #aaa;"
-                        width="100%">
-                        <tbody>
-                            <tr style="border: 1px solid #aaa;">
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Tên người đặt phòng</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
-                                    {{.NameOfBooker}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Mã đặt phòng</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
-                                    {{.ReservationNumber}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Số lượng khách</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
-                                    {{.NumberOfGuest}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Ngày nhận phòng</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
-                                    {{.Checkin}} (sau 14h)</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Ngày trả phòng</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
-                                    {{.Checkout}} (trước 12h)</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Số đêm lưu trú</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
-                                    {{.NumberNight}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Loại phòng</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
-                                    {{.RoomType}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Số lượng phòng</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                                    1</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <table>
-                        <tbody>
-                            <a href="https://mvillage.vn/en/?signUp=true&amp;utm_source=EDM&amp;utm_medium=Bookingconfirmation&amp;utm_campaign=B2C"
-                                target="_blank">
-                                <img src="https://cdn-v2.mvillage.vn/cms/EDM_BC_Banner_2_member_VN_1f7d20b7a0.jpg"
-                                    alt="Booking Confirmation Banner"
-                                    style="width: 100%; height: auto; display: block;">
-                            </a>
-                        </tbody>
-                    </table>
+          <hr style="border: 2px solid #0D1B3A; margin: 20px 150px 0 150px;">
+          <h1 style="text-align: center; font-size: 22px; font-weight: 700; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+            THÔNG TIN CÔNG TY</h1>
+          <!-- table 3 -->
+          <table border="0" cellpadding="0" cellspacing="0" style="margin: 30px 0; background-color: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #aaa;" width="100%">
+            <tbody>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Tên công ty</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                  {{.CompanyVAT}}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Mã số thuế</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                  {{.CodeVAT}}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Địa chỉ công ty</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
+                  {{.AddressVAT}}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;" width="50%"><strong>Email nhận hóa đơn</strong></td>
+                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+                  {{.EmailVAT}}</td>
+              </tr>
 
-                    <hr style="border: 2px solid #0D1B3A; margin: 20px 150px 0 150px;">
-                    <h1
-                        style="text-align: center; font-size: 22px; font-weight: 700; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                        THÔNG TIN CÔNG TY</h1>
-                    <!-- table 3 -->
-                    <table border="0" cellpadding="0" cellspacing="0"
-                        style="margin: 30px 0; background-color: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #aaa;"
-                        width="100%">
-                        <tbody>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Tên công ty</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
-                                    {{.CompanyName}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Mã số thuế</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
-                                    {{.CompanyVAT}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Địa chỉ công ty</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; border-bottom: 1px solid #aaa;">
-                                    {{.CompanyAddress}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; background-color: #0D1B3A; color: #fff;"
-                                    width="50%"><strong>Email nhận hóa đơn</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                                    {{.ReceiverEmail}}</td>
-                            </tr>
-
-                        </tbody>
-                    </table>
+            </tbody>
+          </table>
 
 
-                    <table border="0" cellpadding="0" cellspacing="0"
-                        style="background-color: #fff; border-left: 3px solid #D02028; margin: 20px 0; border-radius: 0 8px 8px 0; overflow: hidden;"
-                        width="100%">
-                        <tbody>
-                            <tr>
-                                <td style="padding: 15px;">
-                                    <p
-                                        style="margin: 0; padding: 0; color: #666; font-size: 14px !important; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; font-style: italic;">
-                                        Để đảm bảo giữ chỗ, quý khách vui lòng thanh toán trước một khoản đặt cọc tương
-                                        đương với giá trị của một đêm lưu trú. Phần chi phí còn lại sẽ được thanh toán
-                                        khi nhận phòng. Quý khách vui lòng tham khảo chính sách đặt phòng
-                                        <a href="https://mvillage.vn/vi/chinh-sach-nhan-phong/"
-                                            style="color: #666; text-decoration: underline; font-size: 14px !important; font-style: italic;"
-                                            target="_blank">tại đây</a>
-                                    </p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+          <table border="0" cellpadding="0" cellspacing="0" style="background-color: #fff; border-left: 3px solid #D02028; margin: 20px 0; border-radius: 0 8px 8px 0; overflow: hidden;" width="100%">
+            <tbody>
+              <tr>
+                <td style="padding: 15px;">
+                  <p style="margin: 0; padding: 0; color: #666; font-size: 14px !important; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; font-style: italic;">
+                    Để đảm bảo giữ chỗ, quý khách vui lòng thanh toán trước một khoản đặt cọc tương
+                    đương với giá trị của một đêm lưu trú. Phần chi phí còn lại sẽ được thanh toán
+                    khi nhận phòng. Quý khách vui lòng tham khảo chính sách đặt phòng
+                    <a href="https://mvillage.vn/vi/chinh-sach-nhan-phong/" style="color: #666; text-decoration: underline; font-size: 14px !important; font-style: italic;" target="_blank">tại đây</a>
+                  </p>
                 </td>
-            </tr>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
 
 
 
-            <!-- Request for a VAT Invoice -->
+      <!-- Request for a VAT Invoice -->
+      <tr>
+        <td style="padding: 0">
+          <div style="padding: 0 20px">
+            <table cellpadding="0" cellspacing="0" style="margin: 15px 0 0 0; border-collapse: separate; border-spacing: 0;" width="100%">
+              <tbody>
+                <tr>
+                  <td style="vertical-align: middle; text-align: left; padding: 0;">
+                    <h2 style="font-weight: 600; color: #000; font-size: 18px !important; margin: 0; padding: 0; text-align: left; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; margin-bottom: 10px">
+                      Yêu cầu xuất hóa đơn VAT</h2>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+
+            <table border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;" width="100%">
+              <tbody>
+                <tr>
+                  <td style="padding: 0; background-color: #fff;">Trong trường hợp cần xuất hóa đơn
+                    VAT, vui lòng gửi thông tin đến reservationb2b@mvillage.vn trước thời gian trả
+                    phòng:
+                    <ul>
+                      <li>Tên công ty</li>
+                      <li>Mã số thuế</li>
+                      <li>Địa chỉ công ty</li>
+                      <li>Email nhận hóa đơn</li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p style="margin: 15px 0 8px 0; padding: 0; font-size: 14px !important; font-style: italic; color: #666; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+              <span style="font-style: italic;"><strong style="color: #D02028;">Lưu ý: </strong> Chỉ hỗ
+                trợ xuất hoá đơn với trường hợp khách hàng thanh toán trực tiếp với M
+                Village
+            </p>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Arrival & Departure Policy -->
+      <tr>
+        <td style="padding: 0">
+          <div style="padding: 0 20px">
+            <table cellpadding="0" cellspacing="0" style="margin: 15px 0 0 0; border-collapse: separate; border-spacing: 0;" width="100%">
+              <tbody>
+                <tr>
+                  <td style="vertical-align: middle; text-align: left; padding: 0;">
+                    <h2 style="font-weight: 600; color: #000; font-size: 18px !important; margin: 0; padding: 0; text-align: left; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; margin-bottom: 10px">
+                      Quy định nhận và trả phòng</h2>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+
+            <table border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;" width="100%">
+              <tbody>
+                <ul style="margin: 0;">
+                  <li>Ngày nhận phòng: sau 14h</li>
+                  <li>Ngày trả phòng: trước 12h</li>
+                  <li>Việc nhận phòng sớm tùy theo tình trạng phòng trống tại M Village</li>
+                  <li>Mọi chi phí phát sinh trong thời gian lưu trú, quý khách vui lòng thanh
+                    toán khi trả phòng</li>
+                  <li>Trẻ em dưới 2 tuổi khi đi cùng bố mẹ không cần trả thêm phí</li>
+                </ul>
+              </tbody>
+            </table>
+
+            <p style="margin-top: 20px; padding: 0; font-size: 16px; color: #333; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+              SAVVY rất mong chờ được gặp bạn!</p>
+
+            <p style="margin: 50px 0 8px 0; padding: 0; font-size: 14px !important; font-style: italic; color: #666; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+              <span style="font-style: italic;"><strong style="color: #D02028;">Lưu ý: </strong> Vì sự
+                riêng tư của bạn, xin vui lòng giữ bảo mật tuyệt đối thông tin đặt phòng của bạn!
+            </p>
+
+          </div>
+        </td>
+      </tr>
+
+      <!-- Bottom Image -->
+      <tr>
+        <td style="padding: 0; text-align: center; background-color: #0D1B3A;">
+          <img src="https://cdn-v2.mvillage.vn/cms/New_White_footer_email_loyalty_8a15b57f09.png" alt="M Village Community" width="600" style="width: 100%; max-width: 600px; height: auto; display: block; border: 0; outline: none; text-decoration: none;">
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td style="padding: 40px 30px; background-color: #0D1B3A;">
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
             <tr>
-                <td style="padding: 0">
-                    <div style="padding: 0 20px">
-                        <table cellpadding="0" cellspacing="0"
-                            style="margin: 15px 0 0 0; border-collapse: separate; border-spacing: 0;" width="100%">
-                            <tbody>
-                                <tr>
-                                    <td style="vertical-align: middle; text-align: left; padding: 0;">
-                                        <h2
-                                            style="font-weight: 600; color: #000; font-size: 18px !important; margin: 0; padding: 0; text-align: left; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; margin-bottom: 10px">
-                                            Yêu cầu xuất hóa đơn VAT</h2>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-
-                        <table border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;" width="100%">
-                            <tbody>
-                                <tr>
-                                    <td style="padding: 0; background-color: #fff;">Trong trường hợp cần xuất hóa đơn
-                                        VAT, vui lòng gửi thông tin đến reservationb2b@mvillage.vn trước thời gian trả
-                                        phòng:
-                                        <ul>
-                                            <li>Tên công ty</li>
-                                            <li>Mã số thuế</li>
-                                            <li>Địa chỉ công ty</li>
-                                            <li>Email nhận hóa đơn</li>
-                                        </ul>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <p
-                            style="margin: 15px 0 8px 0; padding: 0; font-size: 14px !important; font-style: italic; color: #666; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                            <span style="font-style: italic;"><strong style="color: #D02028;">Lưu ý: </strong> Chỉ hỗ
-                                trợ xuất hoá đơn với trường hợp khách hàng thanh toán trực tiếp với M
-                                Village
-                        </p>
-                    </div>
-                </td>
+              <td style="padding: 0; text-align: center;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
+                  <tr>
+                    <td style="padding: 5px 0;">
+                      <p style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                        Website: <a href="https://mvillage.vn" target="_blank" style="color: #ffffff; text-decoration: underline;">mvillage.vn</a>
+                      </p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 5px 0;">
+                      <p style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                        Theo dõi chúng tôi: <a href="https://www.instagram.com/savvybymvillage" target="_blank" style="color: #ffffff; text-decoration: underline;">SAVVY by M
+                          Village</a>
+                      </p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 5px 0;">
+                      <p style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                        Email: <a href="mailto:booking@mvillage.vn" style="color: #ffffff; text-decoration: underline;">booking@mvillage.vn</a>
+                      </p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 5px 0;">
+                      <p style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                        Hotline: <a href="tel:19003311" style="color: #ffffff; text-decoration: underline;">1900
+                          3311</a>
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
             </tr>
-
-            <!-- Arrival & Departure Policy -->
             <tr>
-                <td style="padding: 0">
-                    <div style="padding: 0 20px">
-                        <table cellpadding="0" cellspacing="0"
-                            style="margin: 15px 0 0 0; border-collapse: separate; border-spacing: 0;" width="100%">
-                            <tbody>
-                                <tr>
-                                    <td style="vertical-align: middle; text-align: left; padding: 0;">
-                                        <h2
-                                            style="font-weight: 600; color: #000; font-size: 18px !important; margin: 0; padding: 0; text-align: left; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; margin-bottom: 10px">
-                                            Quy định nhận và trả phòng</h2>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-
-                        <table border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;" width="100%">
-                            <tbody>
-                                <ul style="margin: 0;">
-                                    <li>Ngày nhận phòng: sau 14h</li>
-                                    <li>Ngày trả phòng: trước 12h</li>
-                                    <li>Việc nhận phòng sớm tùy theo tình trạng phòng trống tại M Village</li>
-                                    <li>Mọi chi phí phát sinh trong thời gian lưu trú, quý khách vui lòng thanh
-                                        toán khi trả phòng</li>
-                                    <li>Trẻ em dưới 2 tuổi khi đi cùng bố mẹ không cần trả thêm phí</li>
-                                </ul>
-                            </tbody>
-                        </table>
-
-                        <p
-                            style="margin-top: 20px; padding: 0; font-size: 16px; color: #333; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                            SAVVY rất mong chờ được gặp bạn!</p>
-
-                        <p
-                            style="margin: 50px 0 8px 0; padding: 0; font-size: 14px !important; font-style: italic; color: #666; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                            <span style="font-style: italic;"><strong style="color: #D02028;">Lưu ý: </strong> Vì sự
-                                riêng tư của bạn, xin vui lòng giữ bảo mật tuyệt đối thông tin đặt phòng của bạn!
-                        </p>
-
-                    </div>
-                </td>
+              <td style="padding: 20px 0 0 0; text-align: center;">
+                <p style="margin: 0; font-size: 12px; line-height: 18px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                  Bạn không muốn nhận thêm email? <a href="#" target="_blank" style="color: #ffffff; text-decoration: underline;">Nhấn vào đây</a> để hủy đăng
+                  ký.
+                </p>
+              </td>
             </tr>
-
-            <!-- Bottom Image -->
-            <tr>
-                <td style="padding: 0; text-align: center; background-color: #0D1B3A;">
-                    <img src="https://cdn-v2.mvillage.vn/cms/New_White_footer_email_loyalty_8a15b57f09.png"
-                        alt="M Village Community" width="600"
-                        style="width: 100%; max-width: 600px; height: auto; display: block; border: 0; outline: none; text-decoration: none;">
-                </td>
-            </tr>
-
-            <!-- Footer -->
-            <tr>
-                <td style="padding: 40px 30px; background-color: #0D1B3A;">
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                        <tr>
-                            <td style="padding: 0; text-align: center;">
-                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
-                                    <tr>
-                                        <td style="padding: 5px 0;">
-                                            <p
-                                                style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                                                Website: <a href="https://mvillage.vn" target="_blank"
-                                                    style="color: #ffffff; text-decoration: underline;">mvillage.vn</a>
-                                            </p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 5px 0;">
-                                            <p
-                                                style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                                                Theo dõi chúng tôi: <a href="https://www.instagram.com/savvybymvillage"
-                                                    target="_blank"
-                                                    style="color: #ffffff; text-decoration: underline;">SAVVY by M
-                                                    Village</a>
-                                            </p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 5px 0;">
-                                            <p
-                                                style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                                                Email: <a href="mailto:booking@mvillage.vn"
-                                                    style="color: #ffffff; text-decoration: underline;">booking@mvillage.vn</a>
-                                            </p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 5px 0;">
-                                            <p
-                                                style="margin: 0; font-size: 14px; line-height: 20px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                                                Hotline: <a href="tel:19003311"
-                                                    style="color: #ffffff; text-decoration: underline;">1900
-                                                    3311</a>
-                                            </p>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 20px 0 0 0; text-align: center;">
-                                <p
-                                    style="margin: 0; font-size: 12px; line-height: 18px; color: #ffffff; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-                                    Bạn không muốn nhận thêm email? <a href="#" target="_blank"
-                                        style="color: #ffffff; text-decoration: underline;">Nhấn vào đây</a> để hủy đăng
-                                    ký.
-                                </p>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-    </table>
-    </tbody>
-    </table>
+          </table>
+        </td>
+      </tr>
+  </table>
+  </tbody>
+  </table>
 </body>
 
 </html>

@@ -53,7 +53,7 @@ if signup_file and reservation_file:
     # Validate required columns
     # ======================
     required_signup_cols = ['hotel_short_name', 'city']
-    required_res_cols = ['Hotel Name', 'City', 'Guest Name', 'Checkin']
+    required_res_cols = ['Hotel Name', 'City', 'tenant_id', 'Checkin']
     
     signup_missing = [col for col in required_signup_cols if col not in signup_df.columns]
     res_missing = [col for col in required_res_cols if col not in res_df.columns]
@@ -81,7 +81,7 @@ if signup_file and reservation_file:
     
     RES_HOTEL_COL = 'Hotel Name'
     RES_CITY_COL = 'City'
-    RES_GUEST_COL = 'Guest Name'
+    RES_TENANT_COL = 'tenant_id'
     RES_DATE_COL = 'Checkin'
     
     st.divider()
@@ -100,7 +100,7 @@ if signup_file and reservation_file:
         st.write("**Reservation File Mapping:**")
         st.write(f"✓ Hotel: `{RES_HOTEL_COL}`")
         st.write(f"✓ City: `{RES_CITY_COL}`")
-        st.write(f"✓ Guest Name: `{RES_GUEST_COL}`")
+        st.write(f"✓ Tenatn ID: `{RES_TENANT_COL}`")
         st.write(f"✓ Check-in Date: `{RES_DATE_COL}`")
     
     # ======================
@@ -199,10 +199,11 @@ if signup_file and reservation_file:
     # 1. Count UNIQUE guests per hotel (from reservation)
     checkin_df = (
         res_filtered
-        .groupby(['hotel_normalized', RES_CITY_COL])[RES_GUEST_COL]
+        .groupby(['hotel_normalized', RES_CITY_COL])[RES_TENANT_COL]
         .nunique()
         .reset_index(name="checkin_count")
     )
+
     
     # Keep original hotel name for display
     hotel_name_map = res_filtered.groupby('hotel_normalized')[RES_HOTEL_COL].first().to_dict()

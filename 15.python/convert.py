@@ -9,8 +9,10 @@ st.set_page_config(
 st.title("🏨 Hotel Signup Ranking – Weekly Movement")
 
 st.markdown("""
-So sánh **ranking signup theo hotel** giữa 2 tuần  
-File input **không cần chuẩn hoá column**
+This tool compares **hotel signup rankings** between two weeks to track:
+- Rank movements (up / down / no change)
+- New hotel entries
+- Signup growth week-over-week
 """)
 
 # ======================
@@ -45,16 +47,19 @@ def normalize_df(df):
 
     df = df.rename(columns=column_map)
 
-    required = {"rank", "hotel_name", "signup_count"}
-    if not required.issubset(df.columns):
-        st.error("❌ File thiếu column bắt buộc: Rank, Hotel, Signups")
+    required_cols = {"rank", "hotel_name", "signup_count"}
+    if not required_cols.issubset(df.columns):
+        st.error(
+            "❌ Missing required columns. "
+            "Your file must include: Rank, Hotel, Signups."
+        )
         st.stop()
 
     return df
 
 
 # ======================
-# Process
+# Process files
 # ======================
 if before_file and after_file:
     before_df = pd.read_csv(before_file)
@@ -63,7 +68,7 @@ if before_file and after_file:
     before_df = normalize_df(before_df)
     after_df = normalize_df(after_df)
 
-    # Rename for comparison
+    # Rename columns for comparison
     before_df = before_df.rename(columns={
         "rank": "last_rank",
         "signup_count": "last_signup"
@@ -75,7 +80,7 @@ if before_file and after_file:
     })
 
     # ======================
-    # Merge (key = hotel_name)
+    # Merge data (key = hotel_name)
     # ======================
     df = after_df.merge(
         before_df[["hotel_name", "last_rank", "last_signup"]],
@@ -84,33 +89,35 @@ if before_file and after_file:
     )
 
     # ======================
-    # Rank movement
+    # Rank movement logic
     # ======================
     df["rank_change"] = df["last_rank"] - df["current_rank"]
 
     def movement(row):
         if pd.isna(row["last_rank"]):
-            return "🆕 New"
+            return "🆕 New Entry"
         if row["rank_change"] > 0:
-            return f"↑ +{int(row['rank_change'])}"
+            return f"↑ Up {int(row['rank_change'])}"
         if row["rank_change"] < 0:
-            return f"↓ {int(row['rank_change'])}"
-        return "→ 0"
+            return f"↓ Down {int(row['rank_change'])}"
+        return "→ No Change"
 
     df["movement"] = df.apply(movement, axis=1)
 
+    # ======================
     # Signup growth
+    # ======================
     df["signup_growth_%"] = (
         (df["current_signup"] - df["last_signup"]) / df["last_signup"] * 100
     ).round(1)
 
-    # Sort
+    # Sort by current rank
     df = df.sort_values("current_rank")
 
     # ======================
-    # Display
+    # Display result
     # ======================
-    st.subheader("📊 Ranking Movement Result")
+    st.subheader("📊 Weekly Ranking Comparison")
 
     st.dataframe(
         df[
@@ -128,16 +135,16 @@ if before_file and after_file:
     )
 
     # ======================
-    # Download
+    # Download result
     # ======================
     csv = df.to_csv(index=False).encode("utf-8")
 
     st.download_button(
-        "⬇️ Download Ranking Movement CSV",
+        "⬇️ Download Ranking Movement (CSV)",
         data=csv,
         file_name="hotel_ranking_movement.csv",
         mime="text/csv"
     )
 
 else:
-    st.info("⬆️ Vui lòng upload đầy đủ Before & After file")
+    st.info("⬆️ Please upload both LAST WEEK and THIS WEEK files to continue.")

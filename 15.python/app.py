@@ -100,7 +100,7 @@ if signup_file and reservation_file:
         st.write("**Reservation File Mapping:**")
         st.write(f"✓ Hotel: `{RES_HOTEL_COL}`")
         st.write(f"✓ City: `{RES_CITY_COL}`")
-        st.write(f"✓ Tenatn ID: `{RES_TENANT_COL}`")
+        st.write(f"✓ Tenant ID: `{RES_TENANT_COL}`")
         st.write(f"✓ Check-in Date: `{RES_DATE_COL}`")
     
     # ======================
@@ -432,12 +432,12 @@ Column F: Số lượng signup của hotel tại ngày đó
         st.code("""
 Hotel Name: Tên khách sạn
 City: Thành phố
-Guest Name: Tên khách (sẽ count unique)
+tenant_id: Unique user / tenant identifier (used for unique check-in count)
 Date: Ngày check-in
         """)
         
         st.write("**Logic:**")
-        st.write("- Filter cả 2 files theo cùng date range")
-        st.write("- Đếm UNIQUE guests từ reservation")
-        st.write("- Tổng signup count (Column F) từ signup file")
-        st.write("- CR = Signups / Unique Guests × 100%")
+        st.write("- Filter both files by same date range")
+        st.write("- Count UNIQUE tenant_id from reservation (user-level)")
+        st.write("- Sum signup count (Column F) from signup file")
+        st.write("- CR = Signups / Unique tenant_id × 100%")

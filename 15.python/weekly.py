@@ -3,58 +3,47 @@ import pandas as pd
 from datetime import date, timedelta
 
 st.set_page_config(page_title="Daily Recruit Funnel + WoW", layout="wide")
-st.title("🏨 Daily Recruit Funnel Dashboard")
+st.title("🏨 Daily Recruit Funnel Dashboard (Signup file only)")
 
 # ======================
-# Upload files
+# Upload file
 # ======================
-col1, col2 = st.columns(2)
-with col1:
-    res_file = st.file_uploader("Upload Reservation File", type=["csv", "xlsx"])
-with col2:
-    signup_file = st.file_uploader("Upload Signup File", type=["csv", "xlsx"])
+signup_file = st.file_uploader("Upload Signup File", type=["csv", "xlsx"])
 
 def load_file(file):
     if file.name.endswith(".csv"):
         return pd.read_csv(file)
     return pd.read_excel(file)
 
-if not res_file or not signup_file:
-    st.info("👆 Upload both files to start")
+if not signup_file:
+    st.info("👆 Upload signup file to start")
     st.stop()
 
-res_df = load_file(res_file)
-signup_df = load_file(signup_file)
-
-st.success("✅ Files uploaded successfully")
+df = load_file(signup_file)
+st.success("✅ File uploaded successfully")
 
 # ======================
-# COLUMN MAPPING (FIXED)
+# COLUMN MAPPING
 # ======================
-RES_DATE = "Checkin"
-RES_CITY = "City"
-RES_STATUS = "Sign-up Status"
-
-SIGNUP_DATE = "checkin"
-SIGNUP_CITY = "city"
-SIGNUP_COUNT_COL_INDEX = 4  # Column E (no header)
+DATE_COL = "checkin"
+CITY_COL = "city"
+STATUS_COL = "Sign up status v2"
+COUNT_COL_INDEX = 4  # Column E
 
 # ======================
 # PARSE DATA
 # ======================
-res_df["date"] = pd.to_datetime(res_df[RES_DATE], errors="coerce").dt.date
-signup_df["date"] = pd.to_datetime(signup_df[SIGNUP_DATE], errors="coerce").dt.date
-
-signup_df["signup_count"] = pd.to_numeric(
-    signup_df.iloc[:, SIGNUP_COUNT_COL_INDEX],
+df["date"] = pd.to_datetime(df[DATE_COL], errors="coerce").dt.date
+df["signup_count"] = pd.to_numeric(
+    df.iloc[:, COUNT_COL_INDEX],
     errors="coerce"
 ).fillna(0)
 
 # ======================
-# DATE FILTER (DAILY VIEW)
+# DATE FILTER
 # ======================
-min_date = max(res_df["date"].min(), signup_df["date"].min())
-max_date = min(res_df["date"].max(), signup_df["date"].max())
+min_date = df["date"].min()
+max_date = df["date"].max()
 
 date_range = st.date_input(
     "Select Date Range (Daily View)",
@@ -64,57 +53,47 @@ date_range = st.date_input(
 )
 
 from_date, to_date = date_range
-
-res_daily = res_df[(res_df["date"] >= from_date) & (res_df["date"] <= to_date)]
-signup_daily = signup_df[(signup_df["date"] >= from_date) & (signup_df["date"] <= to_date)]
+daily_df = df[(df["date"] >= from_date) & (df["date"] <= to_date)]
 
 # ======================
-# DAILY – RESERVATION METRICS
+# DEFINE STATUS GROUPS
 # ======================
-res_pivot = (
-    res_daily
-    .groupby(["date", RES_CITY, RES_STATUS])
-    .size()
-    .reset_index(name="count")
-)
-
-chua_signup = res_pivot[
-    res_pivot[RES_STATUS] == "Chưa Sign-up"
-].pivot_table(
-    index="date", columns=RES_CITY, values="count", aggfunc="sum"
-).fillna(0)
-
-member = res_pivot[
-    res_pivot[RES_STATUS] == "Đã Sign-up từ trước"
-].pivot_table(
-    index="date", columns=RES_CITY, values="count", aggfunc="sum"
-).fillna(0)
+STATUS_CHUA_SIGNUP = ["Chưa Sign-up"]
+STATUS_MEMBER = ["Đã Sign-up từ trước"]
+STATUS_NEW_RECRUIT = [
+    "Sign-up sau C/I",
+    "Sign up trước 1 ngày check in",
+    "Sign up trước 2 ngày check in"
+]
 
 # ======================
-# DAILY – NEW RECRUIT (SIGNUP FILE)
+# DAILY AGGREGATION
 # ======================
-new_recruit = (
-    signup_daily
-    .groupby(["date", SIGNUP_CITY])["signup_count"]
-    .sum()
-    .reset_index()
-    .pivot(index="date", columns=SIGNUP_CITY, values="signup_count")
-    .fillna(0)
-)
+def agg_status(status_list):
+    return (
+        daily_df[daily_df[STATUS_COL].isin(status_list)]
+        .groupby(["date", CITY_COL])["signup_count"]
+        .sum()
+        .reset_index()
+        .pivot(index="date", columns=CITY_COL, values="signup_count")
+        .fillna(0)
+    )
 
-total_new_recruit = new_recruit.sum(axis=1)
+chua_signup = agg_status(STATUS_CHUA_SIGNUP)
+member = agg_status(STATUS_MEMBER)
+new_recruit = agg_status(STATUS_NEW_RECRUIT)
 
 # ======================
-# DAILY FINAL TABLE
+# FINAL DAILY TABLE
 # ======================
-final_daily = pd.DataFrame(index=sorted(res_daily["date"].unique()))
+final_daily = pd.DataFrame(index=sorted(daily_df["date"].unique()))
 
 for city in ["HCM", "HN", "DN"]:
     final_daily[f"{city}_Chua_Signup"] = chua_signup.get(city, 0)
     final_daily[f"{city}_Member"] = member.get(city, 0)
     final_daily[f"{city}_New_recruit"] = new_recruit.get(city, 0)
 
-final_daily["Total new recruit"] = total_new_recruit
+final_daily["Total New Recruit"] = new_recruit.sum(axis=1)
 final_daily = final_daily.fillna(0).astype(int).reset_index()
 
 # ======================
@@ -138,10 +117,10 @@ st.download_button(
 # ====================== WoW SECTION ===================
 # ======================================================
 st.divider()
-st.subheader("📈 Week-over-Week New Recruit (Signup only)")
+st.subheader("📈 Week-over-Week New Recruit")
 
 report_date = date.today()
-weekday = report_date.weekday()  # Monday = 0
+weekday = report_date.weekday()
 
 last_week_end = report_date - timedelta(days=weekday + 1)
 last_week_start = last_week_end - timedelta(days=6)
@@ -155,23 +134,25 @@ st.caption(
 )
 
 # ======================
-# FILTER SIGNUP FOR WoW
+# FILTER NEW RECRUIT ONLY
 # ======================
-last_week_df = signup_df[
-    (signup_df["date"] >= last_week_start) &
-    (signup_df["date"] <= last_week_end)
+nr_df = df[df[STATUS_COL].isin(STATUS_NEW_RECRUIT)]
+
+last_week_df = nr_df[
+    (nr_df["date"] >= last_week_start) &
+    (nr_df["date"] <= last_week_end)
 ]
 
-prev_week_df = signup_df[
-    (signup_df["date"] >= prev_week_start) &
-    (signup_df["date"] <= prev_week_end)
+prev_week_df = nr_df[
+    (nr_df["date"] >= prev_week_start) &
+    (nr_df["date"] <= prev_week_end)
 ]
 
 # ======================
-# AGGREGATE
+# AGGREGATE WoW
 # ======================
-last_week_sum = last_week_df.groupby(SIGNUP_CITY)["signup_count"].sum()
-prev_week_sum = prev_week_df.groupby(SIGNUP_CITY)["signup_count"].sum()
+last_week_sum = last_week_df.groupby(CITY_COL)["signup_count"].sum()
+prev_week_sum = prev_week_df.groupby(CITY_COL)["signup_count"].sum()
 
 wow_df = pd.DataFrame({
     "Prev week": prev_week_sum,

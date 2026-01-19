@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import date, timedelta
+import re
 
 # ======================
 # PAGE CONFIG
@@ -31,26 +32,50 @@ st.success("✅ File uploaded successfully")
 # ======================
 # COLUMN MAPPING
 # ======================
-DATE_COL = "checkin"
+DATE_COL = "checkin"          # col C
 CITY_COL = "city"
 STATUS_COL = "Sign up status v2"
-COUNT_COL_INDEX = 4  # Column E
+COUNT_COL_INDEX = 4           # Column E
 
 # ======================
-# PARSE & CLEAN DATA
+# DATE NORMALIZATION (CHECKIN ONLY)
 # ======================
-df["date"] = pd.to_datetime(df[DATE_COL], errors="coerce").dt.date
+DATE_REGEX = re.compile(r"^[A-Za-z]+ \d{1,2}, \d{4}$")
+
+def normalize_checkin(val):
+    if pd.isna(val):
+        return None
+
+    val = str(val).strip()
+
+    # Only accept daily dates like "May 19, 2025"
+    if not DATE_REGEX.match(val):
+        return None
+
+    return pd.to_datetime(val).date()
+
+df["date"] = df[DATE_COL].apply(normalize_checkin)
+
+invalid_rows = df["date"].isna().sum()
+df = df.dropna(subset=["date"])
+
+if df.empty:
+    st.error("❌ No valid daily check-in date found in column 'checkin'")
+    st.stop()
+
+if invalid_rows > 0:
+    st.warning(
+        f"ℹ️ {invalid_rows} non-daily rows in 'checkin' column "
+        "were removed (pivot headers / totals)"
+    )
+
+# ======================
+# SIGNUP COUNT
+# ======================
 df["signup_count"] = pd.to_numeric(
     df.iloc[:, COUNT_COL_INDEX],
     errors="coerce"
 ).fillna(0)
-
-# 👉 CRITICAL FIX: remove invalid date rows
-df = df.dropna(subset=["date"])
-
-if df.empty:
-    st.error("❌ No valid check-in date found after parsing")
-    st.stop()
 
 # ======================
 # DATE FILTER
@@ -73,7 +98,7 @@ daily_df = df[
 ]
 
 # ======================
-# DEFINE STATUS GROUPS
+# STATUS GROUPS
 # ======================
 STATUS_CHUA_SIGNUP = ["Chưa Sign-up"]
 STATUS_MEMBER = ["Đã Sign-up từ trước"]
@@ -103,9 +128,7 @@ new_recruit = agg_status(STATUS_NEW_RECRUIT)
 # ======================
 # FINAL DAILY TABLE
 # ======================
-final_daily = pd.DataFrame(
-    index=sorted(daily_df["date"].unique())
-)
+final_daily = pd.DataFrame(index=sorted(daily_df["date"].unique()))
 
 for city in ["HCM", "HN", "DN"]:
     final_daily[f"{city}_Chua_Signup"] = chua_signup.get(city, 0)
@@ -115,8 +138,7 @@ for city in ["HCM", "HN", "DN"]:
 final_daily["Total New Recruit"] = new_recruit.sum(axis=1)
 
 final_daily = (
-    final_daily
-    .fillna(0)
+    final_daily.fillna(0)
     .astype(int)
     .reset_index()
     .rename(columns={"index": "Date"})
@@ -128,13 +150,9 @@ final_daily = (
 st.subheader("📊 Daily Recruit Funnel")
 st.dataframe(final_daily, use_container_width=True)
 
-# ======================
-# DOWNLOAD DAILY
-# ======================
-csv_daily = final_daily.to_csv(index=False).encode("utf-8-sig")
 st.download_button(
     "⬇️ Download Daily Funnel CSV",
-    csv_daily,
+    final_daily.to_csv(index=False).encode("utf-8-sig"),
     "daily_recruit_funnel.csv",
     "text/csv"
 )
@@ -154,14 +172,6 @@ last_week_start = last_week_end - timedelta(days=6)
 prev_week_end = last_week_start - timedelta(days=1)
 prev_week_start = prev_week_end - timedelta(days=6)
 
-st.caption(
-    f"Last week: {last_week_start} → {last_week_end} | "
-    f"Previous week: {prev_week_start} → {prev_week_end}"
-)
-
-# ======================
-# FILTER NEW RECRUIT ONLY
-# ======================
 nr_df = df[df[STATUS_COL].isin(STATUS_NEW_RECRUIT)]
 
 last_week_df = nr_df[
@@ -174,15 +184,9 @@ prev_week_df = nr_df[
     (nr_df["date"] <= prev_week_end)
 ]
 
-# ======================
-# AGGREGATE WoW
-# ======================
-last_week_sum = last_week_df.groupby(CITY_COL)["signup_count"].sum()
-prev_week_sum = prev_week_df.groupby(CITY_COL)["signup_count"].sum()
-
 wow_df = pd.DataFrame({
-    "Prev week": prev_week_sum,
-    "Last week": last_week_sum
+    "Prev week": prev_week_df.groupby(CITY_COL)["signup_count"].sum(),
+    "Last week": last_week_df.groupby(CITY_COL)["signup_count"].sum()
 }).fillna(0)
 
 wow_df["WoW %"] = (
@@ -192,47 +196,27 @@ wow_df["WoW %"] = (
 
 wow_df["WoW %"] = wow_df["WoW %"].round(2)
 
-# ======================
-# TOTAL ROW
-# ======================
+# TOTAL
 total_prev = prev_week_df["signup_count"].sum()
 total_last = last_week_df["signup_count"].sum()
-
-total_wow = (
-    (total_last - total_prev) / total_prev * 100
-    if total_prev > 0 else None
-)
 
 wow_df.loc["Total"] = [
     total_prev,
     total_last,
-    round(total_wow, 2) if total_wow is not None else None
+    round((total_last - total_prev) / total_prev * 100, 2)
+    if total_prev > 0 else None
 ]
 
-# ======================
 # DISPLAY WoW
-# ======================
 st.dataframe(
-    wow_df
-    .reset_index()
-    .rename(columns={"index": "City"}),
+    wow_df.reset_index().rename(columns={"index": "City"}),
     use_container_width=True
-)
-
-# ======================
-# DOWNLOAD WoW
-# ======================
-csv_wow = (
-    wow_df
-    .reset_index()
-    .rename(columns={"index": "City"})
-    .to_csv(index=False)
-    .encode("utf-8-sig")
 )
 
 st.download_button(
     "⬇️ Download WoW CSV",
-    csv_wow,
+    wow_df.reset_index().rename(columns={"index": "City"})
+    .to_csv(index=False).encode("utf-8-sig"),
     "wow_new_recruit.csv",
     "text/csv"
 )

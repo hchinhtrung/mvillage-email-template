@@ -2,11 +2,17 @@ import streamlit as st
 import pandas as pd
 from datetime import date, timedelta
 
-st.set_page_config(page_title="Tool 3: Daily Recruit Funnel + WoW", layout="wide")
+# ======================
+# PAGE CONFIG
+# ======================
+st.set_page_config(
+    page_title="Tool 3: Daily Recruit Funnel + WoW",
+    layout="wide"
+)
 st.title("Tool 3: Daily Recruit Funnel Dashboard (Signup file only)")
 
 # ======================
-# Upload file
+# UPLOAD FILE
 # ======================
 signup_file = st.file_uploader("Upload Signup File", type=["csv", "xlsx"])
 
@@ -31,13 +37,20 @@ STATUS_COL = "Sign up status v2"
 COUNT_COL_INDEX = 4  # Column E
 
 # ======================
-# PARSE DATA
+# PARSE & CLEAN DATA
 # ======================
 df["date"] = pd.to_datetime(df[DATE_COL], errors="coerce").dt.date
 df["signup_count"] = pd.to_numeric(
     df.iloc[:, COUNT_COL_INDEX],
     errors="coerce"
 ).fillna(0)
+
+# 👉 CRITICAL FIX: remove invalid date rows
+df = df.dropna(subset=["date"])
+
+if df.empty:
+    st.error("❌ No valid check-in date found after parsing")
+    st.stop()
 
 # ======================
 # DATE FILTER
@@ -53,7 +66,11 @@ date_range = st.date_input(
 )
 
 from_date, to_date = date_range
-daily_df = df[(df["date"] >= from_date) & (df["date"] <= to_date)]
+
+daily_df = df[
+    (df["date"] >= from_date) &
+    (df["date"] <= to_date)
+]
 
 # ======================
 # DEFINE STATUS GROUPS
@@ -86,7 +103,9 @@ new_recruit = agg_status(STATUS_NEW_RECRUIT)
 # ======================
 # FINAL DAILY TABLE
 # ======================
-final_daily = pd.DataFrame(index=sorted(daily_df["date"].unique()))
+final_daily = pd.DataFrame(
+    index=sorted(daily_df["date"].unique())
+)
 
 for city in ["HCM", "HN", "DN"]:
     final_daily[f"{city}_Chua_Signup"] = chua_signup.get(city, 0)
@@ -94,7 +113,14 @@ for city in ["HCM", "HN", "DN"]:
     final_daily[f"{city}_New_recruit"] = new_recruit.get(city, 0)
 
 final_daily["Total New Recruit"] = new_recruit.sum(axis=1)
-final_daily = final_daily.fillna(0).astype(int).reset_index()
+
+final_daily = (
+    final_daily
+    .fillna(0)
+    .astype(int)
+    .reset_index()
+    .rename(columns={"index": "Date"})
+)
 
 # ======================
 # DISPLAY DAILY
@@ -164,7 +190,7 @@ wow_df["WoW %"] = (
     wow_df["Prev week"].replace(0, pd.NA)
 ) * 100
 
-wow_df["WoW %"] = wow_df["WoW %"].round(1)
+wow_df["WoW %"] = wow_df["WoW %"].round(2)
 
 # ======================
 # TOTAL ROW
@@ -187,15 +213,22 @@ wow_df.loc["Total"] = [
 # DISPLAY WoW
 # ======================
 st.dataframe(
-    wow_df.reset_index().rename(columns={"index": "City"}),
+    wow_df
+    .reset_index()
+    .rename(columns={"index": "City"}),
     use_container_width=True
 )
 
 # ======================
 # DOWNLOAD WoW
 # ======================
-csv_wow = wow_df.reset_index().rename(columns={"index": "City"}) \
-    .to_csv(index=False).encode("utf-8-sig")
+csv_wow = (
+    wow_df
+    .reset_index()
+    .rename(columns={"index": "City"})
+    .to_csv(index=False)
+    .encode("utf-8-sig")
+)
 
 st.download_button(
     "⬇️ Download WoW CSV",

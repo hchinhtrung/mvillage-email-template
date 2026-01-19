@@ -6,11 +6,11 @@ import numpy as np
 # Page config
 # ======================
 st.set_page_config(
-    page_title="Hotel Signup Ranking Movement",
+    page_title="Tool 2: Hotel Signup Ranking Movement",
     layout="wide"
 )
 
-st.title("🏨 Hotel Signup Ranking – Weekly Movement")
+st.title("Tool 2: Hotel Signup Ranking – Weekly Movement")
 
 # ======================
 # Upload files

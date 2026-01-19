@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Recruit CR Analyzer", layout="wide")
-st.title("🏨 Recruit Signup & CR Analyzer")
+st.set_page_config(page_title="Tool 1: Recruit CR Analyzer", layout="wide")
+st.title("Tool 1: Recruit Signup & CR Analyzer")
 
 # ======================
 # Upload files

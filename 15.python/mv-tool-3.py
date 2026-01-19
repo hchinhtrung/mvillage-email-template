@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 from datetime import date, timedelta
 
-st.set_page_config(page_title="Daily Recruit Funnel + WoW", layout="wide")
-st.title("🏨 Daily Recruit Funnel Dashboard (Signup file only)")
+st.set_page_config(page_title="Tool 3: Daily Recruit Funnel + WoW", layout="wide")
+st.title("Tool 3: Daily Recruit Funnel Dashboard (Signup file only)")
 
 # ======================
 # Upload file

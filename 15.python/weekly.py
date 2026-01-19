@@ -180,7 +180,7 @@ total_wow = (
 wow_df.loc["Total"] = [
     total_prev,
     total_last,
-    round(total_wow, 1) if total_wow is not None else None
+    round(total_wow, 2) if total_wow is not None else None
 ]
 
 # ======================

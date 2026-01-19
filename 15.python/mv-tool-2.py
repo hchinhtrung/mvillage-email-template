@@ -63,7 +63,7 @@ if before_file and after_file:
     after = normalize_df(pd.read_csv(after_file))
 
     # ------------------
-    # Keep rank from file
+    # Rename columns
     # ------------------
     before = before.rename(columns={
         "rank": "last_rank",
@@ -111,7 +111,7 @@ if before_file and after_file:
     ).round(2)
 
     # ======================
-    # GLOBAL RANK MOVEMENT (FROM FILE)
+    # GLOBAL RANK MOVEMENT
     # ======================
     df["rank_change"] = df["last_rank"] - df["current_rank"]
     df["movement"] = df["rank_change"].apply(movement_label)
@@ -141,7 +141,7 @@ if before_file and after_file:
     )
 
     # ======================
-    # CITY-LEVEL RANKING (FIXED)
+    # CITY-LEVEL RANKING
     # ======================
     st.subheader("🏙️ City-level Ranking (Current Week)")
 
@@ -160,19 +160,16 @@ if before_file and after_file:
             ]
         ].copy()
 
-        # Current city rank
         city_current = city_current.sort_values(
             "current_signup", ascending=False
         )
         city_current["current_rank"] = range(1, len(city_current) + 1)
 
-        # Last city rank (independent)
         city_last = city_current.sort_values(
             "last_signup", ascending=False
         )
         city_last["last_rank"] = range(1, len(city_last) + 1)
 
-        # Merge rank by hotel_name (KEY FIX)
         city_rank = city_current.merge(
             city_last[["hotel_name", "last_rank"]],
             on="hotel_name",
@@ -204,6 +201,86 @@ if before_file and after_file:
             ],
             use_container_width=True
         )
+
+    # ======================
+    # CITY-LEVEL RANKING BY BRAND MODEL (NEW)
+    # ======================
+    st.subheader("🏙️ City-level Ranking by Brand Model (Current Week)")
+
+    for city in df["city"].dropna().unique():
+
+        st.markdown(f"## 📍 {city}")
+        city_df = df[df["city"] == city]
+
+        for model in city_df["brand_model"].dropna().unique():
+
+            model_df = city_df[
+                city_df["brand_model"] == model
+            ][
+                [
+                    "hotel_name",
+                    "brand_model",
+                    "city",
+                    "current_signup",
+                    "last_signup",
+                    "last_cr_%",
+                    "current_cr_%",
+                    "cr_change_%"
+                ]
+            ].copy()
+
+            model_current = model_df.sort_values(
+                "current_signup", ascending=False
+            )
+            model_current["current_rank"] = range(
+                1, len(model_current) + 1
+            )
+
+            model_last = model_df.sort_values(
+                "last_signup", ascending=False
+            )
+            model_last["last_rank"] = range(
+                1, len(model_last) + 1
+            )
+
+            model_rank = model_current.merge(
+                model_last[["hotel_name", "last_rank"]],
+                on="hotel_name",
+                how="left"
+            )
+
+            model_rank["rank_change"] = (
+                model_rank["last_rank"] - model_rank["current_rank"]
+            )
+            model_rank["movement"] = model_rank["rank_change"].apply(
+                movement_label
+            )
+            model_rank = model_rank.sort_values(
+                by="cr_change_%",
+                ascending=False,
+                na_position="last"
+            )
+
+            st.markdown(f"### 🏷️ Brand Model: **{model}**")
+
+            st.dataframe(
+                model_rank[
+                    [
+                        "hotel_name",
+                        "brand_model",
+                        "city",
+                        "last_rank",
+                        "current_rank",
+                        "movement",
+                        "last_signup",
+                        "current_signup",
+                        "last_cr_%",
+                        "current_cr_%",
+                        "cr_change_%"
+                    ]
+                ],
+                use_container_width=True
+            )
 
 else:
     st.info("⬆️ Upload both files to continue.")

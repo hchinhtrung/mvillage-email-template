@@ -14,10 +14,12 @@ with col1:
 with col2:
     reservation_file = st.file_uploader("📤 Upload Reservation File", type=["csv", "xlsx"])
 
+
 def load_file(file):
     if file.name.endswith(".csv"):
         return pd.read_csv(file)
     return pd.read_excel(file)
+
 
 # ======================
 # MAIN
@@ -55,16 +57,15 @@ if signup_file and reservation_file:
     # ======================
     SIGNUP_HOTEL = 'hotel_short_name'
     SIGNUP_CITY = 'city'
-    SIGNUP_DATE = signup_df.columns[4]   # Column E
-    SIGNUP_COUNT = signup_df.columns[5]  # Column F
+    SIGNUP_DATE = signup_df.columns[4]
+    SIGNUP_COUNT = signup_df.columns[5]
 
     RES_HOTEL = 'Hotel Name'
     RES_CITY = 'City'
     RES_TENANT = 'tenant_id'
     RES_DATE = 'Checkin'
 
-    # 🔥 Brand Model = Column B in Reservation file
-    BRAND_MODEL_COL = res_df.columns[1]
+    BRAND_MODEL_COL = res_df.columns[1]  # Column B
 
     # ======================
     # Preprocessing
@@ -72,7 +73,6 @@ if signup_file and reservation_file:
     signup_df['hotel_normalized'] = signup_df[SIGNUP_HOTEL].str.strip().str.lower()
     res_df['hotel_normalized'] = res_df[RES_HOTEL].str.strip().str.lower()
 
-    # Brand Model normalize
     res_df['brand_model'] = (
         res_df[BRAND_MODEL_COL]
         .astype(str)
@@ -83,7 +83,9 @@ if signup_file and reservation_file:
     signup_df[SIGNUP_DATE] = pd.to_datetime(signup_df[SIGNUP_DATE], errors="coerce")
     res_df[RES_DATE] = pd.to_datetime(res_df[RES_DATE], errors="coerce")
 
-    signup_df[SIGNUP_COUNT] = pd.to_numeric(signup_df[SIGNUP_COUNT], errors="coerce").fillna(0)
+    signup_df[SIGNUP_COUNT] = pd.to_numeric(
+        signup_df[SIGNUP_COUNT], errors="coerce"
+    ).fillna(0)
 
     signup_df = signup_df.dropna(subset=[SIGNUP_DATE])
     res_df = res_df.dropna(subset=[RES_DATE])
@@ -121,7 +123,11 @@ if signup_file and reservation_file:
         .reset_index(name='checkin_count')
     )
 
-    hotel_name_map = res_f.groupby('hotel_normalized')[RES_HOTEL].first().to_dict()
+    hotel_name_map = (
+        res_f.groupby('hotel_normalized')[RES_HOTEL]
+        .first()
+        .to_dict()
+    )
     checkin_df['hotel_display'] = checkin_df['hotel_normalized'].map(hotel_name_map)
 
     recruit_df = (
@@ -185,13 +191,13 @@ if signup_file and reservation_file:
             'checkin_count': 'Check-ins',
             'recruit_count': 'Signups',
             'CR_percent': 'CR %'
-        })[['Rank','Hotel','Brand Model','City','Check-ins','Signups','CR %']],
+        })[['Rank', 'Hotel', 'Brand Model', 'City', 'Check-ins', 'Signups', 'CR %']],
         use_container_width=True,
         hide_index=True
     )
 
     # ======================
-    # Ranking by City (AUTO)
+    # Ranking by City
     # ======================
     st.divider()
     st.subheader("🌆 Hotel Ranking by City")
@@ -228,7 +234,50 @@ if signup_file and reservation_file:
                 'checkin_count': 'Check-ins',
                 'recruit_count': 'Signups',
                 'CR_percent': 'CR %'
-            })[['Rank','Hotel','Brand Model','Check-ins','Signups','CR %']],
+            })[['Rank', 'Hotel', 'Brand Model', 'Check-ins', 'Signups', 'CR %']],
+            use_container_width=True,
+            hide_index=True
+        )
+
+    # ======================
+    # Ranking by Brand Model
+    # ======================
+    st.divider()
+    st.subheader("🏷️ Hotel Ranking by Brand Model")
+
+    for brand_model, bm_df in final_df.groupby('brand_model'):
+        st.markdown(f"### 🏷️ {brand_model}")
+
+        bm_rank = (
+            bm_df
+            .groupby(['hotel_display', RES_CITY])
+            .agg({'checkin_count': 'sum', 'recruit_count': 'sum'})
+            .reset_index()
+        )
+
+        bm_rank['CR_percent'] = (
+            bm_rank.recruit_count / bm_rank.checkin_count * 100
+        ).round(2)
+
+        bm_rank = bm_rank.sort_values('CR_percent', ascending=False).reset_index(drop=True)
+        bm_rank['Rank'] = range(1, len(bm_rank) + 1)
+
+        s1, s2, s3 = st.columns(3)
+        s1.metric("Check-ins", f"{int(bm_rank.checkin_count.sum()):,}")
+        s2.metric("Signups", f"{int(bm_rank.recruit_count.sum()):,}")
+        s3.metric(
+            "CR",
+            f"{(bm_rank.recruit_count.sum()/bm_rank.checkin_count.sum()*100):.2f}%"
+        )
+
+        st.dataframe(
+            bm_rank.rename(columns={
+                'hotel_display': 'Hotel',
+                RES_CITY: 'City',
+                'checkin_count': 'Check-ins',
+                'recruit_count': 'Signups',
+                'CR_percent': 'CR %'
+            })[['Rank', 'Hotel', 'City', 'Check-ins', 'Signups', 'CR %']],
             use_container_width=True,
             hide_index=True
         )

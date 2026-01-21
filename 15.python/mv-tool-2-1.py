@@ -238,13 +238,13 @@ def style_df(df):
         "rank_change": "{:.0f}",
         "checkin_last": "{:.0f}",
         "checkin_current": "{:.0f}",
-        "checkin_change_%": "{:.1%}",
+        "checkin_change_%": "{:.2%}",
         "signup_last": "{:.0f}",
         "signup_current": "{:.0f}",
-        "signup_change_%": "{:.1%}",
+        "signup_change_%": "{:.2%}",
         "cr_last": "{:.2f}",
         "cr_current": "{:.2f}",
-        "cr_change_%": "{:.1%}",
+        "cr_change_%": "{:.2%}",
     })
 
     styler = styler.applymap(color_change, subset=["cr_change_%"])
@@ -390,11 +390,6 @@ for city, city_df in cb_df.groupby(RES_CITY):
             use_container_width=True,
             hide_index=True
         )
-
-
-
-
-
 
 
 

@@ -101,7 +101,7 @@ daily_df = df[
 # STATUS GROUPS
 # ======================
 STATUS_CHUA_SIGNUP = ["Chưa Sign-up"]
-STATUS_MEMBER = ["Đã Sign-up từ trước"]
+STATUS_MEMBER = ["Đã Sign-up từ trước"]
 STATUS_NEW_RECRUIT = [
     "Sign-up sau C/I",
     "Sign up trước 1 ngày check in",

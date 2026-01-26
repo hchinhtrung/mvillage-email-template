@@ -186,11 +186,11 @@ prev_week_df = nr_df[
 
 wow_df = pd.DataFrame({
     "Prev week": prev_week_df.groupby(CITY_COL)["signup_count"].sum(),
-    "Last week": last_week_df.groupby(CITY_COL)["signup_count"].sum()
+    "This week": last_week_df.groupby(CITY_COL)["signup_count"].sum()
 }).fillna(0)
 
 wow_df["WoW %"] = (
-    (wow_df["Last week"] - wow_df["Prev week"]) /
+    (wow_df["This week"] - wow_df["Prev week"]) /
     wow_df["Prev week"].replace(0, pd.NA)
 ) * 100
 

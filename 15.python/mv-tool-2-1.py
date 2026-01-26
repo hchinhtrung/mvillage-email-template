@@ -370,26 +370,76 @@ for city, df in city_df.groupby(RES_CITY):
         hide_index=True
     )
 
+
 # ======================================================
-# SECTION 3 – City-level Ranking by Brand Model
+# SECTION 3 – City-level Ranking by Brand Model (Current Week)
 # ======================================================
 st.divider()
 st.subheader("🏙️ City-level Ranking by Brand Model (Current Week)")
 
+BRAND_ORDER = ["savvy", "signature", "hotel", "living", "express"]
+CITY_ORDER = ["HCM", "HN", "DN"]
+
 cb_df = build_compare(
     add_city_brand_rank(last_df),
     add_city_brand_rank(current_df)
+).copy()
+
+# normalize
+cb_df[BRAND_MODEL] = (
+    cb_df[BRAND_MODEL]
+    .astype(str)
+    .str.lower()
+    .str.strip()
 )
 
-for city, city_df in cb_df.groupby(RES_CITY):
+cb_df[RES_CITY] = (
+    cb_df[RES_CITY]
+    .astype(str)
+    .str.upper()
+    .str.strip()
+)
+
+# categorical ordering
+cb_df[BRAND_MODEL] = pd.Categorical(
+    cb_df[BRAND_MODEL],
+    categories=BRAND_ORDER,
+    ordered=True
+)
+
+cb_df[RES_CITY] = pd.Categorical(
+    cb_df[RES_CITY],
+    categories=CITY_ORDER,
+    ordered=True
+)
+
+# render
+for city, city_df in (
+    cb_df
+    .sort_values(RES_CITY)
+    .groupby(RES_CITY, sort=False)
+):
+    if city_df.empty:
+        continue
+
     st.markdown(f"## 📍 {city}")
-    for bm, bm_df in city_df.groupby(BRAND_MODEL):
+
+    city_df = city_df.sort_values([BRAND_MODEL, "rank_current"])
+
+    for bm, bm_df in city_df.groupby(BRAND_MODEL, sort=False):
+        # hide empty brand model
+        if bm_df.empty:
+            continue
+
+        if (
+            bm_df["checkin_current"].sum() == 0
+            and bm_df["signup_current"].sum() == 0
+        ):
+            continue
+
         st.markdown(f"### 🏷️ Brand Model: {bm}")
         st.dataframe(
-            style_df(reorder_columns(bm_df.sort_values("rank_current"))),
+            style_df(reorder_columns(bm_df)),
             use_container_width=True,
             hide_index=True
         )
-
-
-

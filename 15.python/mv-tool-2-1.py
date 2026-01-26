@@ -323,32 +323,133 @@ def build_city_overview(last_df, current_df):
 
 
 
+
 # ======================================================
-# SECTION – City Performance Overview
+# SECTION – City Performance Overview (Last vs Current)
 # ======================================================
 st.divider()
 st.subheader("🏙️ City Performance Overview (Last vs Current)")
 
+def build_city_overview(last_df, current_df):
+    last_city = (
+        last_df
+        .groupby(RES_CITY)
+        .agg(
+            checkin_last=("checkin", "sum"),
+            signup_last=("signup", "sum")
+        )
+        .reset_index()
+    )
+
+    last_city["cr_last"] = np.where(
+        last_city["checkin_last"] == 0,
+        0,
+        (last_city["signup_last"] / last_city["checkin_last"] * 100)
+    )
+
+    current_city = (
+        current_df
+        .groupby(RES_CITY)
+        .agg(
+            checkin_current=("checkin", "sum"),
+            signup_current=("signup", "sum")
+        )
+        .reset_index()
+    )
+
+    current_city["cr_current"] = np.where(
+        current_city["checkin_current"] == 0,
+        0,
+        (current_city["signup_current"] / current_city["checkin_current"] * 100)
+    )
+
+    df = last_city.merge(current_city, on=RES_CITY, how="outer").fillna(0)
+
+    df["checkin_change_%"] = np.where(
+        df["checkin_last"] == 0, 0,
+        (df["checkin_current"] / df["checkin_last"]) - 1
+    )
+
+    df["signup_change_%"] = np.where(
+        df["signup_last"] == 0, 0,
+        (df["signup_current"] / df["signup_last"]) - 1
+    )
+
+    df["cr_change_%"] = np.where(
+        df["cr_last"] == 0, 0,
+        (df["cr_current"] / df["cr_last"]) - 1
+    )
+
+    return df
+
+
+def add_total_row(df):
+    total = {
+        RES_CITY: "TOTAL",
+
+        "checkin_last": df["checkin_last"].sum(),
+        "checkin_current": df["checkin_current"].sum(),
+        "signup_last": df["signup_last"].sum(),
+        "signup_current": df["signup_current"].sum(),
+    }
+
+    total["checkin_change_%"] = (
+        0 if total["checkin_last"] == 0
+        else (total["checkin_current"] / total["checkin_last"]) - 1
+    )
+
+    total["signup_change_%"] = (
+        0 if total["signup_last"] == 0
+        else (total["signup_current"] / total["signup_last"]) - 1
+    )
+
+    total["cr_last"] = (
+        0 if total["checkin_last"] == 0
+        else (total["signup_last"] / total["checkin_last"] * 100)
+    )
+
+    total["cr_current"] = (
+        0 if total["checkin_current"] == 0
+        else (total["signup_current"] / total["checkin_current"] * 100)
+    )
+
+    total["cr_change_%"] = (
+        0 if total["cr_last"] == 0
+        else (total["cr_current"] / total["cr_last"]) - 1
+    )
+
+    return pd.concat([df, pd.DataFrame([total])], ignore_index=True)
+
+
+# build city overview
 city_overview_df = build_city_overview(last_df, current_df)
 
 city_overview_df = city_overview_df[[
     RES_CITY,
-
-    # Checkin
     "checkin_last", "checkin_current", "checkin_change_%",
-
-    # Signup
     "signup_last", "signup_current", "signup_change_%",
-
-    # CR
     "cr_last", "cr_current", "cr_change_%"
-]].sort_values("cr_current", ascending=False)
+]]
+
+# add TOTAL row
+city_overview_df = add_total_row(city_overview_df)
+
+# sort city order + TOTAL last
+city_overview_df[RES_CITY] = pd.Categorical(
+    city_overview_df[RES_CITY],
+    categories=["HCM", "HN", "DN", "TOTAL"],
+    ordered=True
+)
+
+city_overview_df = city_overview_df.sort_values(RES_CITY)
 
 st.dataframe(
     style_df(city_overview_df),
     use_container_width=True,
     hide_index=True
 )
+
+
 
 
 # ======================================================

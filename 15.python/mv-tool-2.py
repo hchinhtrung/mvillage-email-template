@@ -5,282 +5,208 @@ import numpy as np
 # ======================
 # Page config
 # ======================
-st.set_page_config(
-    page_title="Tool 2: Hotel Signup Ranking Movement",
-    layout="wide"
-)
-
-st.title("Tool 2: Hotel Signup Ranking – Weekly Movement")
+st.set_page_config(page_title="Weekly Ranking Comparison", layout="wide")
+st.title("📊 Weekly Ranking Comparison Dashboard")
 
 # ======================
 # Upload files
 # ======================
-col1, col2 = st.columns(2)
+c1, c2 = st.columns(2)
+with c1:
+    signup_file = st.file_uploader("📤 Upload Signup File", type=["csv", "xlsx"])
+with c2:
+    reservation_file = st.file_uploader("📤 Upload Reservation File", type=["csv", "xlsx"])
 
-with col1:
-    before_file = st.file_uploader("⬆️ Upload LAST WEEK file", type=["csv"])
-with col2:
-    after_file = st.file_uploader("⬆️ Upload THIS WEEK file", type=["csv"])
+def load_file(file):
+    return pd.read_csv(file) if file.name.endswith(".csv") else pd.read_excel(file)
+
+if not signup_file or not reservation_file:
+    st.info("👆 Upload both Signup & Reservation files to start")
+    st.stop()
+
+signup_df = load_file(signup_file)
+res_df = load_file(reservation_file)
 
 # ======================
-# Helpers
+# Column mapping
 # ======================
-def normalize_df(df):
-    return df.rename(columns={
-        "Rank": "rank",
-        "Hotel": "hotel_name",
-        "Brand Model": "brand_model",
-        "City": "city",
-        "Signups": "signup_count",
-        "Check-ins": "checkin_count"
-    })
+SIGNUP_HOTEL = "hotel_short_name"
+SIGNUP_DATE = signup_df.columns[4]   # checkin (TEXT: "Jan 7, 2026")
+SIGNUP_COUNT = signup_df.columns[5]
 
-def calc_cr(signup, checkin):
-    return np.where(
-        checkin > 0,
-        (signup / checkin) * 100,
-        np.nan
+RES_HOTEL = "Hotel Name"
+RES_CITY = "City"
+RES_DATE = "Checkin"
+RES_TENANT = "tenant_id"
+BRAND_MODEL = res_df.columns[1]
+
+# ======================
+# Preprocessing
+# ======================
+signup_df["hotel_key"] = signup_df[SIGNUP_HOTEL].str.lower().str.strip()
+res_df["hotel_key"] = res_df[RES_HOTEL].str.lower().str.strip()
+
+# ---------- FIX SIGNUP CHECKIN DATE ----------
+signup_df[SIGNUP_DATE] = (
+    signup_df[SIGNUP_DATE]
+    .astype(str)
+    .str.strip()
+)
+
+# Try strict format first: "Jan 7, 2026"
+signup_df[SIGNUP_DATE] = pd.to_datetime(
+    signup_df[SIGNUP_DATE],
+    format="%b %d, %Y",
+    errors="coerce"
+)
+
+# Fallback parse (other formats if exist)
+mask = signup_df[SIGNUP_DATE].isna()
+if mask.any():
+    signup_df.loc[mask, SIGNUP_DATE] = pd.to_datetime(
+        signup_df.loc[mask, SIGNUP_DATE],
+        errors="coerce"
     )
 
-def movement_label(x):
-    if pd.isna(x):
-        return "🆕 New Entry"
-    if x > 0:
-        return f"↑ Up {x}"
-    if x < 0:
-        return f"↓ Down {abs(x)}"
-    return "→ No Change"
+invalid_dates = signup_df[SIGNUP_DATE].isna().sum()
+if invalid_dates > 0:
+    st.warning(f"⚠️ {invalid_dates} signup rows have invalid checkin date format")
+
+signup_df = signup_df.dropna(subset=[SIGNUP_DATE])
+
+# ---------- RESERVATION DATE ----------
+res_df[RES_DATE] = pd.to_datetime(res_df[RES_DATE], errors="coerce")
+res_df = res_df.dropna(subset=[RES_DATE])
+
+# ---------- NUMERIC ----------
+signup_df[SIGNUP_COUNT] = (
+    pd.to_numeric(signup_df[SIGNUP_COUNT], errors="coerce")
+    .fillna(0)
+)
 
 # ======================
-# MAIN
+# Date selector
 # ======================
-if before_file and after_file:
+st.subheader("📅 Compare Time Ranges")
 
-    # ------------------
-    # Load & normalize
-    # ------------------
-    before = normalize_df(pd.read_csv(before_file))
-    after = normalize_df(pd.read_csv(after_file))
+min_date = min(
+    signup_df[SIGNUP_DATE].min(),
+    res_df[RES_DATE].min()
+).date()
 
-    # ------------------
-    # Rename columns
-    # ------------------
-    before = before.rename(columns={
-        "rank": "last_rank",
-        "signup_count": "last_signup",
-        "checkin_count": "last_checkin"
-    })
+max_date = max(
+    signup_df[SIGNUP_DATE].max(),
+    res_df[RES_DATE].max()
+).date()
 
-    after = after.rename(columns={
-        "rank": "current_rank",
-        "signup_count": "current_signup",
-        "checkin_count": "current_checkin"
-    })
+c1, c2 = st.columns(2)
+with c1:
+    last_from, last_to = st.date_input("Last Period", value=(min_date, min_date))
+with c2:
+    current_from, current_to = st.date_input("Current Period", value=(max_date, max_date))
 
-    # ------------------
-    # Merge
-    # ------------------
-    df = after.merge(
-        before[
-            [
-                "hotel_name",
-                "last_rank",
-                "last_signup",
-                "last_checkin"
-            ]
-        ],
-        on="hotel_name",
-        how="left"
+def filter_period(df, col, start, end):
+    return df[(df[col].dt.date >= start) & (df[col].dt.date <= end)]
+
+# ======================
+# Metric builder
+# ======================
+def build_metric(res, signup):
+    checkin = (
+        res.groupby(["hotel_key", RES_CITY, BRAND_MODEL])[RES_TENANT]
+        .nunique()
+        .reset_index(name="checkin")
     )
 
-    # ======================
-    # CR calculation (%)
-    # ======================
-    df["last_cr_%"] = calc_cr(
-        df["last_signup"], df["last_checkin"]
-    ).round(2)
+    signup = (
+        signup.groupby("hotel_key")[SIGNUP_COUNT]
+        .sum()
+        .reset_index(name="signup")
+    )
 
-    df["current_cr_%"] = calc_cr(
-        df["current_signup"], df["current_checkin"]
-    ).round(2)
+    df = checkin.merge(signup, on="hotel_key", how="left").fillna(0)
+
+    df["cr"] = np.where(
+        df["checkin"] == 0,
+        0,
+        (df["signup"] / df["checkin"] * 100).round(2)
+    )
+    return df
+
+last_df = build_metric(
+    filter_period(res_df, RES_DATE, last_from, last_to),
+    filter_period(signup_df, SIGNUP_DATE, last_from, last_to)
+)
+
+current_df = build_metric(
+    filter_period(res_df, RES_DATE, current_from, current_to),
+    filter_period(signup_df, SIGNUP_DATE, current_from, current_to)
+)
+
+# ======================
+# Ranking helpers
+# ======================
+def add_global_rank(df):
+    df = df.copy()
+    df["rank"] = df["cr"].rank(ascending=False, method="dense")
+    return df
+
+def add_city_rank(df):
+    df = df.copy()
+    df["rank"] = df.groupby(RES_CITY)["cr"].rank(
+        ascending=False, method="dense"
+    )
+    return df
+
+def add_city_brand_rank(df):
+    df = df.copy()
+    df["rank"] = df.groupby([RES_CITY, BRAND_MODEL])["cr"].rank(
+        ascending=False, method="dense"
+    )
+    return df
+
+# ======================
+# Compare helper
+# ======================
+def build_compare(last, current):
+    df = last.merge(
+        current,
+        on=["hotel_key", RES_CITY, BRAND_MODEL],
+        suffixes=("_last", "_current"),
+        how="outer"
+    ).fillna(0)
+
+    df["rank_change"] = df["rank_last"] - df["rank_current"]
+
+    df["checkin_change_%"] = np.where(
+        df["checkin_last"] == 0, 0,
+        (df["checkin_current"] / df["checkin_last"]) - 1
+    )
+
+    df["signup_change_%"] = np.where(
+        df["signup_last"] == 0, 0,
+        (df["signup_current"] / df["signup_last"]) - 1
+    )
 
     df["cr_change_%"] = np.where(
-        df["last_cr_%"] > 0,
-        ((df["current_cr_%"] / df["last_cr_%"]) - 1) * 100,
-        np.nan
-    ).round(2)
-
-    # ======================
-    # GLOBAL RANK MOVEMENT
-    # ======================
-    df["rank_change"] = df["last_rank"] - df["current_rank"]
-    df["movement"] = df["rank_change"].apply(movement_label)
-
-    # ======================
-    # WEEKLY RANKING – GLOBAL
-    # ======================
-    st.subheader("📊 Weekly Ranking Comparison (Global)")
-
-    st.dataframe(
-        df[
-            [
-                "hotel_name",
-                "brand_model",
-                "city",
-                "last_rank",
-                "current_rank",
-                "movement",
-                "last_signup",
-                "current_signup",
-                "last_cr_%",
-                "current_cr_%",
-                "cr_change_%"
-            ]
-        ].sort_values("current_rank"),
-        use_container_width=True
+        df["cr_last"] == 0, 0,
+        (df["cr_current"] / df["cr_last"]) - 1
     )
 
-    # ======================
-    # CITY-LEVEL RANKING
-    # ======================
-    st.subheader("🏙️ City-level Ranking (Current Week)")
+    return df
 
-    for city in df["city"].dropna().unique():
+# ======================
+# Global Ranking
+# ======================
+st.divider()
+st.subheader("📊 Weekly Ranking Comparison (Global)")
 
-        city_current = df[df["city"] == city][
-            [
-                "hotel_name",
-                "brand_model",
-                "city",
-                "current_signup",
-                "last_signup",
-                "last_cr_%",
-                "current_cr_%",
-                "cr_change_%"
-            ]
-        ].copy()
+global_df = (
+    build_compare(
+        add_global_rank(last_df),
+        add_global_rank(current_df)
+    )
+    .sort_values("rank_current")
+)
 
-        city_current = city_current.sort_values(
-            "current_signup", ascending=False
-        )
-        city_current["current_rank"] = range(1, len(city_current) + 1)
-
-        city_last = city_current.sort_values(
-            "last_signup", ascending=False
-        )
-        city_last["last_rank"] = range(1, len(city_last) + 1)
-
-        city_rank = city_current.merge(
-            city_last[["hotel_name", "last_rank"]],
-            on="hotel_name",
-            how="left"
-        )
-
-        city_rank["rank_change"] = (
-            city_rank["last_rank"] - city_rank["current_rank"]
-        )
-        city_rank["movement"] = city_rank["rank_change"].apply(movement_label)
-
-        st.markdown(f"### 📍 {city}")
-
-        st.dataframe(
-            city_rank[
-                [
-                    "hotel_name",
-                    "brand_model",
-                    "city",
-                    "last_rank",
-                    "current_rank",
-                    "movement",
-                    "last_signup",
-                    "current_signup",
-                    "last_cr_%",
-                    "current_cr_%",
-                    "cr_change_%"
-                ]
-            ],
-            use_container_width=True
-        )
-
-    # ======================
-    # CITY-LEVEL RANKING BY BRAND MODEL (NEW)
-    # ======================
-    st.subheader("🏙️ City-level Ranking by Brand Model (Current Week)")
-
-    for city in df["city"].dropna().unique():
-
-        st.markdown(f"## 📍 {city}")
-        city_df = df[df["city"] == city]
-
-        for model in city_df["brand_model"].dropna().unique():
-
-            model_df = city_df[
-                city_df["brand_model"] == model
-            ][
-                [
-                    "hotel_name",
-                    "brand_model",
-                    "city",
-                    "current_signup",
-                    "last_signup",
-                    "last_cr_%",
-                    "current_cr_%",
-                    "cr_change_%"
-                ]
-            ].copy()
-
-            model_current = model_df.sort_values(
-                "current_signup", ascending=False
-            )
-            model_current["current_rank"] = range(
-                1, len(model_current) + 1
-            )
-
-            model_last = model_df.sort_values(
-                "last_signup", ascending=False
-            )
-            model_last["last_rank"] = range(
-                1, len(model_last) + 1
-            )
-
-            model_rank = model_current.merge(
-                model_last[["hotel_name", "last_rank"]],
-                on="hotel_name",
-                how="left"
-            )
-
-            model_rank["rank_change"] = (
-                model_rank["last_rank"] - model_rank["current_rank"]
-            )
-            model_rank["movement"] = model_rank["rank_change"].apply(
-                movement_label
-            )
-            model_rank = model_rank.sort_values(
-                by="cr_change_%",
-                ascending=False,
-                na_position="last"
-            )
-
-            st.markdown(f"### 🏷️ Brand Model: **{model}**")
-
-            st.dataframe(
-                model_rank[
-                    [
-                        "hotel_name",
-                        "brand_model",
-                        "city",
-                        "last_rank",
-                        "current_rank",
-                        "movement",
-                        "last_signup",
-                        "current_signup",
-                        "last_cr_%",
-                        "current_cr_%",
-                        "cr_change_%"
-                    ]
-                ],
-                use_container_width=True
-            )
-
-else:
-    st.info("⬆️ Upload both files to continue.")
+st.dataframe(global_df, use_container_width=True, hide_index=True)

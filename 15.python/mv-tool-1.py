@@ -80,7 +80,17 @@ if signup_file and reservation_file:
         .replace({'nan': 'Unknown'})
     )
 
-    signup_df[SIGNUP_DATE] = pd.to_datetime(signup_df[SIGNUP_DATE], errors="coerce")
+    signup_df[SIGNUP_DATE] = (
+    signup_df[SIGNUP_DATE]
+    .astype(str)
+    .str.strip()
+    .pipe(lambda s: pd.to_datetime(
+        s,
+        format="%b %d, %Y",
+        errors="coerce"
+    ))
+)
+
     res_df[RES_DATE] = pd.to_datetime(res_df[RES_DATE], errors="coerce")
 
     signup_df[SIGNUP_COUNT] = pd.to_numeric(

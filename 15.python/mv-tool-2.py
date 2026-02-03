@@ -66,22 +66,41 @@ signup_df[SIGNUP_COUNT] = pd.to_numeric(
 signup_df = signup_df.dropna(subset=[SIGNUP_DATE])
 res_df = res_df.dropna(subset=[RES_DATE])
 
+def filter_period(df, col, start, end):
+    return df[
+        (df[col].dt.date >= start) &
+        (df[col].dt.date <= end)
+    ]
+
 # ======================
-# Date selector
+# Date selector (AUTO DEFAULT)
 # ======================
 st.subheader("📅 Compare Time Ranges")
 
-min_date = min(signup_df[SIGNUP_DATE].min(), res_df[RES_DATE].min()).date()
-max_date = max(signup_df[SIGNUP_DATE].max(), res_df[RES_DATE].max()).date()
+today = pd.Timestamp.today().normalize()
+
+# Default logic
+# Last: D-14 → D-8
+last_from_default = (today - pd.Timedelta(days=14)).date()
+last_to_default   = (today - pd.Timedelta(days=8)).date()
+
+# Current: D-7 → D-1
+current_from_default = (today - pd.Timedelta(days=7)).date()
+current_to_default   = (today - pd.Timedelta(days=1)).date()
 
 c1, c2 = st.columns(2)
 with c1:
-    last_from, last_to = st.date_input("Last Period", value=(min_date, min_date))
-with c2:
-    current_from, current_to = st.date_input("Current Period", value=(max_date, max_date))
+    last_from, last_to = st.date_input(
+        "Last Period",
+        value=(last_from_default, last_to_default)
+    )
 
-def filter_period(df, col, start, end):
-    return df[(df[col].dt.date >= start) & (df[col].dt.date <= end)]
+with c2:
+    current_from, current_to = st.date_input(
+        "Current Period",
+        value=(current_from_default, current_to_default)
+    )
+
 
 # ======================
 # Metric builder

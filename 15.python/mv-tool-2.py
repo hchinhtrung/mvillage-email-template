@@ -40,6 +40,10 @@ RES_DATE = "Checkin"
 RES_TENANT = "tenant_id"
 BRAND_MODEL = res_df.columns[1]
 
+CITY_ORDER = ["HCM", "HN", "DN"]
+BRAND_ORDER = ["savvy", "signature", "hotel", "living", "express"]
+
+
 # ======================
 # Preprocessing
 # ======================
@@ -50,16 +54,14 @@ signup_df[SIGNUP_DATE] = (
     signup_df[SIGNUP_DATE]
     .astype(str)
     .str.strip()
-    .pipe(lambda s: pd.to_datetime(
-        s,
-        format="%b %d, %Y",
-        errors="coerce"
-    ))
+    .pipe(lambda s: pd.to_datetime(s, format="%b %d, %Y", errors="coerce"))
 )
 
 res_df[RES_DATE] = pd.to_datetime(res_df[RES_DATE], errors="coerce")
 
-signup_df[SIGNUP_COUNT] = pd.to_numeric(signup_df[SIGNUP_COUNT], errors="coerce").fillna(0)
+signup_df[SIGNUP_COUNT] = pd.to_numeric(
+    signup_df[SIGNUP_COUNT], errors="coerce"
+).fillna(0)
 
 signup_df = signup_df.dropna(subset=[SIGNUP_DATE])
 res_df = res_df.dropna(subset=[RES_DATE])
@@ -116,7 +118,7 @@ current_df = build_metric(
 )
 
 # ======================
-# Ranking functions
+# Ranking helpers
 # ======================
 def add_global_rank(df):
     df = df.copy()
@@ -148,20 +150,12 @@ def build_compare(last, current):
 
     df["rank_change"] = df["rank_last"] - df["rank_current"]
 
-    df["checkin_change_%"] = np.where(
-        df["checkin_last"] == 0, 0,
-        (df["checkin_current"] / df["checkin_last"]) - 1
-    )
-
-    df["signup_change_%"] = np.where(
-        df["signup_last"] == 0, 0,
-        (df["signup_current"] / df["signup_last"]) - 1
-    )
-
-    df["cr_change_%"] = np.where(
-        df["cr_last"] == 0, 0,
-        (df["cr_current"] / df["cr_last"]) - 1
-    )
+    for col in ["checkin", "signup", "cr"]:
+        df[f"{col}_change_%"] = np.where(
+            df[f"{col}_last"] == 0,
+            0,
+            (df[f"{col}_current"] / df[f"{col}_last"]) - 1
+        )
 
     return df
 
@@ -170,34 +164,19 @@ def build_compare(last, current):
 # ======================
 def reorder_columns(df):
     df = df.copy()
-
-    # ======================
-    # FORMAT hotel_key
-    # ======================
-    if "hotel_key" in df.columns:
-        df["hotel_key"] = df["hotel_key"].str.upper()
+    df["hotel_key"] = df["hotel_key"].str.upper()
 
     cols = [
-        # Dimensions
         "hotel_key", RES_CITY, BRAND_MODEL,
-
-        # Rank
         "rank_last", "rank_current", "rank_change",
-
-        # Checkin
         "checkin_last", "checkin_current", "checkin_change_%",
-
-        # Signup
         "signup_last", "signup_current", "signup_change_%",
-
-        # CR
         "cr_last", "cr_current", "cr_change_%"
     ]
-
     return df[[c for c in cols if c in df.columns]]
 
 # ======================
-# Styling helpers
+# Styling
 # ======================
 def color_change(val):
     try:
@@ -208,41 +187,16 @@ def color_change(val):
     if val <= -0.3:
         return "background-color:#e74c3c;color:white;"
     elif val <= -0.05:
-        return "background-color:#f39c12;color:black;"
+        return "background-color:#f39c12;"
     elif val < 0.05:
-        return "background-color:#ffffff;color:black;"
+        return ""
     elif val < 0.3:
-        return "background-color:#2ecc71;color:black;"
+        return "background-color:#2ecc71;"
     else:
         return "background-color:#27ae60;color:white;"
 
 def style_df(df):
-    styler = df.style
-    header_styles = []
-
-    def header_style(cols, bg, text):
-        for c in cols:
-            if c in df.columns:
-                idx = df.columns.get_loc(c)
-                header_styles.append({
-                    "selector": f"th.col_heading.col{idx}",
-                    "props": [
-                        ("background-color", bg),
-                        ("color", text),
-                        ("font-weight", "700"),
-                        ("text-align", "center"),
-                        ("border-bottom", "2px solid #333"),
-                    ],
-                })
-
-    header_style(["rank_last","rank_current","rank_change"], "#e8f0fe", "#1a237e")
-    header_style(["checkin_last","checkin_current","checkin_change_%"], "#f3e8ff", "#4a148c")
-    header_style(["signup_last","signup_current","signup_change_%"], "#fff3e0", "#e65100")
-    header_style(["cr_last","cr_current","cr_change_%"], "#e8f5e9", "#1b5e20")
-
-    styler = styler.set_table_styles(header_styles, overwrite=False)
-
-    styler = styler.format({
+    styler = df.style.format({
         "rank_last": "{:.0f}",
         "rank_current": "{:.0f}",
         "rank_change": "{:.0f}",
@@ -257,300 +211,190 @@ def style_df(df):
         "cr_change_%": "{:.2%}",
     })
 
-    styler = styler.applymap(color_change, subset=["cr_change_%"])
-    return styler
+    return styler.applymap(color_change, subset=["cr_change_%"])
 
 # ======================================================
-# SECTION 1 – Global Ranking
+# TABS
 # ======================================================
-st.divider()
-st.subheader("📊 Weekly Ranking Comparison (Global)")
+tab_global, tab_city_overview, tab_city_rank, tab_city_brand = st.tabs([
+    "📊 Global Ranking",
+    "🏙️ City Performance Overview",
+    "🏙️ City-level Ranking",
+    "🏷️ City × Brand Model Ranking"
+])
 
-global_df = reorder_columns(
-    build_compare(
-        add_global_rank(last_df),
-        add_global_rank(current_df)
-    ).sort_values("rank_current")
-)
+# ======================
+# TAB 1 – Global
+# ======================
+with tab_global:
+    df = reorder_columns(
+        build_compare(
+            add_global_rank(last_df),
+            add_global_rank(current_df)
+        ).sort_values("rank_current")
+    )
+    st.dataframe(style_df(df), use_container_width=True, hide_index=True)
 
-st.dataframe(style_df(global_df), use_container_width=True, hide_index=True)
+# ======================
+# TAB 2 – City Overview
+# ======================
+with tab_city_overview:
+    st.subheader("🏙️ City Performance Overview (Last vs Current)")
 
-
-
-
-
-def build_city_overview(last_df, current_df):
-    last_city = (
+    city_last = (
         last_df
-        .groupby(RES_CITY)
-        .agg(
-            checkin_last=("checkin", "sum"),
-            signup_last=("signup", "sum")
-        )
+        .groupby(RES_CITY)[["checkin", "signup"]]
+        .sum()
         .reset_index()
     )
 
-    last_city["cr_last"] = np.where(
-        last_city["checkin_last"] == 0,
-        0,
-        (last_city["signup_last"] / last_city["checkin_last"] * 100).round(2)
-    )
-
-    current_city = (
+    city_cur = (
         current_df
-        .groupby(RES_CITY)
-        .agg(
-            checkin_current=("checkin", "sum"),
-            signup_current=("signup", "sum")
-        )
+        .groupby(RES_CITY)[["checkin", "signup"]]
+        .sum()
         .reset_index()
     )
 
-    current_city["cr_current"] = np.where(
-        current_city["checkin_current"] == 0,
-        0,
-        (current_city["signup_current"] / current_city["checkin_current"] * 100).round(2)
+    city = (
+        city_last
+        .merge(city_cur, on=RES_CITY, suffixes=("_last", "_current"))
+        .fillna(0)
     )
 
-    df = last_city.merge(current_city, on=RES_CITY, how="outer").fillna(0)
-
-    df["checkin_change_%"] = np.where(
-        df["checkin_last"] == 0, 0,
-        (df["checkin_current"] / df["checkin_last"]) - 1
+    city["cr_last"] = np.where(
+        city["checkin_last"] == 0, 0,
+        city["signup_last"] / city["checkin_last"] * 100
     )
 
-    df["signup_change_%"] = np.where(
-        df["signup_last"] == 0, 0,
-        (df["signup_current"] / df["signup_last"]) - 1
+    city["cr_current"] = np.where(
+        city["checkin_current"] == 0, 0,
+        city["signup_current"] / city["checkin_current"] * 100
     )
 
-    df["cr_change_%"] = np.where(
-        df["cr_last"] == 0, 0,
-        (df["cr_current"] / df["cr_last"]) - 1
+    city["cr_change_%"] = np.where(
+        city["cr_last"] == 0, 0,
+        (city["cr_current"] / city["cr_last"]) - 1
     )
 
-    return df
-
-
-
-
-# ======================================================
-# SECTION – City Performance Overview (Last vs Current)
-# ======================================================
-st.divider()
-st.subheader("🏙️ City Performance Overview (Last vs Current)")
-
-def build_city_overview(last_df, current_df):
-    last_city = (
-        last_df
-        .groupby(RES_CITY)
-        .agg(
-            checkin_last=("checkin", "sum"),
-            signup_last=("signup", "sum")
-        )
-        .reset_index()
+    # 👉 FORCE CITY ORDER
+    city[RES_CITY] = (
+        city[RES_CITY]
+        .astype(str)
+        .str.upper()
     )
 
-    last_city["cr_last"] = np.where(
-        last_city["checkin_last"] == 0,
-        0,
-        (last_city["signup_last"] / last_city["checkin_last"] * 100)
+    city[RES_CITY] = pd.Categorical(
+        city[RES_CITY],
+        categories=CITY_ORDER,
+        ordered=True
     )
 
-    current_city = (
-        current_df
-        .groupby(RES_CITY)
-        .agg(
-            checkin_current=("checkin", "sum"),
-            signup_current=("signup", "sum")
-        )
-        .reset_index()
-    )
+    city = city.sort_values(RES_CITY)
 
-    current_city["cr_current"] = np.where(
-        current_city["checkin_current"] == 0,
-        0,
-        (current_city["signup_current"] / current_city["checkin_current"] * 100)
-    )
-
-    df = last_city.merge(current_city, on=RES_CITY, how="outer").fillna(0)
-
-    df["checkin_change_%"] = np.where(
-        df["checkin_last"] == 0, 0,
-        (df["checkin_current"] / df["checkin_last"]) - 1
-    )
-
-    df["signup_change_%"] = np.where(
-        df["signup_last"] == 0, 0,
-        (df["signup_current"] / df["signup_last"]) - 1
-    )
-
-    df["cr_change_%"] = np.where(
-        df["cr_last"] == 0, 0,
-        (df["cr_current"] / df["cr_last"]) - 1
-    )
-
-    return df
-
-
-def add_total_row(df):
-    total = {
-        RES_CITY: "TOTAL",
-
-        "checkin_last": df["checkin_last"].sum(),
-        "checkin_current": df["checkin_current"].sum(),
-        "signup_last": df["signup_last"].sum(),
-        "signup_current": df["signup_current"].sum(),
-    }
-
-    total["checkin_change_%"] = (
-        0 if total["checkin_last"] == 0
-        else (total["checkin_current"] / total["checkin_last"]) - 1
-    )
-
-    total["signup_change_%"] = (
-        0 if total["signup_last"] == 0
-        else (total["signup_current"] / total["signup_last"]) - 1
-    )
-
-    total["cr_last"] = (
-        0 if total["checkin_last"] == 0
-        else (total["signup_last"] / total["checkin_last"] * 100)
-    )
-
-    total["cr_current"] = (
-        0 if total["checkin_current"] == 0
-        else (total["signup_current"] / total["checkin_current"] * 100)
-    )
-
-    total["cr_change_%"] = (
-        0 if total["cr_last"] == 0
-        else (total["cr_current"] / total["cr_last"]) - 1
-    )
-
-    return pd.concat([df, pd.DataFrame([total])], ignore_index=True)
-
-
-# build city overview
-city_overview_df = build_city_overview(last_df, current_df)
-
-city_overview_df = city_overview_df[[
-    RES_CITY,
-    "checkin_last", "checkin_current", "checkin_change_%",
-    "signup_last", "signup_current", "signup_change_%",
-    "cr_last", "cr_current", "cr_change_%"
-]]
-
-# add TOTAL row
-city_overview_df = add_total_row(city_overview_df)
-
-# sort city order + TOTAL last
-city_overview_df[RES_CITY] = pd.Categorical(
-    city_overview_df[RES_CITY],
-    categories=["HCM", "HN", "DN", "TOTAL"],
-    ordered=True
-)
-
-city_overview_df = city_overview_df.sort_values(RES_CITY)
-
-st.dataframe(
-    style_df(city_overview_df),
-    use_container_width=True,
-    hide_index=True
-)
-
-
-
-
-# ======================================================
-# SECTION 2 – City-level Ranking
-# ======================================================
-st.divider()
-st.subheader("🏙️ City-level Ranking (Current Week)")
-
-city_df = build_compare(
-    add_city_rank(last_df),
-    add_city_rank(current_df)
-)
-
-for city, df in city_df.groupby(RES_CITY):
-    st.markdown(f"### 📍 {city}")
     st.dataframe(
-        style_df(reorder_columns(df.sort_values("rank_current"))),
+        style_df(city),
         use_container_width=True,
         hide_index=True
     )
 
 
-# ======================================================
-# SECTION 3 – City-level Ranking by Brand Model (Current Week)
-# ======================================================
-st.divider()
-st.subheader("🏙️ City-level Ranking by Brand Model (Current Week)")
+# ======================
+# TAB 3 – City Ranking
+# ======================
+with tab_city_rank:
+    st.subheader("🏙️ City-level Ranking (Current Week)")
 
-BRAND_ORDER = ["savvy", "signature", "hotel", "living", "express"]
-CITY_ORDER = ["HCM", "HN", "DN"]
+    df = build_compare(
+        add_city_rank(last_df),
+        add_city_rank(current_df)
+    )
 
-cb_df = build_compare(
-    add_city_brand_rank(last_df),
-    add_city_brand_rank(current_df)
-).copy()
+    # normalize city
+    df[RES_CITY] = (
+        df[RES_CITY]
+        .astype(str)
+        .str.upper()
+        .str.strip()
+    )
 
-# normalize
-cb_df[BRAND_MODEL] = (
-    cb_df[BRAND_MODEL]
-    .astype(str)
-    .str.lower()
-    .str.strip()
-)
+    df[RES_CITY] = pd.Categorical(
+        df[RES_CITY],
+        categories=CITY_ORDER,
+        ordered=True
+    )
 
-cb_df[RES_CITY] = (
-    cb_df[RES_CITY]
-    .astype(str)
-    .str.upper()
-    .str.strip()
-)
-
-# categorical ordering
-cb_df[BRAND_MODEL] = pd.Categorical(
-    cb_df[BRAND_MODEL],
-    categories=BRAND_ORDER,
-    ordered=True
-)
-
-cb_df[RES_CITY] = pd.Categorical(
-    cb_df[RES_CITY],
-    categories=CITY_ORDER,
-    ordered=True
-)
-
-# render
-for city, city_df in (
-    cb_df
-    .sort_values(RES_CITY)
-    .groupby(RES_CITY, sort=False)
-):
-    if city_df.empty:
-        continue
-
-    st.markdown(f"## 📍 {city}")
-
-    city_df = city_df.sort_values([BRAND_MODEL, "rank_current"])
-
-    for bm, bm_df in city_df.groupby(BRAND_MODEL, sort=False):
-        # hide empty brand model
-        if bm_df.empty:
-            continue
-
-        if (
-            bm_df["checkin_current"].sum() == 0
-            and bm_df["signup_current"].sum() == 0
-        ):
-            continue
-
-        st.markdown(f"### 🏷️ Brand Model: {bm}")
+    for city, cdf in (
+        df
+        .sort_values(RES_CITY)
+        .groupby(RES_CITY, sort=False)
+    ):
+        st.markdown(f"### 📍 {city}")
         st.dataframe(
-            style_df(reorder_columns(bm_df)),
+            style_df(
+                reorder_columns(
+                    cdf.sort_values("rank_current")
+                )
+            ),
             use_container_width=True,
             hide_index=True
         )
+
+
+# ======================
+# TAB 4 – City × Brand
+# ======================
+with tab_city_brand:
+    st.subheader("🏷️ City × Brand Model Ranking (Current Week)")
+
+    df = build_compare(
+        add_city_brand_rank(last_df),
+        add_city_brand_rank(current_df)
+    ).copy()
+
+    # normalize
+    df[RES_CITY] = (
+        df[RES_CITY]
+        .astype(str)
+        .str.upper()
+        .str.strip()
+    )
+
+    df[BRAND_MODEL] = (
+        df[BRAND_MODEL]
+        .astype(str)
+        .str.lower()
+        .str.strip()
+    )
+
+    # 👉 FORCE ORDER
+    df[RES_CITY] = pd.Categorical(
+        df[RES_CITY],
+        categories=CITY_ORDER,
+        ordered=True
+    )
+
+    df[BRAND_MODEL] = pd.Categorical(
+        df[BRAND_MODEL],
+        categories=BRAND_ORDER,
+        ordered=True
+    )
+
+    for city, city_df in (
+        df
+        .sort_values(RES_CITY)
+        .groupby(RES_CITY, sort=False)
+    ):
+        st.markdown(f"## 📍 {city}")
+
+        city_df = city_df.sort_values([BRAND_MODEL, "rank_current"])
+
+        for bm, bm_df in city_df.groupby(BRAND_MODEL, sort=False):
+            if bm_df["checkin_current"].sum() == 0:
+                continue
+
+            st.markdown(f"### 🏷️ Brand Model: {bm}")
+            st.dataframe(
+                style_df(reorder_columns(bm_df)),
+                use_container_width=True,
+                hide_index=True
+            )

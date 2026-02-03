@@ -32,26 +32,22 @@ st.success("✅ File uploaded successfully")
 # ======================
 # COLUMN MAPPING
 # ======================
-DATE_COL = "checkin"          # col C
+DATE_COL = "checkin"
 CITY_COL = "city"
 STATUS_COL = "Sign up status v2"
-COUNT_COL_INDEX = 4           # Column E
+COUNT_COL_INDEX = 4
 
 # ======================
-# DATE NORMALIZATION (CHECKIN ONLY)
+# DATE NORMALIZATION
 # ======================
 DATE_REGEX = re.compile(r"^[A-Za-z]+ \d{1,2}, \d{4}$")
 
 def normalize_checkin(val):
     if pd.isna(val):
         return None
-
     val = str(val).strip()
-
-    # Only accept daily dates like "May 19, 2025"
     if not DATE_REGEX.match(val):
         return None
-
     return pd.to_datetime(val).date()
 
 df["date"] = df[DATE_COL].apply(normalize_checkin)
@@ -60,14 +56,11 @@ invalid_rows = df["date"].isna().sum()
 df = df.dropna(subset=["date"])
 
 if df.empty:
-    st.error("❌ No valid daily check-in date found in column 'checkin'")
+    st.error("❌ No valid daily check-in date found")
     st.stop()
 
 if invalid_rows > 0:
-    st.warning(
-        f"ℹ️ {invalid_rows} non-daily rows in 'checkin' column "
-        "were removed (pivot headers / totals)"
-    )
+    st.warning(f"ℹ️ {invalid_rows} non-daily rows were removed")
 
 # ======================
 # SIGNUP COUNT
@@ -78,14 +71,18 @@ df["signup_count"] = pd.to_numeric(
 ).fillna(0)
 
 # ======================
-# DATE FILTER
+# DATE FILTER (D-13 → D+3)
 # ======================
 min_date = df["date"].min()
 max_date = df["date"].max()
 
+today = date.today()
+default_from = max(today - timedelta(days=13), min_date)
+default_to = min(today + timedelta(days=3), max_date)
+
 date_range = st.date_input(
     "Select Date Range (Daily View)",
-    value=(min_date, max_date),
+    value=(default_from, default_to),
     min_value=min_date,
     max_value=max_date
 )
@@ -101,16 +98,13 @@ daily_df = df[
 # STATUS GROUPS
 # ======================
 STATUS_CHUA_SIGNUP = ["Chưa Sign-up"]
-STATUS_MEMBER = ["Đã Sign-up từ trước"]
+STATUS_MEMBER = ["Đã Sign-up từ trước"]
 STATUS_NEW_RECRUIT = [
     "Sign-up sau C/I",
     "Sign up trước 1 ngày check in",
     "Sign up trước 2 ngày check in"
 ]
 
-# ======================
-# DAILY AGGREGATION
-# ======================
 def agg_status(status_list):
     return (
         daily_df[daily_df[STATUS_COL].isin(status_list)]
@@ -145,10 +139,46 @@ final_daily = (
 )
 
 # ======================
-# DISPLAY DAILY
+# DAILY VIEW SWITCH: TABLE / CHART
 # ======================
 st.subheader("📊 Daily Recruit Funnel")
-st.dataframe(final_daily, use_container_width=True)
+
+view_mode = st.radio(
+    "View mode",
+    ["📋 Table", "📈 Chart"],
+    horizontal=True,
+    label_visibility="collapsed"
+)
+
+if view_mode == "📋 Table":
+    ROW_HEIGHT = 35
+    MAX_ROWS = 30
+    table_height = ROW_HEIGHT * (min(len(final_daily), MAX_ROWS) + 1)
+
+    st.dataframe(
+        final_daily,
+        use_container_width=True,
+        height=table_height
+    )
+
+else:
+    chart_df = final_daily[
+        [
+            "Date",
+            "HCM_New_recruit",
+            "HN_New_recruit",
+            "DN_New_recruit",
+            "Total New Recruit"
+        ]
+    ].sort_values("Date")
+
+    chart_df = chart_df.set_index("Date")
+
+    st.line_chart(
+        chart_df,
+        height=420
+    )
+
 
 st.download_button(
     "⬇️ Download Daily Funnel CSV",
@@ -196,7 +226,6 @@ wow_df["WoW %"] = (
 
 wow_df["WoW %"] = wow_df["WoW %"].round(2)
 
-# TOTAL
 total_prev = prev_week_df["signup_count"].sum()
 total_last = last_week_df["signup_count"].sum()
 
@@ -207,7 +236,6 @@ wow_df.loc["Total"] = [
     if total_prev > 0 else None
 ]
 
-# DISPLAY WoW
 st.dataframe(
     wow_df.reset_index().rename(columns={"index": "City"}),
     use_container_width=True

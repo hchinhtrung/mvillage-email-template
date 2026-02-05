@@ -367,6 +367,7 @@ with tab_global:
                 hotel_data = chart_data[chart_data["hotel_key"] == hotel].sort_values("date")
                 
                 # Checkin change line
+                # Checkin change line
                 fig.add_trace(go.Scatter(
                     x=hotel_data["date"],
                     y=hotel_data["checkin_change_%"],
@@ -376,14 +377,10 @@ with tab_global:
                     marker=dict(size=6),
                     legendgroup="checkin",
                     legendgrouptitle_text="Checkin Change",
-                    customdata=hotel_data[["checkin", "signup", "cr"]].values,
+                    customdata=hotel_data[["checkin"]].values, # Only checkin needed
                     hovertemplate=(
-                        "<b>%{fullData.name}</b><br>" +
-                        "Date: %{x|%Y-%m-%d}<br>" +
-                        "Change: %{y:.2f}%<br>" +
-                        "Checkin: %{customdata[0]:.0f}<br>" +
-                        "Signup: %{customdata[1]:.0f}<br>" +
-                        "CR: %{customdata[2]:.2f}%<br>" +
+                        "<b>Checkin Change</b>: %{y:.2f}%<br>" +
+                        "Abs Checkin: %{customdata[0]:.0f}<br>" +
                         "<extra></extra>"
                     )
                 ))
@@ -398,14 +395,10 @@ with tab_global:
                     marker=dict(size=6),
                     legendgroup="signup",
                     legendgrouptitle_text="Signup Change",
-                    customdata=hotel_data[["checkin", "signup", "cr"]].values,
+                    customdata=hotel_data[["signup"]].values, # Only signup needed
                     hovertemplate=(
-                        "<b>%{fullData.name}</b><br>" +
-                        "Date: %{x|%Y-%m-%d}<br>" +
-                        "Change: %{y:.2f}%<br>" +
-                        "Checkin: %{customdata[0]:.0f}<br>" +
-                        "Signup: %{customdata[1]:.0f}<br>" +
-                        "CR: %{customdata[2]:.2f}%<br>" +
+                        "<b>Signup Change</b>: %{y:.2f}%<br>" +
+                        "Abs Signup: %{customdata[0]:.0f}<br>" +
                         "<extra></extra>"
                     )
                 ))
@@ -420,14 +413,10 @@ with tab_global:
                     marker=dict(size=6),
                     legendgroup="cr",
                     legendgrouptitle_text="CR Change",
-                    customdata=hotel_data[["checkin", "signup", "cr"]].values,
+                    customdata=hotel_data[["cr"]].values, # Only CR needed
                     hovertemplate=(
-                        "<b>%{fullData.name}</b><br>" +
-                        "Date: %{x|%Y-%m-%d}<br>" +
-                        "Change: %{y:.2f}%<br>" +
-                        "Checkin: %{customdata[0]:.0f}<br>" +
-                        "Signup: %{customdata[1]:.0f}<br>" +
-                        "CR: %{customdata[2]:.2f}%<br>" +
+                        "<b>CR Change</b>: %{y:.2f}%<br>" +
+                        "Abs CR: %{customdata[0]:.2f}%<br>" +
                         "<extra></extra>"
                     )
                 ))

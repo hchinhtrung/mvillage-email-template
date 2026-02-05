@@ -375,7 +375,17 @@ with tab_global:
                     line=dict(color=metric_colors["checkin"], width=2),
                     marker=dict(size=6),
                     legendgroup="checkin",
-                    legendgrouptitle_text="Checkin Change"
+                    legendgrouptitle_text="Checkin Change",
+                    customdata=hotel_data[["checkin", "signup", "cr"]].values,
+                    hovertemplate=(
+                        "<b>%{fullData.name}</b><br>" +
+                        "Date: %{x|%Y-%m-%d}<br>" +
+                        "Change: %{y:.2f}%<br>" +
+                        "Checkin: %{customdata[0]:.0f}<br>" +
+                        "Signup: %{customdata[1]:.0f}<br>" +
+                        "CR: %{customdata[2]:.2f}%<br>" +
+                        "<extra></extra>"
+                    )
                 ))
                 
                 # Signup change line
@@ -387,7 +397,17 @@ with tab_global:
                     line=dict(color=metric_colors["signup"], width=2),
                     marker=dict(size=6),
                     legendgroup="signup",
-                    legendgrouptitle_text="Signup Change"
+                    legendgrouptitle_text="Signup Change",
+                    customdata=hotel_data[["checkin", "signup", "cr"]].values,
+                    hovertemplate=(
+                        "<b>%{fullData.name}</b><br>" +
+                        "Date: %{x|%Y-%m-%d}<br>" +
+                        "Change: %{y:.2f}%<br>" +
+                        "Checkin: %{customdata[0]:.0f}<br>" +
+                        "Signup: %{customdata[1]:.0f}<br>" +
+                        "CR: %{customdata[2]:.2f}%<br>" +
+                        "<extra></extra>"
+                    )
                 ))
                 
                 # CR change line
@@ -399,7 +419,17 @@ with tab_global:
                     line=dict(color=metric_colors["cr"], width=2),
                     marker=dict(size=6),
                     legendgroup="cr",
-                    legendgrouptitle_text="CR Change"
+                    legendgrouptitle_text="CR Change",
+                    customdata=hotel_data[["checkin", "signup", "cr"]].values,
+                    hovertemplate=(
+                        "<b>%{fullData.name}</b><br>" +
+                        "Date: %{x|%Y-%m-%d}<br>" +
+                        "Change: %{y:.2f}%<br>" +
+                        "Checkin: %{customdata[0]:.0f}<br>" +
+                        "Signup: %{customdata[1]:.0f}<br>" +
+                        "CR: %{customdata[2]:.2f}%<br>" +
+                        "<extra></extra>"
+                    )
                 ))
             
             # Add vertical line to separate periods

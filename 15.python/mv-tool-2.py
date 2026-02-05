@@ -448,6 +448,11 @@ with tab_global:
             fig.update_layout(
                 title="Metrics Change Over Time (% change from baseline)",
                 xaxis_title="Date",
+                xaxis=dict(
+                    tickmode="linear",
+                    dtick=86400000.0, # 1 day
+                    tickformat="%b %d\n%Y" # Format: Jan 29 \n 2026
+                ),
                 yaxis_title="Change (%)",
                 hovermode="x unified",
                 height=600,

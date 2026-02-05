@@ -237,11 +237,12 @@ def style_df(df):
 # ======================================================
 # TABS
 # ======================================================
-tab_global, tab_city_overview, tab_city_rank, tab_city_brand, tab_insight = st.tabs([
+tab_global, tab_city_overview, tab_city_rank, tab_city_brand, tab_chart, tab_insight = st.tabs([
     "📊 Global Ranking",
     "🏙️ City Performance Overview",
     "🏙️ City-level Ranking",
     "🏷️ City × Brand Model Ranking",
+    "📈 Chart",
     "💡 Insight"
 ])
 
@@ -258,225 +259,6 @@ with tab_global:
     )
     st.dataframe(style_df(df), use_container_width=True, hide_index=True)
     
-    # ======================
-    # Line Chart Visualization
-    # ======================
-    st.subheader("📈 Metrics Trend Visualization")
-    
-    # Hotel selection
-    available_hotels = sorted(df["hotel_key"].unique())
-    selected_hotels = st.multiselect(
-        "Select hotels to visualize:",
-        options=available_hotels,
-        default=available_hotels[:3] if len(available_hotels) >= 3 else available_hotels
-    )
-    
-    if selected_hotels:
-        # Prepare daily data for selected hotels
-        def build_daily_metrics(res, signup, date_col_res, date_col_signup):
-            """Build daily metrics for checkin, signup, and CR"""
-            # Daily checkin
-            daily_checkin = (
-                res.groupby(["hotel_key", date_col_res])[RES_TENANT]
-                .nunique()
-                .reset_index(name="checkin")
-            )
-            daily_checkin["date"] = daily_checkin[date_col_res]
-            
-            # Daily signup
-            daily_signup = (
-                signup.groupby(["hotel_key", date_col_signup])[SIGNUP_COUNT]
-                .sum()
-                .reset_index(name="signup")
-            )
-            daily_signup["date"] = daily_signup[date_col_signup]
-            
-            # Merge
-            daily = daily_checkin.merge(
-                daily_signup[["hotel_key", "date", "signup"]], 
-                on=["hotel_key", "date"], 
-                how="outer"
-            ).fillna(0)
-            
-            # Calculate CR
-            daily["cr"] = np.where(
-                daily["checkin"] == 0, 0,
-                (daily["signup"] / daily["checkin"] * 100)
-            )
-            
-            return daily[["hotel_key", "date", "checkin", "signup", "cr"]]
-        
-        # Get daily data for last period
-        last_res = filter_period(res_df, RES_DATE, last_from, last_to)
-        last_signup = filter_period(signup_df, SIGNUP_DATE, last_from, last_to)
-        last_daily = build_daily_metrics(last_res, last_signup, RES_DATE, SIGNUP_DATE)
-        last_daily["period"] = "last"
-        
-        # Get daily data for current period
-        current_res = filter_period(res_df, RES_DATE, current_from, current_to)
-        current_signup = filter_period(signup_df, SIGNUP_DATE, current_from, current_to)
-        current_daily = build_daily_metrics(current_res, current_signup, RES_DATE, SIGNUP_DATE)
-        current_daily["period"] = "current"
-        
-        # Combine both periods
-        combined_daily = pd.concat([last_daily, current_daily], ignore_index=True)
-        
-        # Filter for selected hotels
-        chart_data = combined_daily[combined_daily["hotel_key"].isin([h.lower() for h in selected_hotels])].copy()
-        
-        # Calculate cumulative metrics for smoother visualization
-        chart_data = chart_data.sort_values(["hotel_key", "date"])
-        
-        # Calculate percentage changes (comparing to baseline - first day of last period)
-        chart_list = []
-        for hotel in chart_data["hotel_key"].unique():
-            hotel_data = chart_data[chart_data["hotel_key"] == hotel].copy()
-            hotel_data = hotel_data.sort_values("date")
-            
-            # Get baseline (average of first 3 days of last period or first day if less)
-            baseline_data = hotel_data[hotel_data["period"] == "last"].head(3)
-            if len(baseline_data) == 0:
-                continue
-                
-            baseline_checkin = baseline_data["checkin"].mean() if baseline_data["checkin"].mean() > 0 else 1
-            baseline_signup = baseline_data["signup"].mean() if baseline_data["signup"].mean() > 0 else 1
-            baseline_cr = baseline_data["cr"].mean() if baseline_data["cr"].mean() > 0 else 1
-            
-            # Calculate percentage change from baseline
-            hotel_data["checkin_change_%"] = ((hotel_data["checkin"] / baseline_checkin) - 1) * 100
-            hotel_data["signup_change_%"] = ((hotel_data["signup"] / baseline_signup) - 1) * 100
-            hotel_data["cr_change_%"] = ((hotel_data["cr"] / baseline_cr) - 1) * 100
-            
-            chart_list.append(hotel_data)
-        
-        if chart_list:
-            chart_data = pd.concat(chart_list, ignore_index=True)
-            chart_data["hotel_key"] = chart_data["hotel_key"].str.upper()
-            
-            # Create the line chart with Plotly
-            fig = go.Figure()
-            
-            # Define colors for each metric type
-            metric_colors = {
-                "checkin": "#3498db",  # Blue
-                "signup": "#2ecc71",   # Green
-                "cr": "#e67e22"        # Orange
-            }
-            
-            for idx, hotel in enumerate(sorted(chart_data["hotel_key"].unique())):
-                hotel_data = chart_data[chart_data["hotel_key"] == hotel].sort_values("date")
-                
-                # Checkin change line
-                # Checkin change line
-                fig.add_trace(go.Scatter(
-                    x=hotel_data["date"],
-                    y=hotel_data["checkin_change_%"],
-                    name=f"{hotel} - Checkin Change",
-                    mode="lines+markers",
-                    line=dict(color=metric_colors["checkin"], width=2),
-                    marker=dict(size=6),
-                    legendgroup="checkin",
-                    legendgrouptitle_text="Checkin Change",
-                    customdata=hotel_data[["checkin"]].values, # Only checkin needed
-                    hovertemplate=(
-                        "<b>Checkin Change</b>: %{y:.2f}%<br>" +
-                        "Abs Checkin: %{customdata[0]:.0f}<br>" +
-                        "<extra></extra>"
-                    )
-                ))
-                
-                # Signup change line
-                fig.add_trace(go.Scatter(
-                    x=hotel_data["date"],
-                    y=hotel_data["signup_change_%"],
-                    name=f"{hotel} - Signup Change",
-                    mode="lines+markers",
-                    line=dict(color=metric_colors["signup"], width=2),
-                    marker=dict(size=6),
-                    legendgroup="signup",
-                    legendgrouptitle_text="Signup Change",
-                    customdata=hotel_data[["signup"]].values, # Only signup needed
-                    hovertemplate=(
-                        "<b>Signup Change</b>: %{y:.2f}%<br>" +
-                        "Abs Signup: %{customdata[0]:.0f}<br>" +
-                        "<extra></extra>"
-                    )
-                ))
-                
-                # CR change line
-                fig.add_trace(go.Scatter(
-                    x=hotel_data["date"],
-                    y=hotel_data["cr_change_%"],
-                    name=f"{hotel} - CR Change",
-                    mode="lines+markers",
-                    line=dict(color=metric_colors["cr"], width=2),
-                    marker=dict(size=6),
-                    legendgroup="cr",
-                    legendgrouptitle_text="CR Change",
-                    customdata=hotel_data[["cr"]].values, # Only CR needed
-                    hovertemplate=(
-                        "<b>CR Change</b>: %{y:.2f}%<br>" +
-                        "Abs CR: %{customdata[0]:.2f}%<br>" +
-                        "<extra></extra>"
-                    )
-                ))
-            
-            # Add vertical line to separate periods
-            if len(last_daily) > 0 and len(current_daily) > 0:
-                last_end = pd.to_datetime(last_daily["date"].max())
-                # Use add_shape instead of add_vline to avoid datetime issues
-                fig.add_shape(
-                    type="line",
-                    x0=last_end,
-                    x1=last_end,
-                    y0=0,
-                    y1=1,
-                    yref="paper",
-                    line=dict(color="gray", width=2, dash="dash")
-                )
-                # Add annotation separately
-                fig.add_annotation(
-                    x=last_end,
-                    y=1,
-                    yref="paper",
-                    text="Period Boundary",
-                    showarrow=False,
-                    yshift=10
-                )
-            
-            # Update layout
-            fig.update_layout(
-                title="Metrics Change Over Time (% change from baseline)",
-                xaxis_title="Date",
-                xaxis=dict(
-                    tickmode="linear",
-                    dtick=86400000.0, # 1 day
-                    tickformat="%b %d\n%Y" # Format: Jan 29 \n 2026
-                ),
-                yaxis_title="Change (%)",
-                hovermode="x unified",
-                height=600,
-                legend=dict(
-                    orientation="v",
-                    yanchor="top",
-                    y=1,
-                    xanchor="left",
-                    x=1.02
-                )
-            )
-            
-            # Add zero line
-            fig.add_hline(y=0, line_dash="solid", line_color="black", line_width=1, opacity=0.3)
-            
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Add legend explanation
-            st.caption("📊 **Chart Legend:** 🔵 Blue = Checkin Change | 🟢 Green = Signup Change | 🟠 Orange = CR Change")
-        else:
-            st.warning("No data available for the selected hotels in the chosen date range.")
-    else:
-        st.info("👆 Please select at least one hotel to visualize the metrics.")
-
 # ======================
 # TAB 2 – City Overview
 # ======================
@@ -643,8 +425,130 @@ with tab_city_brand:
 
 
 # ======================
-# TAB 5 – Insight
+# TAB (New) – Chart
 # ======================
+with tab_chart:
+    st.subheader("📈 Performance Charts (Last + Current Period)")
+    
+    # Define Date Ranges
+    # We want a continuous view from min(last_from) to max(current_to)
+    chart_start = last_from
+    chart_end = current_to
+    
+    # Display date range
+    st.info(f"📅 Visualizing Data from: **{chart_start}** → **{chart_end}**")
+    
+    # Get daily data
+    # Checkins
+    res_range = filter_period(res_df, RES_DATE, chart_start, chart_end)
+    daily_res = (
+        res_range.groupby(res_range[RES_DATE].dt.date)[RES_TENANT]
+        .nunique()
+        .reset_index(name="checkin")
+    )
+    daily_res.columns = ["date", "checkin"]
+    
+    # Signups
+    signup_range = filter_period(signup_df, SIGNUP_DATE, chart_start, chart_end)
+    daily_signup = (
+        signup_range.groupby(signup_range[SIGNUP_DATE].dt.date)[SIGNUP_COUNT]
+        .sum()
+        .reset_index(name="signup")
+    )
+    daily_signup.columns = ["date", "signup"]
+    
+    # Merge
+    chart_df = pd.merge(daily_res, daily_signup, on="date", how="outer").fillna(0)
+    chart_df["date"] = pd.to_datetime(chart_df["date"])
+    chart_df = chart_df.sort_values("date")
+    
+    if not chart_df.empty:
+        chart_df["cr"] = np.where(
+            chart_df["checkin"] > 0, 
+            (chart_df["signup"] / chart_df["checkin"] * 100), 
+            0
+        )
+        
+        # Determine Period Boundary (End of Last Period)
+        # Use timestamp (milliseconds) to avoid Plotly calculation errors with strings/Timestamps
+        period_boundary = pd.to_datetime(last_to).timestamp() * 1000
+        
+        # CHART 1: Checkin & Signup
+        fig1 = go.Figure()
+        fig1.add_trace(go.Scatter(
+            x=chart_df["date"], y=chart_df["checkin"], 
+            name="Checkin", mode="lines+markers+text",
+            line=dict(color="#3498db", width=3),
+            text=chart_df["checkin"].apply(lambda x: f"{int(x)}" if x > 0 else ""),
+            textposition="top center"
+        ))
+        fig1.add_trace(go.Scatter(
+            x=chart_df["date"], y=chart_df["signup"], 
+            name="Signup", mode="lines+markers+text",
+            line=dict(color="#2ecc71", width=3),
+            text=chart_df["signup"].apply(lambda x: f"{int(x)}" if x > 0 else ""),
+            textposition="top center"
+        ))
+        
+        # Add Boundary Line
+        fig1.add_vline(
+            x=period_boundary, line_width=2, line_dash="dash", line_color="#bdc3c7",
+            annotation_text="End of Last Period", 
+            annotation_position="top left"
+        )
+        
+        fig1.update_layout(
+            title="📊 Daily Check-in & Sign-up",
+            xaxis_title="Date",
+            yaxis_title="Count",
+            hovermode="x unified",
+            xaxis=dict(
+                tickmode="linear",
+                dtick=86400000.0, # 1 day
+                tickformat="%d-%b"
+            ),
+            height=500,
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        )
+        st.plotly_chart(fig1, use_container_width=True)
+        
+        st.markdown("---")
+        
+        # CHART 2: Conversion Rate (CR)
+        fig2 = go.Figure()
+        fig2.add_trace(go.Scatter(
+            x=chart_df["date"], y=chart_df["cr"], 
+            name="CR %", mode="lines+markers+text",
+            line=dict(color="#e67e22", width=3),
+            text=chart_df["cr"].apply(lambda x: f"{x:.1f}%" if x > 0 else ""),
+            textposition="top center"
+        ))
+        
+        # Add Boundary Line
+        fig2.add_vline(
+            x=period_boundary, line_width=2, line_dash="dash", line_color="#bdc3c7",
+            annotation_text="End of Last Period", 
+            annotation_position="top left"
+        )
+        
+        fig2.update_layout(
+            title="📉 Daily Conversion Rate (CR)",
+            xaxis_title="Date",
+            yaxis_title="CR (%)",
+            hovermode="x unified",
+            xaxis=dict(
+                tickmode="linear",
+                dtick=86400000.0, # 1 day
+                tickformat="%d-%b"
+            ),
+            height=500
+        )
+        st.plotly_chart(fig2, use_container_width=True)
+        
+    else:
+        st.warning("No data found for the selected date range.")
+
+
 # ======================
 # TAB 5 – Insight
 # ======================

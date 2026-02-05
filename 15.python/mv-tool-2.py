@@ -712,12 +712,40 @@ with tab_insight:
             
             st.markdown(f"### {title}")
            
-            # Filter by status
-            last_filtered = last_df[last_df[signup_status_col].isin(status_filter)].copy()
-            current_filtered = current_df[current_df[signup_status_col].isin(status_filter)].copy()
+            # Debug: Show available statuses if no data found
+            # st.write(f"DEBUG: Searching for {status_filter}")
+            # st.write(f"DEBUG: Available statuses in Last: {last_df[signup_status_col].unique()}")
+            # st.write(f"DEBUG: Available statuses in Current: {current_df[signup_status_col].unique()}")
+            
+            # Filter by status (with loose matching)
+            def loose_filter(df, statuses):
+                # Optimize: Check if column is string type
+                if df[signup_status_col].dtype == object:
+                    # Create normalized version for matching:
+                    # 1. Convert to string
+                    # 2. Replace non-breaking space (\xa0) with regular space
+                    # 3. Strip leading/trailing whitespace
+                    normalized_status = (
+                        df[signup_status_col]
+                        .astype(str)
+                        .str.replace("\xa0", " ", regex=False)
+                        .str.strip()
+                    )
+                    
+                    # Normalize target statuses as well
+                    target_statuses = [s.replace("\xa0", " ").strip() for s in statuses]
+                    
+                    mask = normalized_status.isin(target_statuses)
+                else:
+                    mask = df[signup_status_col].isin(statuses)
+                return df[mask].copy()
+
+            last_filtered = loose_filter(last_df, status_filter)
+            current_filtered = loose_filter(current_df, status_filter)
             
             if len(last_filtered) == 0 and len(current_filtered) == 0:
                 st.warning(f"No data available for statuses: {', '.join(status_filter)}")
+                st.info(f"💡 Hint: Check exact spelling. Found in data: {sorted(list(set(last_df[signup_status_col].unique()) | set(current_df[signup_status_col].unique())))}")
                 return
             
             def prepare_data(df):

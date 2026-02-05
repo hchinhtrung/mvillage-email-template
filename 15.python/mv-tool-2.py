@@ -648,4 +648,208 @@ with tab_city_brand:
             )
 
 
-
+# ======================
+# TAB 5 – Insight
+# ======================
+with tab_insight:
+    st.subheader("💡 Brand Segment × Booking Source × Sign-up Status Breakdown")
+    
+    # Period selection
+    st.markdown("#### 📅 Time Period")
+    period_option = st.radio(
+        "Select period to analyze:",
+        options=["Current Period", "Last Period", "Both Periods Combined"],
+        horizontal=True
+    )
+    
+    # Display selected date range
+    if period_option == "Current Period":
+        st.info(f"📅 Analyzing: **{current_from}** → **{current_to}**")
+        insight_base_df = filter_period(res_df, RES_DATE, current_from, current_to)
+    elif period_option == "Last Period":
+        st.info(f"📅 Analyzing: **{last_from}** → **{last_to}**")
+        insight_base_df = filter_period(res_df, RES_DATE, last_from, last_to)
+    else:
+        st.info(f"📅 Analyzing: **{last_from}** → **{current_to}** (Combined)")
+        insight_base_df = filter_period(res_df, RES_DATE, last_from, current_to)
+    
+    st.markdown("---")
+    
+    # Check if required columns exist in res_df
+    booking_source_col = None
+    signup_status_col = None
+    guest_country_col = None
+    
+    # Try to find the columns
+    for col in res_df.columns:
+        col_lower = col.lower()
+        if "booking" in col_lower and "source" in col_lower:
+            booking_source_col = col
+        if "sign" in col_lower and "status" in col_lower and "v2" in col_lower:
+            signup_status_col = col
+        if "guest" in col_lower and "country" in col_lower:
+            guest_country_col = col
+    
+    # Show column finder if not found automatically
+    st.markdown("#### 📋 Column Mapping")
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        booking_source_col = st.selectbox(
+            "Booking Source Column",
+            options=res_df.columns.tolist(),
+            index=res_df.columns.tolist().index(booking_source_col) if booking_source_col else 0
+        )
+    
+    with col2:
+        signup_status_col = st.selectbox(
+            "Sign-up Status v2 Column",
+            options=res_df.columns.tolist(),
+            index=res_df.columns.tolist().index(signup_status_col) if signup_status_col else 0
+        )
+    
+    with col3:
+        guest_country_col = st.selectbox(
+            "Guest Country Column",
+            options=res_df.columns.tolist(),
+            index=res_df.columns.tolist().index(guest_country_col) if guest_country_col else 0
+        )
+    
+    if booking_source_col and signup_status_col and guest_country_col:
+        # Prepare data for pivot (using filtered data based on period selection)
+        insight_df = insight_base_df.copy()
+        
+        # Create DOM/INT column
+        insight_df["Market"] = insight_df[guest_country_col].apply(
+            lambda x: "DOM" if str(x).strip().lower() == "vietnam" else "INT"
+        )
+        
+        # Normalize Brand Model
+        insight_df[BRAND_MODEL] = (
+            insight_df[BRAND_MODEL]
+            .astype(str)
+            .str.lower()
+            .str.strip()
+        )
+        
+        # Count unique tenants
+        pivot_data = (
+            insight_df
+            .groupby([BRAND_MODEL, booking_source_col, "Market", signup_status_col])[RES_TENANT]
+            .nunique()
+            .reset_index(name="count")
+        )
+        
+        # Create pivot table
+        pivot_table = pivot_data.pivot_table(
+            index=[BRAND_MODEL, booking_source_col],
+            columns=["Market", signup_status_col],
+            values="count",
+            aggfunc="sum",
+            fill_value=0
+        )
+        
+        # Add totals
+        # DOM Total
+        if "DOM" in pivot_table.columns.get_level_values(0):
+            dom_cols = [col for col in pivot_table.columns if col[0] == "DOM"]
+            pivot_table[("DOM", "Total")] = pivot_table[dom_cols].sum(axis=1)
+        
+        # INT Total
+        if "INT" in pivot_table.columns.get_level_values(0):
+            int_cols = [col for col in pivot_table.columns if col[0] == "INT"]
+            pivot_table[("INT", "Total")] = pivot_table[int_cols].sum(axis=1)
+        
+        # Grand Total
+        pivot_table[("", "Grand Total")] = pivot_table.sum(axis=1)
+        
+        # Sort columns: DOM columns, DOM Total, INT columns, INT Total, Grand Total
+        dom_cols = sorted([col for col in pivot_table.columns if col[0] == "DOM" and col[1] != "Total"])
+        int_cols = sorted([col for col in pivot_table.columns if col[0] == "INT" and col[1] != "Total"])
+        
+        ordered_cols = []
+        ordered_cols.extend(dom_cols)
+        if ("DOM", "Total") in pivot_table.columns:
+            ordered_cols.append(("DOM", "Total"))
+        ordered_cols.extend(int_cols)
+        if ("INT", "Total") in pivot_table.columns:
+            ordered_cols.append(("INT", "Total"))
+        ordered_cols.append(("", "Grand Total"))
+        
+        pivot_table = pivot_table[[col for col in ordered_cols if col in pivot_table.columns]]
+        
+        # Reset index to show Brand Model and Booking Source as columns
+        display_df = pivot_table.reset_index()
+        
+        # Rename columns for display
+        display_df.columns = [
+            f"{col[0]}_{col[1]}" if col[0] else col[1] 
+            for col in display_df.columns
+        ]
+        
+        # Rename first two columns
+        display_df = display_df.rename(columns={
+            display_df.columns[0]: "Brand Segment",
+            display_df.columns[1]: "Booking Source"
+        })
+        
+        # Add subtotals for each Brand Segment
+        brand_totals = []
+        for brand in display_df["Brand Segment"].unique():
+            brand_df = display_df[display_df["Brand Segment"] == brand]
+            total_row = brand_df.iloc[:, 2:].sum()
+            total_row["Brand Segment"] = f"{brand} Total"
+            total_row["Booking Source"] = ""
+            brand_totals.append(total_row)
+        
+        # Insert totals after each brand group
+        final_rows = []
+        for brand in display_df["Brand Segment"].unique():
+            brand_df = display_df[display_df["Brand Segment"] == brand]
+            final_rows.append(brand_df)
+            # Add total row
+            total_row = brand_df.iloc[:, 2:].sum().to_frame().T
+            total_row["Brand Segment"] = f"📊 {brand} Total"
+            total_row["Booking Source"] = ""
+            final_rows.append(total_row)
+        
+        final_df = pd.concat(final_rows, ignore_index=True)
+        
+        # Reorder columns
+        cols = ["Brand Segment", "Booking Source"] + [c for c in final_df.columns if c not in ["Brand Segment", "Booking Source"]]
+        final_df = final_df[cols]
+        
+        # Style function for totals
+        def highlight_totals(row):
+            if "Total" in str(row["Brand Segment"]):
+                return ["background-color: #2c3e50; font-weight: bold;"] * len(row)
+            return [""] * len(row)
+        
+        st.dataframe(
+            final_df.style.apply(highlight_totals, axis=1).format(
+                {col: "{:.0f}" for col in final_df.columns if col not in ["Brand Segment", "Booking Source"]},
+                na_rep="0"
+            ),
+            use_container_width=True,
+            hide_index=True,
+            height=600
+        )
+        
+        # Summary stats
+        st.markdown("---")
+        st.markdown("#### 📈 Summary")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            dom_total = pivot_table[("DOM", "Total")].sum() if ("DOM", "Total") in pivot_table.columns else 0
+            st.metric("🏠 DOM Total", f"{int(dom_total):,}")
+        
+        with col2:
+            int_total = pivot_table[("INT", "Total")].sum() if ("INT", "Total") in pivot_table.columns else 0
+            st.metric("🌍 INT Total", f"{int(int_total):,}")
+        
+        with col3:
+            grand_total = pivot_table[("", "Grand Total")].sum()
+            st.metric("📊 Grand Total", f"{int(grand_total):,}")
+    else:
+        st.warning("⚠️ Please select the required columns to generate the insight table.")

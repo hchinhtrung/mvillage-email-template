@@ -71,6 +71,19 @@ df["signup_count"] = pd.to_numeric(
 ).fillna(0)
 
 # ======================
+# STATUS NORMALIZATION (FIX MEMBER = 0)
+# ======================
+def normalize_status(val):
+    if pd.isna(val):
+        return ""
+    val = str(val).strip().lower()
+    val = re.sub(r"\s+", " ", val)
+    val = val.replace("-", " ")
+    return val
+
+df["_status_norm"] = df[STATUS_COL].apply(normalize_status)
+
+# ======================
 # DATE FILTER (D-13 → D+3)
 # ======================
 min_date = df["date"].min()
@@ -95,19 +108,19 @@ daily_df = df[
 ]
 
 # ======================
-# STATUS GROUPS
+# STATUS GROUPS (LOGIC GIỮ NGUYÊN)
 # ======================
-STATUS_CHUA_SIGNUP = ["Chưa Sign-up"]
-STATUS_MEMBER = ["Đã Sign-up từ trước"]
-STATUS_NEW_RECRUIT = [
-    "Sign-up sau C/I",
-    "Sign up trước 1 ngày check in",
-    "Sign up trước 2 ngày check in"
-]
+STATUS_CHUA_SIGNUP = ["chưa"]
+STATUS_MEMBER = ["đã", "trước"]
+STATUS_NEW_RECRUIT = ["sau", "trước 1", "trước 2"]
 
-def agg_status(status_list):
+def agg_status(keyword_list):
+    mask = daily_df["_status_norm"].apply(
+        lambda x: any(k in x for k in keyword_list)
+    )
+
     return (
-        daily_df[daily_df[STATUS_COL].isin(status_list)]
+        daily_df[mask]
         .groupby(["date", CITY_COL])["signup_count"]
         .sum()
         .reset_index()
@@ -139,7 +152,7 @@ final_daily = (
 )
 
 # ======================
-# DAILY VIEW SWITCH: TABLE / CHART
+# DAILY VIEW SWITCH
 # ======================
 st.subheader("📊 Daily Recruit Funnel")
 
@@ -170,15 +183,9 @@ else:
             "DN_New_recruit",
             "Total New Recruit"
         ]
-    ].sort_values("Date")
+    ].set_index("Date")
 
-    chart_df = chart_df.set_index("Date")
-
-    st.line_chart(
-        chart_df,
-        height=420
-    )
-
+    st.line_chart(chart_df, height=420)
 
 st.download_button(
     "⬇️ Download Daily Funnel CSV",
@@ -186,6 +193,17 @@ st.download_button(
     "daily_recruit_funnel.csv",
     "text/csv"
 )
+
+# ======================
+# STATUS DEBUG (OPTIONAL)
+# ======================
+with st.expander("🔍 Status Debug"):
+    st.write(
+        df["_status_norm"]
+        .value_counts()
+        .reset_index()
+        .rename(columns={"index": "Status (normalized)", "_status_norm": "Count"})
+    )
 
 # ======================================================
 # ====================== WoW SECTION ===================
@@ -202,7 +220,9 @@ last_week_start = last_week_end - timedelta(days=6)
 prev_week_end = last_week_start - timedelta(days=1)
 prev_week_start = prev_week_end - timedelta(days=6)
 
-nr_df = df[df[STATUS_COL].isin(STATUS_NEW_RECRUIT)]
+nr_df = df[df["_status_norm"].apply(
+    lambda x: any(k in x for k in STATUS_NEW_RECRUIT)
+)]
 
 last_week_df = nr_df[
     (nr_df["date"] >= last_week_start) &
@@ -243,8 +263,10 @@ st.dataframe(
 
 st.download_button(
     "⬇️ Download WoW CSV",
-    wow_df.reset_index().rename(columns={"index": "City"})
-    .to_csv(index=False).encode("utf-8-sig"),
+    wow_df.reset_index()
+    .rename(columns={"index": "City"})
+    .to_csv(index=False)
+    .encode("utf-8-sig"),
     "wow_new_recruit.csv",
     "text/csv"
 )

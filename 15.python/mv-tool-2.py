@@ -430,27 +430,56 @@ with tab_city_brand:
 with tab_chart:
     st.subheader("📈 Performance Charts (Last + Current Period)")
 
-    # --- Hotel Filter ---
-    hotels_map = {}
+    # --- Filter Logic ---
+    c1, c2 = st.columns(2)
     
-    # Enable filtering if data exists
+    # 1. City Filter
+    with c1:
+        # Get unique cities from res_df
+        all_cities = sorted(res_df[RES_CITY].dropna().unique()) if not res_df.empty else []
+        selected_cities = st.multiselect("🏙️ Filter by City", options=all_cities)
+
+    # 2. Hotel Mapping
+    hotels_map = {}
+    city_hotel_map = {} 
+
     if not res_df.empty:
-        temp = res_df[[RES_HOTEL, "hotel_key"]].drop_duplicates("hotel_key")
+        # Get hotel mapping and city association
+        temp = res_df[[RES_HOTEL, "hotel_key", RES_CITY]].drop_duplicates("hotel_key")
         hotels_map.update(dict(zip(temp["hotel_key"], temp[RES_HOTEL])))
-        
+        city_hotel_map.update(dict(zip(temp["hotel_key"], temp[RES_CITY])))
+
     if not signup_df.empty:
         temp = signup_df[[SIGNUP_HOTEL, "hotel_key"]].drop_duplicates("hotel_key")
         for k, v in zip(temp["hotel_key"], temp[SIGNUP_HOTEL]):
             if k not in hotels_map:
                 hotels_map[k] = v
                 
-    all_keys = sorted(hotels_map.keys())
+    all_hotel_keys = sorted(hotels_map.keys())
     
-    selected_hotels = st.multiselect(
-        "🏨 Filter by Hotel",
-        options=all_keys,
-        format_func=lambda x: hotels_map.get(x, x.title())
-    )
+    # 3. Filter Constraints
+    if selected_cities:
+        available_hotel_keys = [
+            k for k in all_hotel_keys 
+            if city_hotel_map.get(k) in selected_cities
+        ]
+    else:
+        available_hotel_keys = all_hotel_keys
+
+    with c2:
+        selected_hotels = st.multiselect(
+            "🏨 Filter by Hotel",
+            options=available_hotel_keys,
+            format_func=lambda x: hotels_map.get(x, x.title())
+        )
+    
+    # 4. Determine Final Filter Mask
+    final_filter_hotels = []
+    if selected_hotels:
+        final_filter_hotels = selected_hotels
+    elif selected_cities:
+        final_filter_hotels = available_hotel_keys
+    
     # --------------------
     
     # Define Date Ranges
@@ -465,8 +494,8 @@ with tab_chart:
     # Checkins
     res_range = filter_period(res_df, RES_DATE, chart_start, chart_end)
     
-    if selected_hotels:
-        res_range = res_range[res_range["hotel_key"].isin(selected_hotels)]
+    if final_filter_hotels:
+        res_range = res_range[res_range["hotel_key"].isin(final_filter_hotels)]
 
     daily_res = (
         res_range.groupby(res_range[RES_DATE].dt.date)[RES_TENANT]
@@ -478,8 +507,8 @@ with tab_chart:
     # Signups
     signup_range = filter_period(signup_df, SIGNUP_DATE, chart_start, chart_end)
     
-    if selected_hotels:
-        signup_range = signup_range[signup_range["hotel_key"].isin(selected_hotels)]
+    if final_filter_hotels:
+        signup_range = signup_range[signup_range["hotel_key"].isin(final_filter_hotels)]
 
     daily_signup = (
         signup_range.groupby(signup_range[SIGNUP_DATE].dt.date)[SIGNUP_COUNT]

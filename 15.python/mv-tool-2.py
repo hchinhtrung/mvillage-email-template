@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+from openai import OpenAI, RateLimitError, AuthenticationError, APIConnectionError
 
 # ======================
 # Page config
@@ -1018,23 +1019,84 @@ with tab_insight:
                 hide_index=True,
                 height=500
             )
+            
+            return final_df
         
         # Filter data for Last and Current periods
         last_res = filter_period(res_df, RES_DATE, last_from, last_to)
         current_res = filter_period(res_df, RES_DATE, current_from, current_to)
         
+        # Store tables for insight generation
+        insight_data = {}
+        
         # Define status groups
         # Table 1: Chưa Sign-up
-        build_comparison_table(last_res, current_res, ["Chưa Sign-up"], "1️⃣ Chưa Sign-up")
+        df1 = build_comparison_table(last_res, current_res, ["Chưa Sign-up"], "1️⃣ Chưa Sign-up")
+        if df1 is not None:
+            insight_data["Chưa Sign-up"] = df1
+            
         st.markdown("---")
         
         # Table 2: Đã Sign-up từ trước
-        build_comparison_table(last_res, current_res, ["Đã Sign-up từ trước"], "2️⃣ Đã Sign-up từ trước")
+        df2 = build_comparison_table(last_res, current_res, ["Đã Sign-up từ trước"], "2️⃣ Đã Sign-up từ trước")
+        if df2 is not None:
+            insight_data["Đã Sign-up từ trước"] = df2
+            
         st.markdown("---")
         
         # Table 3: Sign-up related to Check-in
         group3 = ["Sign-up sau C/I", "Sign up trước 1 ngày check in", "Sign up trước 2 ngày check in"]
-        build_comparison_table(last_res, current_res, group3, "3️⃣ Sign-up liên quan Check-in")
+        df3 = build_comparison_table(last_res, current_res, group3, "3️⃣ Sign-up liên quan Check-in")
+        if df3 is not None:
+            insight_data["Sign-up liên quan Check-in"] = df3
+            
+        st.markdown("---")
+        st.subheader("🤖 AI Insight Generator")
+        
+        # API Key Input
+        api_key = st.text_input("🔑 Enter OpenAI API Key (Required)", type="password")
+            
+        if st.button("✨ Generate Insight"):
+            if not api_key:
+                st.error("Please provide an OpenAI API Key to continue.")
+            elif not insight_data:
+                st.warning("No table data available to analyze.")
+            else:
+                try:
+                    client = OpenAI(api_key=api_key)
+                    
+                    # Construct Prompt
+                    prompt = "Analyze the following Weekly Performance Data tables and provide a concise set of key insights, focusing on significant changes, trends, and anomalies between the Last Period and Current Period.\n\n"
+                    
+                    for name, df in insight_data.items():
+                        prompt += f"### Table: {name}\n"
+                        prompt += df.to_csv(index=False)
+                        prompt += "\n\n"
+                        
+                    prompt += "Focus on:\n1. Which Brand Segments or Booking Sources had the biggest drops or improvements?\n2. Compare DOM vs INT performance shifts.\n3. Any notable observations regarding specific sign-up behaviors."
+                    
+                    with st.spinner("🤖 Analyzing data... please wait..."):
+                        response = client.chat.completions.create(
+                            model="gpt-4o",
+                            messages=[
+                                {"role": "system", "content": "You are an expert data analyst realizing insights from hotel performance metrics."},
+                                {"role": "user", "content": prompt}
+                            ]
+                        )
+                        
+                        insight_text = response.choices[0].message.content
+                        
+                        st.success("Analysis Complete!")
+                        st.markdown(insight_text)
+                        
+                except RateLimitError:
+                    st.error("🚫 API Quota Exceeded (429). The provided API Key has run out of credits. Please check your billing or use a different key.")
+                except AuthenticationError:
+                    st.error("🚫 Invalid API Key (401). Please check that your key is correct.")
+                except APIConnectionError:
+                    st.error("🚫 Connection Error. Please check your internet connection.")
+                except Exception as e:
+                    st.error(f"An unexpected error occurred: {str(e)}")
         
     else:
         st.warning("⚠️ Please select the required columns to generate the insight tables.")

@@ -1118,6 +1118,32 @@ with tab_insight:
         if df3 is not None:
             insight_data["Sign-up liên quan Check-in"] = df3
             
+        # Prepare extra data for analysis
+        # 1. Hotel Mapping
+        hotel_map = res_df[["hotel_key", RES_CITY, BRAND_MODEL]].drop_duplicates("hotel_key").set_index("hotel_key")
+
+        # 2. City Sign-up Trends
+        def get_signup_metrics(s_df):
+            tmp = s_df.merge(hotel_map, on="hotel_key", how="left")
+            return tmp.groupby(RES_CITY)[SIGNUP_COUNT].sum()
+
+        last_signup_df = filter_period(signup_df, SIGNUP_DATE, last_from, last_to)
+        cur_signup_df = filter_period(signup_df, SIGNUP_DATE, current_from, current_to)
+
+        last_city_signup = get_signup_metrics(last_signup_df)
+        cur_city_signup = get_signup_metrics(cur_signup_df)
+
+        city_diff = pd.DataFrame({"Last": last_city_signup, "Current": cur_city_signup}).fillna(0)
+        city_diff["Diff"] = city_diff["Current"] - city_diff["Last"]
+        # Add to insight data
+        insight_data["4️⃣ City Sign-up Trends (WoW)"] = city_diff
+
+        # 3. Daily Low Point Analysis (Current Period)
+        cur_daily = cur_signup_df.groupby(cur_signup_df[SIGNUP_DATE].dt.date)[SIGNUP_COUNT].sum().reset_index()
+        cur_daily.columns = ["Date", "Signups"]
+        cur_daily = cur_daily.sort_values("Signups")
+        insight_data["5️⃣ Daily Sign-up Trend (Lowest Days)"] = cur_daily
+
         st.markdown("---")
         st.subheader("🤖 AI Insight Generator")
         
@@ -1134,15 +1160,30 @@ with tab_insight:
                     client = OpenAI(api_key=api_key)
                     
                     # Construct Prompt
-                    prompt = "Phân tích các bảng dữ liệu Hiệu suất Hàng tuần dưới đây và đưa ra các insight chính, ngắn gọn, tập trung vào các thay đổi, xu hướng và bất thường đáng kể giữa Kỳ trước (Last Period) và Kỳ hiện tại (Current Period). Kết quả trả về bằng tiếng Việt.\n\n"
+                    prompt = """
+                    Dựa vào các bảng dữ liệu được cung cấp (bao gồm phân tích theo Brand/Source/Market, Xu hướng City và Dữ liệu theo Ngày), hãy viết một báo cáo phân tích chi tiết bám sát cấu trúc sau:
+
+                    1. **So sánh WoW (Tuần trước vs Tuần hiện tại):**
+                       - **Theo City:** Lượng Sign-up tăng/giảm thế nào ở từng thành phố? Thành phố nào biến động mạnh nhất?
+                       - **Theo Segment & Source:** Sự tăng/giảm đến từ phân khúc (Brand) nào và nguồn đặt phòng (Source) nào là chủ yếu? Có nguồn nào sụt giảm bất thường không?
+                       - **Theo Khách hàng (Check-in):** So sánh lượng Check-in giữa khách DOM (Nội địa) và INT (Quốc tế). Nhóm nào đang tăng trưởng hoặc suy giảm?
+
+                    2. **Phân tích Ngày thấp điểm (Factor Analysis):**
+                       - Dựa vào bảng Dữ liệu theo Ngày, xác định những ngày có lượng Sign-up thấp nhất trong kỳ hiện tại.
+                       - Đưa ra nhận định hoặc giả thuyết về nguyên nhân tại sao những ngày này lại thấp (ví dụ: ngày trong tuần, sự kiện, hay xu hướng check-in thấp vào ngày đó).
+
+                    3. **Tổng hợp Insight & Action:**
+                       - **Key Insight:** Đúc kết nguyên nhân gốc rễ (Root Cause) của việc tăng/giảm tổng thể.
+                       - **Action Plan:** Đề xuất các hành động cụ thể để cải thiện. (Ví dụ: Cần push sale cho nguồn nào? Cần ưu đãi cho ngày nào trong tuần? Cần focus vào city nào?).
+
+                    Hãy viết ngắn gọn, súc tích, đi thẳng vào vấn đề. Kết quả trả về bằng tiếng Việt.
+                    """
                     
                     for name, df in insight_data.items():
-                        prompt += f"### Table: {name}\n"
-                        prompt += df.to_csv(index=False)
-                        prompt += "\n\n"
+                        prompt += f"\n### Table: {name}\n"
+                        prompt += df.to_csv(index=True)
+                        prompt += "\n"
                         
-                    prompt += "Tập trung vào:\n1. Phân khúc Thương hiệu (Brand Segments) hoặc Nguồn đặt phòng (Booking Sources) nào có sự tăng/giảm mạnh nhất?\n2. So sánh sự thay đổi hiệu suất giữa khách DOM (Nội địa) và INT (Quốc tế).\n3. Các quan sát đáng chú ý về hành vi đăng ký (sign-up)."
-                    
                     with st.spinner("🤖 Analyzing data... please wait..."):
                         response = client.chat.completions.create(
                             model="gpt-4o",

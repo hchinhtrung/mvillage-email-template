@@ -1161,25 +1161,24 @@ with tab_insight:
                     
                     # Construct Prompt
                     prompt = """
-                    Dựa vào các bảng dữ liệu được cung cấp (bao gồm phân tích theo Brand/Source/Market, Xu hướng City và Dữ liệu theo Ngày), hãy viết một báo cáo phân tích chi tiết bám sát cấu trúc sau:
+                    Mục tiêu tối thượng của báo cáo này là **PHÂN TÍCH BIẾN ĐỘNG SỐ LƯỢNG SIGN-UP (ĐĂNG KÝ)**.
+                    Hãy đóng vai trò là Senior BI Manager, sử dụng dữ liệu để trả lời câu hỏi: **"Tại sao lượng Sign-up tăng/giảm?"** bằng cách mổ xẻ các yếu tố tác động.
 
-                    1. **🔍 Phân tích Tăng trưởng (Growth Analysis - WoW):**
-                       - **Theo City:** Lượng Sign-up tăng/giảm thế nào? **BẮT BUỘC dùng định dạng: "City: [Số Last] -> [Số Current] (tăng/giảm [Số]%)"**.
-                         - *Deep Dive:* Tại sao thành phố đó tăng/giảm? (Do Brand nào kéo xuống? Nguồn booking nào đang mất phong độ?). Phân tích kỹ từng thành phố (HCM, HN, DN).
-                       - **Theo Segment & Source:** Brand model nào đang là "ngôi sao" (tăng trưởng tốt) và cái nào là "gánh nặng" (sụt giảm)? Nguồn (Source) nào đang cần kiểm tra gấp? (Ghi rõ số absolute và %).
-                       - **Theo Market (DOM/INT):** Xu hướng khách Nội địa vs Quốc tế dịch chuyển thế nào? Có cơ hội nào đang bị bỏ lỡ từ tập khách INT không?
+                    1. **� Phân tích Tác động (Impact Analysis) - Tại sao Sign-up thay đổi?**
+                       - **Yếu tố Vùng miền (City Impact):** City nào đóng góp chính vào đà tăng/giảm sign-up? **(Bắt buộc định dạng: "City: [Số Last] -> [Số Current] (tăng/giảm [Số]%)")**.
+                       - **Yếu tố Lưu lượng (Traffic vs Conversion):** Sign-up thay đổi do lượng Check-in (Show-up) thay đổi hay do tỷ lệ chốt (CR) thay đổi? (Ví dụ: Check-in tăng mà Sign-up giảm -> Cần xem lại quy trình Sale tại site).
+                       - **Yếu tố Nguồn (Source Impact):** Nguồn booking nào (OTA, Walk-in, B2B...) đang kéo chỉ số Sign-up đi lên/xuống?
+                       - **Yếu tố Khách hàng (Market Mix):** Sự dịch chuyển cơ cấu khách DOM/INT ảnh hưởng thế nào đến kết quả Sign-up cuối cùng? (Khách INT tăng có làm tăng Sign-up không hay ngược lại?).
 
-                    2. **⚠️ Đánh giá Điểm yếu & Vấn đề tồn đọng (Critical Evaluation):**
-                       - **Underperformance:** Chỉ ra thẳng thắn các điểm "chưa được": Khu vực/Brand nào đang hoạt động kém hiệu quả (under-performing) so với kỳ trước?
-                       - **Ngày thấp điểm (Low Days):** Những ngày nào trong tuần "chạm đáy" về sign-up? Có phải do team Sales nghỉ, hay do đặc tính ngày trong tuần?
-                       - **Missing Opportunities:** Những nguồn/segment nào tiềm năng nhưng số liệu lại đang thấp lẹt đẹt?
+                    2. **📉 Điểm nóng & Nguyên nhân (Root Cause Diagnosis):**
+                       - **Top Negative Drivers:** Chỉ mặt đặt tên Brand/City/Source nào đang làm "rò rỉ" lượng Sign-up nhiều nhất so với kỳ trước.
+                       - **Low-Performance Days:** Các ngày thấp điểm trong tuần có mẫu hình chung gì không? (Do vắng khách check-in hay do nhân sự?).
 
-                    3. **🚀 Đề xuất Chiến lược & Hành động (Strategic Action Plan):**
-                       - **Fixing (Ngắn hạn):** Cần làm gì NGAY để khắc phục đà giảm ở các city/brand yếu? (Ví dụ: review lại giá, check lại vận hành tại cơ sở...).
-                       - **Optimizing (Dài hạn):** Đề xuất hướng đẩy mạnh cho các điểm sáng (nhân rộng mô hình thành công).
-                       - **Focus Area:** Tuần tới nên tập trung tối ưu chỉ số nào là quan trọng nhất (CR, Volume, hay Market Mix)?
+                    3. **� Đề xuất Tối ưu Sign-up (Action Plan):**
+                       - Đưa ra giải pháp cụ thể để lấy lại lượng Sign-up bị mất. (Tập trung vào training Sales, push nguồn khách nào, hay thay đổi chính sách?).
+                       - Đánh giá mức độ nghiêm trọng: Vấn đề này là ngắn hạn hay xu hướng dài hạn cần báo động?
 
-                    Hãy viết ngắn gọn, súc tích, đi thẳng vào vấn đề. Kết quả trả về bằng tiếng Việt.
+                    Văn phong chuyên nghiệp, sắc bén, tập trung hoàn toàn vào chỉ số Sign-up.
                     """
                     
                     for name, df in insight_data.items():

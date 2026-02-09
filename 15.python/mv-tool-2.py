@@ -1281,6 +1281,10 @@ with tab_insight:
                         st.success("Analysis Complete!")
                         st.markdown(insight_text)
                         
+                        # Add a copyable version of the text
+                        with st.expander("📋 Click to copy the Raw Analysis"):
+                            st.code(insight_text, language="markdown")
+                        
                 except RateLimitError:
                     st.error("🚫 API Quota Exceeded (429). The provided API Key has run out of credits.")
                 except AuthenticationError:

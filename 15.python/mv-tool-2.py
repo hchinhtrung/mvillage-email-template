@@ -431,23 +431,37 @@ with tab_chart:
     st.subheader("📈 Performance Charts (Last + Current Period)")
 
     # --- Filter Logic ---
-    c1, c2 = st.columns(2)
+    c1, c2, c3 = st.columns(3)
     
     # 1. City Filter
     with c1:
-        # Get unique cities from res_df
         all_cities = sorted(res_df[RES_CITY].dropna().unique()) if not res_df.empty else []
         selected_cities = st.multiselect("🏙️ Filter by City", options=all_cities)
 
-    # 2. Hotel Mapping
+    # 2. Brand Filter
+    with c2:
+        all_brands = []
+        if not res_df.empty and BRAND_MODEL in res_df.columns:
+            all_brands = sorted(res_df[BRAND_MODEL].astype(str).dropna().unique())
+        selected_brands = st.multiselect("🏷️ Filter by Brand", options=all_brands)
+
+    # 3. Hotel Mapping
     hotels_map = {}
     city_hotel_map = {} 
+    brand_hotel_map = {}
 
     if not res_df.empty:
-        # Get hotel mapping and city association
-        temp = res_df[[RES_HOTEL, "hotel_key", RES_CITY]].drop_duplicates("hotel_key")
+        # Get hotel mapping and associations
+        cols = [RES_HOTEL, "hotel_key", RES_CITY]
+        if BRAND_MODEL in res_df.columns:
+            cols.append(BRAND_MODEL)
+            
+        temp = res_df[cols].drop_duplicates("hotel_key")
         hotels_map.update(dict(zip(temp["hotel_key"], temp[RES_HOTEL])))
         city_hotel_map.update(dict(zip(temp["hotel_key"], temp[RES_CITY])))
+        
+        if BRAND_MODEL in res_df.columns:
+            brand_hotel_map.update(dict(zip(temp["hotel_key"], temp[BRAND_MODEL].astype(str))))
 
     if not signup_df.empty:
         temp = signup_df[[SIGNUP_HOTEL, "hotel_key"]].drop_duplicates("hotel_key")
@@ -457,27 +471,33 @@ with tab_chart:
                 
     all_hotel_keys = sorted(hotels_map.keys())
     
-    # 3. Filter Constraints
+    # 4. Filter Constraints (Intersection)
+    available_hotel_keys = all_hotel_keys
+    
     if selected_cities:
         available_hotel_keys = [
-            k for k in all_hotel_keys 
+            k for k in available_hotel_keys 
             if city_hotel_map.get(k) in selected_cities
         ]
-    else:
-        available_hotel_keys = all_hotel_keys
+        
+    if selected_brands:
+        available_hotel_keys = [
+            k for k in available_hotel_keys 
+            if brand_hotel_map.get(k) in selected_brands
+        ]
 
-    with c2:
+    with c3:
         selected_hotels = st.multiselect(
             "🏨 Filter by Hotel",
             options=available_hotel_keys,
             format_func=lambda x: hotels_map.get(x, x.title())
         )
     
-    # 4. Determine Final Filter Mask
+    # 5. Determine Final Filter Mask
     final_filter_hotels = []
     if selected_hotels:
         final_filter_hotels = selected_hotels
-    elif selected_cities:
+    elif selected_cities or selected_brands:
         final_filter_hotels = available_hotel_keys
     
     # --------------------

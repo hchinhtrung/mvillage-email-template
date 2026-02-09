@@ -429,6 +429,29 @@ with tab_city_brand:
 # ======================
 with tab_chart:
     st.subheader("📈 Performance Charts (Last + Current Period)")
+
+    # --- Hotel Filter ---
+    hotels_map = {}
+    
+    # Enable filtering if data exists
+    if not res_df.empty:
+        temp = res_df[[RES_HOTEL, "hotel_key"]].drop_duplicates("hotel_key")
+        hotels_map.update(dict(zip(temp["hotel_key"], temp[RES_HOTEL])))
+        
+    if not signup_df.empty:
+        temp = signup_df[[SIGNUP_HOTEL, "hotel_key"]].drop_duplicates("hotel_key")
+        for k, v in zip(temp["hotel_key"], temp[SIGNUP_HOTEL]):
+            if k not in hotels_map:
+                hotels_map[k] = v
+                
+    all_keys = sorted(hotels_map.keys())
+    
+    selected_hotels = st.multiselect(
+        "🏨 Filter by Hotel",
+        options=all_keys,
+        format_func=lambda x: hotels_map.get(x, x.title())
+    )
+    # --------------------
     
     # Define Date Ranges
     # We want a continuous view from min(last_from) to max(current_to)
@@ -441,6 +464,10 @@ with tab_chart:
     # Get daily data
     # Checkins
     res_range = filter_period(res_df, RES_DATE, chart_start, chart_end)
+    
+    if selected_hotels:
+        res_range = res_range[res_range["hotel_key"].isin(selected_hotels)]
+
     daily_res = (
         res_range.groupby(res_range[RES_DATE].dt.date)[RES_TENANT]
         .nunique()
@@ -450,6 +477,10 @@ with tab_chart:
     
     # Signups
     signup_range = filter_period(signup_df, SIGNUP_DATE, chart_start, chart_end)
+    
+    if selected_hotels:
+        signup_range = signup_range[signup_range["hotel_key"].isin(selected_hotels)]
+
     daily_signup = (
         signup_range.groupby(signup_range[SIGNUP_DATE].dt.date)[SIGNUP_COUNT]
         .sum()

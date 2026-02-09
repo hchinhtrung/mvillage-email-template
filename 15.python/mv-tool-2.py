@@ -1224,43 +1224,29 @@ with tab_insight:
                     # --- 2. CONSTRUCT PROMPT ---
                     prompt = f"""
                     You are a Senior BI Strategy Consultant at MVillage.
-                    Your mission is to provide a DETAILED and EASY-TO-UNDERSTAND explanation of the changes in Sign-up (membership registration) volume compared to the previous period.
+                    Your mission is to provide an analysis of the changes in Sign-up (membership registration) volume compared to the previous period.
+
+                    YOUR RESPONSE MUST BE DIVIDED INTO TWO DISTINCT SECTIONS:
                     
-                    TARGET AUDIENCE: A non-technical manager who needs data explained in a descriptive, educational "storytelling" manner.
+                    ---
+                    ### SECTION 1: DETAILED BUSINESS ANALYSIS
+                    This section is for deep-dive understanding.
+                    - Provide a DETAILED and EDUCATIONAL explanation for each City (HCM, HN, DN...).
+                    - **IMPORTANT: Use absolute numbers for all changes** (e.g., +10, -5, from X to Y).
+                    - Explain causality (e.g., "Check-ins dropped by -X, which led to Sign-ups dropping by -Y").
+                    - Breakdown by Brand Model, Booking Source, and Market (DOM vs INT).
+                    - Provide sharp actionable recommendations at the end of each city or the section.
                     
-                    PROVIDED DATA (CSV) columns:
-                    - City, Brand, Source, Market (DOM/INT)
-                    - Checkin_Count_Last, Checkin_Count_Current (Traffic volume)
-                    - Signup_Count_Last, Signup_Count_Current (Membership volume)
-
-                    REQUIREMENTS: PROVIDE DETAILED ANALYSIS FOR EACH CITY (HCM, HN, DN...) using this structure:
-
-                    ### 📍 [CITY NAME - e.g., HO CHI MINH CITY]
+                    ---
+                    ### SECTION 2: EXECUTIVE SUMMARY (SHORTENED & CLEAR)
+                    This section is for a quick overview.
+                    - Provide a very concise table or bullet-point list summarizing the "Bottom Line" for each city.
+                    - Highlight only the MOST CRITICAL impact per city (e.g., "HCM: Sign-ups -20 due to OTA traffic slump (-50 Check-ins)").
+                    - Use absolute numbers only. No long sentences.
                     
-                    #### 1. Overall Performance (The Big Picture)
-                    - Explain how the Sign-up volume has changed. 
-                    - **IMPORTANT: You MUST include absolute numbers for all changes.** (e.g., "Sign-ups increased by +25 (from 100 to 125), a 25% growth").
-                    - **Causality Check:** Explain the relationship: "Sign-ups depend on Check-ins". 
-                    - If Sign-ups dropped: Is it because Check-ins (traffic) dropped? Or did traffic stay high while the conversion rate failed (staff didn't invite guests effectively)?
-                    
-                    #### 2. Deep Dive by Brand Model (Savvy, Signature, Living, Express, Hotel)
-                    - Identify the specific Brands driving performance or causing the decline.
-                    - For each brand, provide the reason with **absolute values**. Example: "In Brand Living, Sign-ups dropped by -15. Looking at traffic data, Check-ins also dropped by -20, suggesting this is a market traffic issue rather than a sales skill issue."
-
-                    #### 3. Booking Source & Market Segmentation (DOM vs INT)
-                    - Explain the impact of specific sources: Which ones are strong (e.g., Direct, Walk-in) and which are weak (e.g., OTA)? 
-                    - How did the source mix affect Sign-ups? (e.g., "A drop of -30 Check-ins from OTA sources led to -10 fewer Sign-ups").
-                    - Analyze Domestic (DOM) vs International (INT) trends. Does an increase in INT guests correlate with Sign-up growth, or do INT guests sign up less often?
-
-                    #### 4. Conclusion & Actionable Recommendations
-                    - Provide sharp insights into the current situation.
-                    - Suggest immediate actions (e.g., "Urgent sales training needed at Brand X because traffic is up by +50 guests but Sign-ups remained flat at 0 change").
-
-                    STYLING RULES:
-                    - **DO NOT BE BRIEF.** Write a comprehensive analysis report.
-                    - Use friendly, non-technical language. Explain any jargon used.
-                    - Use bullet points and bold text to highlight key takeaways.
-                    - Always connect "Cause" and "Effect" with **absolute data points**.
+                    ---
+                    Văn phong chuyên nghiệp, English language only. 
+                    STYLING: Use bullet points and bold text for key metrics.
                     
                     --- DATA ---
                     {csv_data}

@@ -1163,20 +1163,21 @@ with tab_insight:
                     prompt = """
                     Dựa vào các bảng dữ liệu được cung cấp (bao gồm phân tích theo Brand/Source/Market, Xu hướng City và Dữ liệu theo Ngày), hãy viết một báo cáo phân tích chi tiết bám sát cấu trúc sau:
 
-                    1. **So sánh WoW (Tuần trước vs Tuần hiện tại):**
-                       - **Theo City:** 
-                         - Lượng Sign-up tăng/giảm thế nào ở từng thành phố? **BẮT BUỘC dùng định dạng: "City: [Số Last] -> [Số Current] (tăng/giảm [Số]%)"**.
-                         - **Insight chi tiết cho từng City:** Tại sao tăng/giảm? (Do Brand nào? Nguồn nào tác động chính?). Hãy phân tích cụ thể cho từng thành phố (HCM, HN, DN).
-                       - **Theo Segment & Source:** Sự tăng/giảm đến từ phân khúc (Brand) nào và nguồn đặt phòng (Source) nào là chủ yếu? (Ghi rõ số lượng tuyệt đối và %). Có nguồn nào sụt giảm bất thường không?
-                       - **Theo Khách hàng (Check-in):** So sánh lượng Check-in giữa khách DOM (Nội địa) và INT (Quốc tế). Nhóm nào đang tăng trưởng hoặc suy giảm? (Ghi rõ số lượng tuyệt đối và %).
+                    1. **🔍 Phân tích Tăng trưởng (Growth Analysis - WoW):**
+                       - **Theo City:** Lượng Sign-up tăng/giảm thế nào? **BẮT BUỘC dùng định dạng: "City: [Số Last] -> [Số Current] (tăng/giảm [Số]%)"**.
+                         - *Deep Dive:* Tại sao thành phố đó tăng/giảm? (Do Brand nào kéo xuống? Nguồn booking nào đang mất phong độ?). Phân tích kỹ từng thành phố (HCM, HN, DN).
+                       - **Theo Segment & Source:** Brand model nào đang là "ngôi sao" (tăng trưởng tốt) và cái nào là "gánh nặng" (sụt giảm)? Nguồn (Source) nào đang cần kiểm tra gấp? (Ghi rõ số absolute và %).
+                       - **Theo Market (DOM/INT):** Xu hướng khách Nội địa vs Quốc tế dịch chuyển thế nào? Có cơ hội nào đang bị bỏ lỡ từ tập khách INT không?
 
-                    2. **Phân tích Ngày thấp điểm (Factor Analysis):**
-                       - Dựa vào bảng Dữ liệu theo Ngày, xác định những ngày có lượng Sign-up thấp nhất trong kỳ hiện tại.
-                       - Đưa ra nhận định hoặc giả thuyết về nguyên nhân tại sao những ngày này lại thấp (ví dụ: ngày trong tuần, sự kiện, hay xu hướng check-in thấp vào ngày đó).
+                    2. **⚠️ Đánh giá Điểm yếu & Vấn đề tồn đọng (Critical Evaluation):**
+                       - **Underperformance:** Chỉ ra thẳng thắn các điểm "chưa được": Khu vực/Brand nào đang hoạt động kém hiệu quả (under-performing) so với kỳ trước?
+                       - **Ngày thấp điểm (Low Days):** Những ngày nào trong tuần "chạm đáy" về sign-up? Có phải do team Sales nghỉ, hay do đặc tính ngày trong tuần?
+                       - **Missing Opportunities:** Những nguồn/segment nào tiềm năng nhưng số liệu lại đang thấp lẹt đẹt?
 
-                    3. **Tổng hợp Insight & Action:**
-                       - **Key Insight:** Đúc kết nguyên nhân gốc rễ (Root Cause) của việc tăng/giảm tổng thể.
-                       - **Action Plan:** Đề xuất các hành động cụ thể để cải thiện. (Ví dụ: Cần push sale cho nguồn nào? Cần ưu đãi cho ngày nào trong tuần? Cần focus vào city nào?).
+                    3. **🚀 Đề xuất Chiến lược & Hành động (Strategic Action Plan):**
+                       - **Fixing (Ngắn hạn):** Cần làm gì NGAY để khắc phục đà giảm ở các city/brand yếu? (Ví dụ: review lại giá, check lại vận hành tại cơ sở...).
+                       - **Optimizing (Dài hạn):** Đề xuất hướng đẩy mạnh cho các điểm sáng (nhân rộng mô hình thành công).
+                       - **Focus Area:** Tuần tới nên tập trung tối ưu chỉ số nào là quan trọng nhất (CR, Volume, hay Market Mix)?
 
                     Hãy viết ngắn gọn, súc tích, đi thẳng vào vấn đề. Kết quả trả về bằng tiếng Việt.
                     """
@@ -1190,7 +1191,7 @@ with tab_insight:
                         response = client.chat.completions.create(
                             model="gpt-4o",
                             messages=[
-                                {"role": "system", "content": "Bạn là một chuyên gia phân tích dữ liệu khách sạn. Hãy trả lời bằng tiếng Việt."},
+                                {"role": "system", "content": "Bạn là một Senior Business Intelligence Manager (BI Expert) của chuỗi khách sạn MVillage. Nhiệm vụ của bạn là phân tích sâu dữ liệu để tìm ra cơ hội tăng trưởng, chỉ rõ các điểm yếu kém và đề xuất giải pháp chiến lược. Hãy trả lời bằng tiếng Việt chuyên ngành, sắc sảo và đi thẳng vào vấn đề."},
                                 {"role": "user", "content": prompt}
                             ]
                         )

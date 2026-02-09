@@ -1223,46 +1223,55 @@ with tab_insight:
                     
                     # --- 2. CONSTRUCT PROMPT ---
                     prompt = f"""
-                    Bạn là một chuyên gia phân tích dữ liệu tại Mvillage.
-                    Nhiệm vụ: Giải thích ngắn gọn lý do tăng/giảm Sign-up theo từng City.
+                    You are a Senior BI Strategy Consultant at MVillage.
+                    Your mission is to provide a DETAILED and EASY-TO-UNDERSTAND explanation of the changes in Sign-up (membership registration) volume compared to the previous period.
                     
-                    DỮ LIỆU ĐƯỢC CUNG CẤP (CSV) gồm các cột:
+                    TARGET AUDIENCE: A non-technical manager who needs data explained in a descriptive, educational "storytelling" manner.
+                    
+                    PROVIDED DATA (CSV) columns:
                     - City, Brand, Source, Market (DOM/INT)
-                    - Checkin_Count_Last, Checkin_Count_Current (Số lượng khách Check-in)
-                    - Signup_Count_Last, Signup_Count_Current (Số lượng khách đã Sign-up)
+                    - Checkin_Count_Last, Checkin_Count_Current (Traffic volume)
+                    - Signup_Count_Last, Signup_Count_Current (Membership volume)
 
-                    YÊU CẦU TRẢ LỜI:
-                    Hãy phân tích riêng cho TỪNG CITY (HCM, HN, DN...) theo cấu trúc sau:
+                    REQUIREMENTS: PROVIDE DETAILED ANALYSIS FOR EACH CITY (HCM, HN, DN...) using this structure:
 
-                    ### [TÊN CITY - Ví dụ: HCM]
-                    1. **📉 Tổng quan:**
-                       - Số lượng Sign-up tăng/giảm bao nhiêu? (Nêu số liệu).
-                       - Nguyên nhân chính: Do lượng Check-in biến động hay do tỷ lệ chốt (Conversion) biến động?
-
-                    2. **🏷️ Chi tiết Brand Model:**
-                       - Brand nào bị giảm/tăng nhiều nhất?
-                       - Tại sao? (Ví dụ: "Brand Living giảm sign-up do lượng Check-in giảm mạnh").
-
-                    3. **🌍 Yếu tố Khách hàng & Nguồn:**
-                       - Tăng/giảm do khách DOM hay INT? 
-                       - Do nguồn nào? (Ví dụ: "Do nguồn OTA sụt giảm lượng khách Check-in dẫn đến ít Sign-up hơn").
+                    ### 📍 [CITY NAME - e.g., HO CHI MINH CITY]
                     
-                    QUY TẮC CỐT LÕI:
-                    - **CỰC KỲ NGẮN GỌN, KHÔNG DÀI DÒNG.**
-                    - Viết dạng gạch đầu dòng.
-                    - Giải thích dễ hiểu cho người không chuyên.
-                    - Luôn gắn kết nguyên nhân - kết quả: Check-in giảm -> Sign-up giảm.
+                    #### 1. Overall Performance (The Big Picture)
+                    - Explain how the Sign-up volume has changed. 
+                    - **IMPORTANT: You MUST include absolute numbers for all changes.** (e.g., "Sign-ups increased by +25 (from 100 to 125), a 25% growth").
+                    - **Causality Check:** Explain the relationship: "Sign-ups depend on Check-ins". 
+                    - If Sign-ups dropped: Is it because Check-ins (traffic) dropped? Or did traffic stay high while the conversion rate failed (staff didn't invite guests effectively)?
                     
-                    --- DỮ LIỆU ---
+                    #### 2. Deep Dive by Brand Model (Savvy, Signature, Living, Express, Hotel)
+                    - Identify the specific Brands driving performance or causing the decline.
+                    - For each brand, provide the reason with **absolute values**. Example: "In Brand Living, Sign-ups dropped by -15. Looking at traffic data, Check-ins also dropped by -20, suggesting this is a market traffic issue rather than a sales skill issue."
+
+                    #### 3. Booking Source & Market Segmentation (DOM vs INT)
+                    - Explain the impact of specific sources: Which ones are strong (e.g., Direct, Walk-in) and which are weak (e.g., OTA)? 
+                    - How did the source mix affect Sign-ups? (e.g., "A drop of -30 Check-ins from OTA sources led to -10 fewer Sign-ups").
+                    - Analyze Domestic (DOM) vs International (INT) trends. Does an increase in INT guests correlate with Sign-up growth, or do INT guests sign up less often?
+
+                    #### 4. Conclusion & Actionable Recommendations
+                    - Provide sharp insights into the current situation.
+                    - Suggest immediate actions (e.g., "Urgent sales training needed at Brand X because traffic is up by +50 guests but Sign-ups remained flat at 0 change").
+
+                    STYLING RULES:
+                    - **DO NOT BE BRIEF.** Write a comprehensive analysis report.
+                    - Use friendly, non-technical language. Explain any jargon used.
+                    - Use bullet points and bold text to highlight key takeaways.
+                    - Always connect "Cause" and "Effect" with **absolute data points**.
+                    
+                    --- DATA ---
                     {csv_data}
                     """
                     
                     # --- 3. CALL API ---
-                    with st.spinner("🤖 AI is analyzing per City..."):
+                    with st.spinner("🤖 AI is performing a detailed analysis per City... please wait..."):
                         response = client.chat.completions.create(
                             model="gpt-4o",
                             messages=[
-                                {"role": "system", "content": "Bạn là chuyên gia BI nói tiếng Việt, phong cách ngắn gọn, súc tích, đi thẳng vào vấn đề."},
+                                {"role": "system", "content": "You are a dedicated BI consultant who explains complex data in simple, detailed, and actionable English stories."},
                                 {"role": "user", "content": prompt}
                             ]
                         )

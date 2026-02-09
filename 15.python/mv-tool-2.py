@@ -1164,9 +1164,9 @@ with tab_insight:
                     Dựa vào các bảng dữ liệu được cung cấp (bao gồm phân tích theo Brand/Source/Market, Xu hướng City và Dữ liệu theo Ngày), hãy viết một báo cáo phân tích chi tiết bám sát cấu trúc sau:
 
                     1. **So sánh WoW (Tuần trước vs Tuần hiện tại):**
-                       - **Theo City:** Lượng Sign-up tăng/giảm thế nào ở từng thành phố? Thành phố nào biến động mạnh nhất?
-                       - **Theo Segment & Source:** Sự tăng/giảm đến từ phân khúc (Brand) nào và nguồn đặt phòng (Source) nào là chủ yếu? Có nguồn nào sụt giảm bất thường không?
-                       - **Theo Khách hàng (Check-in):** So sánh lượng Check-in giữa khách DOM (Nội địa) và INT (Quốc tế). Nhóm nào đang tăng trưởng hoặc suy giảm?
+                       - **Theo City:** Lượng Sign-up tăng/giảm thế nào ở từng thành phố? (Ghi rõ số lượng tuyệt đối và %). Thành phố nào biến động mạnh nhất?
+                       - **Theo Segment & Source:** Sự tăng/giảm đến từ phân khúc (Brand) nào và nguồn đặt phòng (Source) nào là chủ yếu? (Ghi rõ số lượng tuyệt đối và %). Có nguồn nào sụt giảm bất thường không?
+                       - **Theo Khách hàng (Check-in):** So sánh lượng Check-in giữa khách DOM (Nội địa) và INT (Quốc tế). Nhóm nào đang tăng trưởng hoặc suy giảm? (Ghi rõ số lượng tuyệt đối và %).
 
                     2. **Phân tích Ngày thấp điểm (Factor Analysis):**
                        - Dựa vào bảng Dữ liệu theo Ngày, xác định những ngày có lượng Sign-up thấp nhất trong kỳ hiện tại.

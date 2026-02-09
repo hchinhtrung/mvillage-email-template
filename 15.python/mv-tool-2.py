@@ -1066,20 +1066,20 @@ with tab_insight:
                     client = OpenAI(api_key=api_key)
                     
                     # Construct Prompt
-                    prompt = "Analyze the following Weekly Performance Data tables and provide a concise set of key insights, focusing on significant changes, trends, and anomalies between the Last Period and Current Period.\n\n"
+                    prompt = "Phân tích các bảng dữ liệu Hiệu suất Hàng tuần dưới đây và đưa ra các insight chính, ngắn gọn, tập trung vào các thay đổi, xu hướng và bất thường đáng kể giữa Kỳ trước (Last Period) và Kỳ hiện tại (Current Period). Kết quả trả về bằng tiếng Việt.\n\n"
                     
                     for name, df in insight_data.items():
                         prompt += f"### Table: {name}\n"
                         prompt += df.to_csv(index=False)
                         prompt += "\n\n"
                         
-                    prompt += "Focus on:\n1. Which Brand Segments or Booking Sources had the biggest drops or improvements?\n2. Compare DOM vs INT performance shifts.\n3. Any notable observations regarding specific sign-up behaviors."
+                    prompt += "Tập trung vào:\n1. Phân khúc Thương hiệu (Brand Segments) hoặc Nguồn đặt phòng (Booking Sources) nào có sự tăng/giảm mạnh nhất?\n2. So sánh sự thay đổi hiệu suất giữa khách DOM (Nội địa) và INT (Quốc tế).\n3. Các quan sát đáng chú ý về hành vi đăng ký (sign-up)."
                     
                     with st.spinner("🤖 Analyzing data... please wait..."):
                         response = client.chat.completions.create(
                             model="gpt-4o",
                             messages=[
-                                {"role": "system", "content": "You are an expert data analyst realizing insights from hotel performance metrics."},
+                                {"role": "system", "content": "Bạn là một chuyên gia phân tích dữ liệu khách sạn. Hãy trả lời bằng tiếng Việt."},
                                 {"role": "user", "content": prompt}
                             ]
                         )

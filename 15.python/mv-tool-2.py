@@ -670,6 +670,54 @@ with tab_chart:
         )
         st.plotly_chart(fig2, use_container_width=True)
         
+        st.markdown("---")
+        
+        # CHART 3: DOM vs INT Check-in
+        if guest_country_col:
+            fig3 = go.Figure()
+            
+            # DOM Line
+            fig3.add_trace(go.Scatter(
+                x=chart_df["date"], y=chart_df["checkin_dom"], 
+                name="DOM", mode="lines+markers+text",
+                line=dict(color="#9b59b6", width=3),
+                text=chart_df["checkin_dom"].apply(lambda x: f"{int(x)}" if x > 0 else ""),
+                textposition="top center"
+            ))
+            
+            # INT Line
+            fig3.add_trace(go.Scatter(
+                x=chart_df["date"], y=chart_df["checkin_int"], 
+                name="INT", mode="lines+markers+text",
+                line=dict(color="#e74c3c", width=3),
+                text=chart_df["checkin_int"].apply(lambda x: f"{int(x)}" if x > 0 else ""),
+                textposition="top center"
+            ))
+            
+            # Add Boundary Line
+            fig3.add_vline(
+                x=period_boundary, line_width=2, line_dash="dash", line_color="#bdc3c7",
+                annotation_text="End of Last Period", 
+                annotation_position="top left"
+            )
+            
+            fig3.update_layout(
+                title="🌍 DOM vs INT Check-in Trends",
+                xaxis_title="Date",
+                yaxis_title="Count",
+                hovermode="x unified",
+                xaxis=dict(
+                    tickmode="linear",
+                    dtick=86400000.0, # 1 day
+                    tickformat="%d-%b"
+                ),
+                height=500,
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig3, use_container_width=True)
+        else:
+            st.warning("⚠️ Cannot generate DOM/INT chart: 'Guest Country' column not found.")
+        
     else:
         st.warning("No data found for the selected date range.")
 

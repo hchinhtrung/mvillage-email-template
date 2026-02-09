@@ -1239,10 +1239,11 @@ with tab_insight:
                     
                     ---
                     ### SECTION 2: EXECUTIVE SUMMARY (SHORTENED & CLEAR)
-                    This section is for a quick overview.
-                    - Provide a very concise table or bullet-point list summarizing the "Bottom Line" for each city.
-                    - Highlight only the MOST CRITICAL impact per city (e.g., "HCM: Sign-ups -20 due to OTA traffic slump (-50 Check-ins)").
-                    - Use absolute numbers only. No long sentences.
+                    This section is a summary of the key findings from SECTION 1.
+                    - Provide a very concise bullet-point list summarizing the "Bottom Line" for each city.
+                    - Distill the core insights from Section 1 into 1-2 powerful sentences or bullet points per city.
+                    - Highlight only the MOST CRITICAL impact per city (e.g., "HCM summary: Sign-ups dropped by -20 primarily due to a -50 drop in OTA Check-ins; staff conversion efficiency remained stable.").
+                    - Use absolute numbers only. Keep it sharp and punchy.
                     
                     ---
                     Văn phong chuyên nghiệp, English language only. 

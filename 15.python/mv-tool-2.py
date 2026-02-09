@@ -322,6 +322,74 @@ with tab_city_overview:
         hide_index=True
     )
 
+    st.markdown("---")
+    st.subheader("🏷️ Breakdown by Brand Model")
+
+    # Group by City + Brand
+    cb_last = (
+        last_df
+        .groupby([RES_CITY, BRAND_MODEL])[["checkin", "signup"]]
+        .sum()
+        .reset_index()
+    )
+
+    cb_cur = (
+        current_df
+        .groupby([RES_CITY, BRAND_MODEL])[["checkin", "signup"]]
+        .sum()
+        .reset_index()
+    )
+    
+    # Merge
+    cb = (
+        cb_last
+        .merge(cb_cur, on=[RES_CITY, BRAND_MODEL], suffixes=("_last", "_current"))
+        .fillna(0)
+    )
+
+    # Calculate CR and Change
+    cb["cr_last"] = np.where(
+        cb["checkin_last"] == 0, 0,
+        cb["signup_last"] / cb["checkin_last"] * 100
+    )
+
+    cb["cr_current"] = np.where(
+        cb["checkin_current"] == 0, 0,
+        cb["signup_current"] / cb["checkin_current"] * 100
+    )
+
+    cb["cr_change_%"] = np.where(
+        cb["cr_last"] == 0, 0,
+        (cb["cr_current"] / cb["cr_last"]) - 1
+    )
+
+    # Filtering/Ordering
+    # Normalize strings
+    cb[RES_CITY] = cb[RES_CITY].astype(str).str.upper().str.strip()
+    cb[BRAND_MODEL] = cb[BRAND_MODEL].astype(str).str.lower().str.strip()
+
+    # Categorical sort
+    cb[RES_CITY] = pd.Categorical(cb[RES_CITY], categories=CITY_ORDER, ordered=True)
+    cb[BRAND_MODEL] = pd.Categorical(cb[BRAND_MODEL], categories=BRAND_ORDER, ordered=True)
+
+    cb = cb.sort_values([RES_CITY, BRAND_MODEL])
+    
+    # Reorder columns for display
+    cols_order = [
+         RES_CITY, BRAND_MODEL,
+         "checkin_last", "checkin_current", 
+         "signup_last", "signup_current", 
+         "cr_last", "cr_current", "cr_change_%"
+    ]
+    # Keep only what exists
+    cols_order = [c for c in cols_order if c in cb.columns]
+    
+    st.dataframe(
+        style_df(cb[cols_order]), 
+        use_container_width=True,
+        hide_index=True
+    )
+
 
 # ======================
 # TAB 3 – City Ranking

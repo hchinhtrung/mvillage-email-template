@@ -511,12 +511,21 @@ with tab_chart:
     st.info(f"📅 Visualizing Data from: **{chart_start}** → **{chart_end}**")
     
     # Get daily data
+    # --- Data Processing for DOM/INT ---
+    # Find Guest Country column
+    guest_country_col = None
+    for col in res_df.columns:
+        if "guest" in col.lower() and "country" in col.lower():
+            guest_country_col = col
+            break
+            
     # Checkins
     res_range = filter_period(res_df, RES_DATE, chart_start, chart_end)
     
     if final_filter_hotels:
         res_range = res_range[res_range["hotel_key"].isin(final_filter_hotels)]
 
+    # 1. Total Checkin
     daily_res = (
         res_range.groupby(res_range[RES_DATE].dt.date)[RES_TENANT]
         .nunique()
@@ -524,6 +533,25 @@ with tab_chart:
     )
     daily_res.columns = ["date", "checkin"]
     
+    # 2. DOM/INT Breakdown
+    daily_dom_int = pd.DataFrame()
+    if guest_country_col:
+        # Create temp column for classification
+        res_range["_market_temp"] = np.where(
+            res_range[guest_country_col].astype(str).str.lower().str.strip() == "vietnam",
+            "DOM", "INT"
+        )
+        
+        # Aggregate
+        daily_breakdown = (
+            res_range.groupby([res_range[RES_DATE].dt.date, "_market_temp"])[RES_TENANT]
+            .nunique()
+            .reset_index(name="count")
+        )
+        # Pivot: date | DOM | INT
+        daily_dom_int = daily_breakdown.pivot(index=RES_DATE, columns="_market_temp", values="count").fillna(0).reset_index()
+        daily_dom_int.columns = ["date", "checkin_dom", "checkin_int"]
+        
     # Signups
     signup_range = filter_period(signup_df, SIGNUP_DATE, chart_start, chart_end)
     
@@ -537,8 +565,15 @@ with tab_chart:
     )
     daily_signup.columns = ["date", "signup"]
     
-    # Merge
+    # Merge all
     chart_df = pd.merge(daily_res, daily_signup, on="date", how="outer").fillna(0)
+    
+    if not daily_dom_int.empty:
+        chart_df = pd.merge(chart_df, daily_dom_int, on="date", how="left").fillna(0)
+    else:
+        chart_df["checkin_dom"] = 0
+        chart_df["checkin_int"] = 0
+        
     chart_df["date"] = pd.to_datetime(chart_df["date"])
     chart_df = chart_df.sort_values("date")
     
@@ -555,19 +590,29 @@ with tab_chart:
         
         # CHART 1: Checkin & Signup
         fig1 = go.Figure()
+        
+        # Checkin Trace with DOM/INT Hover
         fig1.add_trace(go.Scatter(
             x=chart_df["date"], y=chart_df["checkin"], 
             name="Checkin", mode="lines+markers+text",
             line=dict(color="#3498db", width=3),
             text=chart_df["checkin"].apply(lambda x: f"{int(x)}" if x > 0 else ""),
-            textposition="top center"
+            textposition="top center",
+            customdata=chart_df[["checkin_dom", "checkin_int"]],
+            hovertemplate=(
+                "<b>Checkin: %{y}</b><br>" +
+                "DOM: %{customdata[0]}<br>" +
+                "INT: %{customdata[1]}<extra></extra>"
+            )
         ))
+        
         fig1.add_trace(go.Scatter(
             x=chart_df["date"], y=chart_df["signup"], 
             name="Signup", mode="lines+markers+text",
             line=dict(color="#2ecc71", width=3),
             text=chart_df["signup"].apply(lambda x: f"{int(x)}" if x > 0 else ""),
-            textposition="top center"
+            textposition="top center",
+            hovertemplate="<b>Signup: %{y}</b><extra></extra>"
         ))
         
         # Add Boundary Line

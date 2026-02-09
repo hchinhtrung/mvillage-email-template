@@ -1150,136 +1150,136 @@ with tab_insight:
         # API Key Input
         api_key = st.text_input("🔑 Enter OpenAI API Key (Required)", type="password")
             
-            if st.button("✨ Generate Insight"):
-                if not api_key:
-                    st.error("Please provide an OpenAI API Key to continue.")
-                else:
-                    try:
-                        client = OpenAI(api_key=api_key)
-                        
-                        # --- 1. PREPARE AGGREGATED DATA FOR AI ---
-                        # We need a consolidated view: City | Brand | Source | Market | Checkin (Last/Cur) | Signup (Last/Cur)
-                        
-                        # Combine Period Data
-                        last_res_proc = last_res.copy()
-                        last_res_proc['Period'] = 'Last'
-                        
-                        current_res_proc = current_res.copy()
-                        current_res_proc['Period'] = 'Current'
-                        
-                        full_df = pd.concat([last_res_proc, current_res_proc])
-                        
-                        # Normalize Columns
-                        full_df[RES_CITY] = full_df[RES_CITY].astype(str).str.upper().str.strip()
-                        full_df[BRAND_MODEL] = full_df[BRAND_MODEL].astype(str).str.lower().str.strip()
-                        full_df[booking_source_col] = full_df[booking_source_col].fillna("Unknown").astype(str).str.strip()
-                        
-                        # Market (DOM/INT)
-                        full_df["Market"] = full_df[guest_country_col].apply(
-                            lambda x: "DOM" if str(x).strip().lower() == "vietnam" else "INT"
+        if st.button("✨ Generate Insight"):
+            if not api_key:
+                st.error("Please provide an OpenAI API Key to continue.")
+            else:
+                try:
+                    client = OpenAI(api_key=api_key)
+                    
+                    # --- 1. PREPARE AGGREGATED DATA FOR AI ---
+                    # We need a consolidated view: City | Brand | Source | Market | Checkin (Last/Cur) | Signup (Last/Cur)
+                    
+                    # Combine Period Data
+                    last_res_proc = last_res.copy()
+                    last_res_proc['Period'] = 'Last'
+                    
+                    current_res_proc = current_res.copy()
+                    current_res_proc['Period'] = 'Current'
+                    
+                    full_df = pd.concat([last_res_proc, current_res_proc])
+                    
+                    # Normalize Columns
+                    full_df[RES_CITY] = full_df[RES_CITY].astype(str).str.upper().str.strip()
+                    full_df[BRAND_MODEL] = full_df[BRAND_MODEL].astype(str).str.lower().str.strip()
+                    full_df[booking_source_col] = full_df[booking_source_col].fillna("Unknown").astype(str).str.strip()
+                    
+                    # Market (DOM/INT)
+                    full_df["Market"] = full_df[guest_country_col].apply(
+                        lambda x: "DOM" if str(x).strip().lower() == "vietnam" else "INT"
+                    )
+                    
+                    # Define Sign-up Success (using Group 3)
+                    # Normalize status for matching
+                    full_df[signup_status_col] = full_df[signup_status_col].astype(str).str.replace("\xa0", " ").str.strip()
+                    target_signup_statuses = [s.replace("\xa0", " ").strip() for s in group3]
+                    
+                    full_df['Is_Signup'] = full_df[signup_status_col].isin(target_signup_statuses).astype(int)
+                    
+                    # Aggregation: Group by Dimensions and Count Unique Tenants
+                    # 1. Check-ins (All tenants)
+                    metrics_checkin = full_df.groupby(
+                        [RES_CITY, BRAND_MODEL, booking_source_col, "Market", "Period"]
+                    )[RES_TENANT].nunique().reset_index(name="Checkin_Count")
+                    
+                    # 2. Sign-ups (Only Success tenants)
+                    metrics_signup = full_df[full_df['Is_Signup'] == 1].groupby(
+                        [RES_CITY, BRAND_MODEL, booking_source_col, "Market", "Period"]
+                    )[RES_TENANT].nunique().reset_index(name="Signup_Count")
+                    
+                    # Merge Metrics
+                    metrics_df = metrics_checkin.merge(
+                        metrics_signup,
+                        on=[RES_CITY, BRAND_MODEL, booking_source_col, "Market", "Period"],
+                        how="left"
+                    ).fillna(0)
+                    
+                    # Pivot to separate Last/Current columns
+                    pivot_df = metrics_df.pivot_table(
+                        index=[RES_CITY, BRAND_MODEL, booking_source_col, "Market"],
+                        columns='Period',
+                        values=['Checkin_Count', 'Signup_Count'],
+                        fill_value=0
+                    ).reset_index()
+                    
+                    # Flatten Column Names (e.g., Checkin_Count_Last, Signup_Count_Current)
+                    pivot_df.columns = [
+                        f"{col[0]}_{col[1]}" if col[1] else col[0] 
+                        for col in pivot_df.columns
+                    ]
+                    
+                    # Convert to CSV for Prompt
+                    csv_data = pivot_df.to_csv(index=False)
+                    
+                    # --- 2. CONSTRUCT PROMPT ---
+                    prompt = f"""
+                    Bạn là một chuyên gia phân tích dữ liệu tại Mvillage.
+                    Nhiệm vụ: Giải thích ngắn gọn lý do tăng/giảm Sign-up theo từng City.
+                    
+                    DỮ LIỆU ĐƯỢC CUNG CẤP (CSV) gồm các cột:
+                    - City, Brand, Source, Market (DOM/INT)
+                    - Checkin_Count_Last, Checkin_Count_Current (Số lượng khách Check-in)
+                    - Signup_Count_Last, Signup_Count_Current (Số lượng khách đã Sign-up)
+
+                    YÊU CẦU TRẢ LỜI:
+                    Hãy phân tích riêng cho TỪNG CITY (HCM, HN, DN...) theo cấu trúc sau:
+
+                    ### [TÊN CITY - Ví dụ: HCM]
+                    1. **📉 Tổng quan:**
+                       - Số lượng Sign-up tăng/giảm bao nhiêu? (Nêu số liệu).
+                       - Nguyên nhân chính: Do lượng Check-in biến động hay do tỷ lệ chốt (Conversion) biến động?
+
+                    2. **🏷️ Chi tiết Brand Model:**
+                       - Brand nào bị giảm/tăng nhiều nhất?
+                       - Tại sao? (Ví dụ: "Brand Living giảm sign-up do lượng Check-in giảm mạnh").
+
+                    3. **🌍 Yếu tố Khách hàng & Nguồn:**
+                       - Tăng/giảm do khách DOM hay INT? 
+                       - Do nguồn nào? (Ví dụ: "Do nguồn OTA sụt giảm lượng khách Check-in dẫn đến ít Sign-up hơn").
+                    
+                    QUY TẮC CỐT LÕI:
+                    - **CỰC KỲ NGẮN GỌN, KHÔNG DÀI DÒNG.**
+                    - Viết dạng gạch đầu dòng.
+                    - Giải thích dễ hiểu cho người không chuyên.
+                    - Luôn gắn kết nguyên nhân - kết quả: Check-in giảm -> Sign-up giảm.
+                    
+                    --- DỮ LIỆU ---
+                    {csv_data}
+                    """
+                    
+                    # --- 3. CALL API ---
+                    with st.spinner("🤖 AI is analyzing per City..."):
+                        response = client.chat.completions.create(
+                            model="gpt-4o",
+                            messages=[
+                                {"role": "system", "content": "Bạn là chuyên gia BI nói tiếng Việt, phong cách ngắn gọn, súc tích, đi thẳng vào vấn đề."},
+                                {"role": "user", "content": prompt}
+                            ]
                         )
                         
-                        # Define Sign-up Success (using Group 3)
-                        # Normalize status for matching
-                        full_df[signup_status_col] = full_df[signup_status_col].astype(str).str.replace("\xa0", " ").str.strip()
-                        target_signup_statuses = [s.replace("\xa0", " ").strip() for s in group3]
+                        insight_text = response.choices[0].message.content
                         
-                        full_df['Is_Signup'] = full_df[signup_status_col].isin(target_signup_statuses).astype(int)
+                        st.success("Analysis Complete!")
+                        st.markdown(insight_text)
                         
-                        # Aggregation: Group by Dimensions and Count Unique Tenants
-                        # 1. Check-ins (All tenants)
-                        metrics_checkin = full_df.groupby(
-                            [RES_CITY, BRAND_MODEL, booking_source_col, "Market", "Period"]
-                        )[RES_TENANT].nunique().reset_index(name="Checkin_Count")
-                        
-                        # 2. Sign-ups (Only Success tenants)
-                        metrics_signup = full_df[full_df['Is_Signup'] == 1].groupby(
-                            [RES_CITY, BRAND_MODEL, booking_source_col, "Market", "Period"]
-                        )[RES_TENANT].nunique().reset_index(name="Signup_Count")
-                        
-                        # Merge Metrics
-                        metrics_df = metrics_checkin.merge(
-                            metrics_signup,
-                            on=[RES_CITY, BRAND_MODEL, booking_source_col, "Market", "Period"],
-                            how="left"
-                        ).fillna(0)
-                        
-                        # Pivot to separate Last/Current columns
-                        pivot_df = metrics_df.pivot_table(
-                            index=[RES_CITY, BRAND_MODEL, booking_source_col, "Market"],
-                            columns='Period',
-                            values=['Checkin_Count', 'Signup_Count'],
-                            fill_value=0
-                        ).reset_index()
-                        
-                        # Flatten Column Names (e.g., Checkin_Count_Last, Signup_Count_Current)
-                        pivot_df.columns = [
-                            f"{col[0]}_{col[1]}" if col[1] else col[0] 
-                            for col in pivot_df.columns
-                        ]
-                        
-                        # Convert to CSV for Prompt
-                        csv_data = pivot_df.to_csv(index=False)
-                        
-                        # --- 2. CONSTRUCT PROMPT ---
-                        prompt = f"""
-                        Bạn là một chuyên gia phân tích dữ liệu tại Mvillage.
-                        Nhiệm vụ: Giải thích ngắn gọn lý do tăng/giảm Sign-up theo từng City.
-                        
-                        DỮ LIỆU ĐƯỢC CUNG CẤP (CSV) gồm các cột:
-                        - City, Brand, Source, Market (DOM/INT)
-                        - Checkin_Count_Last, Checkin_Count_Current (Số lượng khách Check-in)
-                        - Signup_Count_Last, Signup_Count_Current (Số lượng khách đã Sign-up)
-
-                        YÊU CẦU TRẢ LỜI:
-                        Hãy phân tích riêng cho TỪNG CITY (HCM, HN, DN...) theo cấu trúc sau:
-
-                        ### [TÊN CITY - Ví dụ: HCM]
-                        1. **📉 Tổng quan:**
-                           - Số lượng Sign-up tăng/giảm bao nhiêu? (Nêu số liệu).
-                           - Nguyên nhân chính: Do lượng Check-in biến động hay do tỷ lệ chốt (Conversion) biến động?
-
-                        2. **🏷️ Chi tiết Brand Model:**
-                           - Brand nào bị giảm/tăng nhiều nhất?
-                           - Tại sao? (Ví dụ: "Brand Living giảm sign-up do lượng Check-in giảm mạnh").
-
-                        3. **🌍 Yếu tố Khách hàng & Nguồn:**
-                           - Tăng/giảm do khách DOM hay INT? 
-                           - Do nguồn nào? (Ví dụ: "Do nguồn OTA sụt giảm lượng khách Check-in dẫn đến ít Sign-up hơn").
-                        
-                        QUY TẮC CỐT LÕI:
-                        - **CỰC KỲ NGẮN GỌN, KHÔNG DÀI DÒNG.**
-                        - Viết dạng gạch đầu dòng.
-                        - Giải thích dễ hiểu cho người không chuyên.
-                        - Luôn gắn kết nguyên nhân - kết quả: Check-in giảm -> Sign-up giảm.
-                        
-                        --- DỮ LIỆU ---
-                        {csv_data}
-                        """
-                        
-                        # --- 3. CALL API ---
-                        with st.spinner("🤖 AI is analyzing per City..."):
-                            response = client.chat.completions.create(
-                                model="gpt-4o",
-                                messages=[
-                                    {"role": "system", "content": "Bạn là chuyên gia BI nói tiếng Việt, phong cách ngắn gọn, súc tích, đi thẳng vào vấn đề."},
-                                    {"role": "user", "content": prompt}
-                                ]
-                            )
-                            
-                            insight_text = response.choices[0].message.content
-                            
-                            st.success("Analysis Complete!")
-                            st.markdown(insight_text)
-                            
-                    except RateLimitError:
-                        st.error("🚫 API Quota Exceeded (429). The provided API Key has run out of credits.")
-                    except AuthenticationError:
-                        st.error("🚫 Invalid API Key (401). Please check that your key is correct.")
-                    except APIConnectionError:
-                        st.error("🚫 Connection Error. Please check your internet connection.")
-                    except Exception as e:
-                        st.error(f"An unexpected error occurred: {str(e)}")
+                except RateLimitError:
+                    st.error("🚫 API Quota Exceeded (429). The provided API Key has run out of credits.")
+                except AuthenticationError:
+                    st.error("🚫 Invalid API Key (401). Please check that your key is correct.")
+                except APIConnectionError:
+                    st.error("🚫 Connection Error. Please check your internet connection.")
+                except Exception as e:
+                    st.error(f"An unexpected error occurred: {str(e)}")
         
     else:
         st.warning("⚠️ Please select the required columns to generate the insight tables.")

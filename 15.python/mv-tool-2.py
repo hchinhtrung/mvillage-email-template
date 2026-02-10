@@ -236,6 +236,41 @@ def style_df(df):
     return styler.applymap(color_change, subset=["cr_change_%"])
 
 # ======================================================
+# STYLING - Sticky Tabs
+# ======================================================
+st.markdown("""
+    <style>
+    /* Target the tab container and make it visible for sticky positioning */
+    div[data-testid="stTabs"] {
+        overflow: visible !important;
+    }
+    
+    /* Target the tab list (buttons) and make it sticky */
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] {
+        position: sticky;
+        top: 0px;
+        background-color: var(--background-color, white);
+        z-index: 1000;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border-bottom: 2px solid #f0f2f6;
+    }
+    
+    /* Ensure tab text is visible and buttons are clickable */
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] button {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        background-color: transparent !important;
+    }
+
+    /* Fix for potential overlap with sidebar or other elements */
+    [data-testid="stHeader"] {
+        z-index: 1001; /* Ensure streamlit header is above our sticky tabs */
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# ======================================================
 # TABS
 # ======================================================
 tab_global, tab_city_overview, tab_city_rank, tab_city_brand, tab_chart, tab_insight = st.tabs([

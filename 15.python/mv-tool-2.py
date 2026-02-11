@@ -1220,26 +1220,43 @@ with tab_insight:
         # Store tables for insight generation
         insight_data = {}
         
-        # Define status groups
-        # Table 1: Chưa Sign-up
-        df1 = build_comparison_table(last_res, current_res, ["Chưa Sign-up"], "1️⃣ Chưa Sign-up")
-        if df1 is not None:
-            insight_data["Chưa Sign-up"] = df1
+        # Get unique cities and sort them
+        unique_cities = res_df[RES_CITY].dropna().unique()
+        sorted_cities = sorted(unique_cities, key=lambda x: CITY_ORDER.index(x) if x in CITY_ORDER else 999)
+
+        for city in sorted_cities:
+            st.markdown(f"## 🏙️ City: {city}")
             
-        st.markdown("---")
-        
-        # Table 2: Đã Sign-up từ trước
-        df2 = build_comparison_table(last_res, current_res, ["Đã Sign-up từ trước"], "2️⃣ Đã Sign-up từ trước")
-        if df2 is not None:
-            insight_data["Đã Sign-up từ trước"] = df2
+            # Filter data for this city
+            city_last_res = last_res[last_res[RES_CITY] == city]
+            city_current_res = current_res[current_res[RES_CITY] == city]
             
-        st.markdown("---")
-        
-        # Table 3: Sign-up related to Check-in
-        group3 = ["Sign-up sau C/I", "Sign up trước 1 ngày check in", "Sign up trước 2 ngày check in"]
-        df3 = build_comparison_table(last_res, current_res, group3, "3️⃣ Sign-up liên quan Check-in")
-        if df3 is not None:
-            insight_data["Sign-up liên quan Check-in"] = df3
+            if city_last_res.empty and city_current_res.empty:
+                st.warning(f"No data for city: {city}")
+                continue
+
+            # Table 1: Chưa Sign-up
+            df1 = build_comparison_table(city_last_res, city_current_res, ["Chưa Sign-up"], f"1️⃣ {city} - Chưa Sign-up")
+            if df1 is not None:
+                insight_data[f"{city}_Chưa Sign-up"] = df1
+                
+            st.markdown("---")
+            
+            # Table 2: Đã Sign-up từ trước
+            df2 = build_comparison_table(city_last_res, city_current_res, ["Đã Sign-up từ trước"], f"2️⃣ {city} - Đã Sign-up từ trước")
+            if df2 is not None:
+                insight_data[f"{city}_Đã Sign-up từ trước"] = df2
+                
+            st.markdown("---")
+            
+            # Table 3: Sign-up related to Check-in
+            group3 = ["Sign-up sau C/I", "Sign up trước 1 ngày check in", "Sign up trước 2 ngày check in"]
+            df3 = build_comparison_table(city_last_res, city_current_res, group3, f"3️⃣ {city} - Sign-up liên quan Check-in")
+            if df3 is not None:
+                insight_data[f"{city}_Sign-up liên quan Check-in"] = df3
+            
+            st.markdown("<br><br>", unsafe_allow_html=True)
+
             
         # Prepare extra data for analysis
         # 1. Hotel Mapping

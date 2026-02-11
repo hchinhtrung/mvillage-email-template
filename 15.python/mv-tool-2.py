@@ -372,6 +372,24 @@ with tab_city_overview:
 
     city = city.sort_values(RES_CITY)
 
+    # --- ADD GRAND TOTAL ---
+    grand_total = pd.DataFrame([{
+        RES_CITY: "GRAND TOTAL",
+        "checkin_last": city["checkin_last"].sum(),
+        "checkin_current": city["checkin_current"].sum(),
+        "signup_last": city["signup_last"].sum(),
+        "signup_current": city["signup_current"].sum(),
+    }])
+    
+    # Recalculate derived metrics for grand total
+    grand_total["checkin_change_%"] = np.where(grand_total["checkin_last"] == 0, 0, (grand_total["checkin_current"] / grand_total["checkin_last"]) - 1)
+    grand_total["signup_change_%"] = np.where(grand_total["signup_last"] == 0, 0, (grand_total["signup_current"] / grand_total["signup_last"]) - 1)
+    grand_total["cr_last"] = np.where(grand_total["checkin_last"] == 0, 0, grand_total["signup_last"] / grand_total["checkin_last"] * 100)
+    grand_total["cr_current"] = np.where(grand_total["checkin_current"] == 0, 0, grand_total["signup_current"] / grand_total["checkin_current"] * 100)
+    grand_total["cr_change_%"] = np.where(grand_total["cr_last"] == 0, 0, (grand_total["cr_current"] / grand_total["cr_last"]) - 1)
+    
+    city = pd.concat([city, grand_total], ignore_index=True)
+
     # Reorder columns to group metrics together
     cols_order = [
          RES_CITY, 
@@ -380,8 +398,14 @@ with tab_city_overview:
          "cr_last", "cr_current", "cr_change_%"
     ]
     
+    # Styling for Grand Total
+    def style_grand_total(row):
+        if row[RES_CITY] == "GRAND TOTAL":
+            return ["font-weight: bold; background-color: #1e2129; color: #ffffff; border-top: 2px solid #E24D14;"] * len(row)
+        return [""] * len(row)
+
     st.dataframe(
-        style_df(city[cols_order]),
+        style_df(city[cols_order]).apply(style_grand_total, axis=1),
         use_container_width=True,
         hide_index=True
     )

@@ -249,11 +249,11 @@ st.markdown("""
     div[data-testid="stTabs"] [data-baseweb="tab-list"] {
         position: sticky;
         top: 0px;
-        background-color: var(--background-color, white);
+        background-color: #0e1117; /* Match Streamlit dark background */
         z-index: 1000;
         padding-top: 5px;
         padding-bottom: 5px;
-        border-bottom: 2px solid #f0f2f6;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     /* Ensure tab text is visible and buttons are clickable */
@@ -261,6 +261,13 @@ st.markdown("""
         padding-top: 10px;
         padding-bottom: 10px;
         background-color: transparent !important;
+        color: white !important;
+    }
+
+    /* Active tab style */
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] button[aria-selected="true"] {
+        color: #E24D14 !important; /* Primary color from user request history */
+        border-bottom: 2px solid #E24D14 !important;
     }
 
     /* Fix for potential overlap with sidebar or other elements */

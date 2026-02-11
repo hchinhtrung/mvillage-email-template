@@ -221,10 +221,10 @@ def reorder_columns(df):
         "hotel_key", RES_CITY, BRAND_MODEL,
         "rank_last", "rank_current", "rank_change",
         "checkin_last", "checkin_current", "checkin_change_%",
-        "signup_last", "signup_current", "signup_change_%",
-        "cr_last", "cr_current", "cr_change_%",
         "dom_last", "dom_current", "dom_change_%",
-        "int_last", "int_current", "int_change_%"
+        "int_last", "int_current", "int_change_%",
+        "signup_last", "signup_current", "signup_change_%",
+        "cr_last", "cr_current", "cr_change_%"
     ]
     return df[[c for c in cols if c in df.columns]]
 
@@ -446,10 +446,10 @@ with tab_city_overview:
     cols_order = [
          RES_CITY, 
          "checkin_last", "checkin_current", "checkin_change_%",
-         "signup_last", "signup_current", "signup_change_%",
-         "cr_last", "cr_current", "cr_change_%",
          "dom_last", "dom_current", "dom_change_%",
-         "int_last", "int_current", "int_change_%"
+         "int_last", "int_current", "int_change_%",
+         "signup_last", "signup_current", "signup_change_%",
+         "cr_last", "cr_current", "cr_change_%"
     ]
     
     # Styling for Grand Total
@@ -566,10 +566,10 @@ with tab_city_overview:
     cols_order = [
          RES_CITY, BRAND_MODEL,
          "checkin_last", "checkin_current", "checkin_change_%",
-         "signup_last", "signup_current", "signup_change_%",
-         "cr_last", "cr_current", "cr_change_%",
          "dom_last", "dom_current", "dom_change_%",
-         "int_last", "int_current", "int_change_%"
+         "int_last", "int_current", "int_change_%",
+         "signup_last", "signup_current", "signup_change_%",
+         "cr_last", "cr_current", "cr_change_%"
     ]
     # Keep only what exists
     cols_order = [c for c in cols_order if c in cb.columns]

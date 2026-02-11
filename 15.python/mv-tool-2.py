@@ -271,7 +271,6 @@ st.markdown("""
     /* Active tab style */
     div[data-testid="stTabs"] [data-baseweb="tab-list"] button[aria-selected="true"] {
         color: #E24D14 !important; /* Primary color from user request history */
-        border-bottom: 2px solid #E24D14 !important;
     }
 
     /* Fix for potential overlap with sidebar or other elements */

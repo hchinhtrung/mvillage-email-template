@@ -437,14 +437,34 @@ with tab_city_overview:
         (cb["cr_current"] / cb["cr_last"]) - 1
     )
 
+    # Calculate city totals to add as subtotal rows
+    city_totals = cb.groupby(RES_CITY).agg({
+        "checkin_last": "sum",
+        "checkin_current": "sum",
+        "signup_last": "sum",
+        "signup_current": "sum"
+    }).reset_index()
+    city_totals[BRAND_MODEL] = "TOTAL"
+    
+    # Recalculate derived metrics for totals
+    city_totals["checkin_change_%"] = np.where(city_totals["checkin_last"] == 0, 0, (city_totals["checkin_current"] / city_totals["checkin_last"]) - 1)
+    city_totals["signup_change_%"] = np.where(city_totals["signup_last"] == 0, 0, (city_totals["signup_current"] / city_totals["signup_last"]) - 1)
+    city_totals["cr_last"] = np.where(city_totals["checkin_last"] == 0, 0, city_totals["signup_last"] / city_totals["checkin_last"] * 100)
+    city_totals["cr_current"] = np.where(city_totals["checkin_current"] == 0, 0, city_totals["signup_current"] / city_totals["checkin_current"] * 100)
+    city_totals["cr_change_%"] = np.where(city_totals["cr_last"] == 0, 0, (city_totals["cr_current"] / city_totals["cr_last"]) - 1)
+    
+    # Append totals and filter/sort
+    cb = pd.concat([cb, city_totals], ignore_index=True)
+
     # Filtering/Ordering
     # Normalize strings
     cb[RES_CITY] = cb[RES_CITY].astype(str).str.upper().str.strip()
     cb[BRAND_MODEL] = cb[BRAND_MODEL].astype(str).str.lower().str.strip()
 
-    # Categorical sort
+    # Categorical sort - include TOTAL at the end of each city group
+    EXTENDED_BRAND_ORDER = BRAND_ORDER + ["total"]
     cb[RES_CITY] = pd.Categorical(cb[RES_CITY], categories=CITY_ORDER, ordered=True)
-    cb[BRAND_MODEL] = pd.Categorical(cb[BRAND_MODEL], categories=BRAND_ORDER, ordered=True)
+    cb[BRAND_MODEL] = pd.Categorical(cb[BRAND_MODEL], categories=EXTENDED_BRAND_ORDER, ordered=True)
 
     cb = cb.sort_values([RES_CITY, BRAND_MODEL])
     
@@ -458,8 +478,14 @@ with tab_city_overview:
     # Keep only what exists
     cols_order = [c for c in cols_order if c in cb.columns]
     
+    # Custom styling to bold the TOTAL rows
+    def bold_total(row):
+        if row[BRAND_MODEL] == "total":
+            return ["font-weight: bold; background-color: rgba(255, 255, 255, 0.05);"] * len(row)
+        return [""] * len(row)
+
     st.dataframe(
-        style_df(cb[cols_order]), 
+        style_df(cb[cols_order]).apply(bold_total, axis=1), 
         use_container_width=True,
         hide_index=True
     )

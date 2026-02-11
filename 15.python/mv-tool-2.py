@@ -233,7 +233,11 @@ def style_df(df):
         "cr_change_%": "{:.2%}",
     })
 
-    return styler.applymap(color_change, subset=["cr_change_%"])
+    # Apply color highlighting to ALL change columns that exist in the dataframe
+    change_cols = [c for c in df.columns if "_change_%" in c]
+    if change_cols:
+        return styler.applymap(color_change, subset=change_cols)
+    return styler
 
 # ======================================================
 # STYLING - Sticky Tabs
@@ -328,6 +332,16 @@ with tab_city_overview:
         .fillna(0)
     )
 
+    city["checkin_change_%"] = np.where(
+        city["checkin_last"] == 0, 0,
+        (city["checkin_current"] / city["checkin_last"]) - 1
+    )
+
+    city["signup_change_%"] = np.where(
+        city["signup_last"] == 0, 0,
+        (city["signup_current"] / city["signup_last"]) - 1
+    )
+
     city["cr_last"] = np.where(
         city["checkin_last"] == 0, 0,
         city["signup_last"] / city["checkin_last"] * 100
@@ -358,8 +372,16 @@ with tab_city_overview:
 
     city = city.sort_values(RES_CITY)
 
+    # Reorder columns to group metrics together
+    cols_order = [
+         RES_CITY, 
+         "checkin_last", "checkin_current", "checkin_change_%",
+         "signup_last", "signup_current", "signup_change_%",
+         "cr_last", "cr_current", "cr_change_%"
+    ]
+    
     st.dataframe(
-        style_df(city),
+        style_df(city[cols_order]),
         use_container_width=True,
         hide_index=True
     )
@@ -389,7 +411,17 @@ with tab_city_overview:
         .fillna(0)
     )
 
-    # Calculate CR and Change
+    # Calculate Metrics and Change
+    cb["checkin_change_%"] = np.where(
+        cb["checkin_last"] == 0, 0,
+        (cb["checkin_current"] / cb["checkin_last"]) - 1
+    )
+
+    cb["signup_change_%"] = np.where(
+        cb["signup_last"] == 0, 0,
+        (cb["signup_current"] / cb["signup_last"]) - 1
+    )
+
     cb["cr_last"] = np.where(
         cb["checkin_last"] == 0, 0,
         cb["signup_last"] / cb["checkin_last"] * 100
@@ -419,8 +451,8 @@ with tab_city_overview:
     # Reorder columns for display
     cols_order = [
          RES_CITY, BRAND_MODEL,
-         "checkin_last", "checkin_current", 
-         "signup_last", "signup_current", 
+         "checkin_last", "checkin_current", "checkin_change_%",
+         "signup_last", "signup_current", "signup_change_%",
          "cr_last", "cr_current", "cr_change_%"
     ]
     # Keep only what exists

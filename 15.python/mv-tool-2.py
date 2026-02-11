@@ -481,7 +481,7 @@ with tab_city_overview:
     # Custom styling to bold the TOTAL rows
     def bold_total(row):
         if row[BRAND_MODEL] == "total":
-            return ["font-weight: bold; background-color: rgba(255, 255, 255, 0.05);"] * len(row)
+            return ["font-weight: bold; background-color: #1e2129; color: #ffffff; border-bottom: 1px solid #E24D14;"] * len(row)
         return [""] * len(row)
 
     st.dataframe(

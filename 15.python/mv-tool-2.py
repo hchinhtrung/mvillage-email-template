@@ -109,11 +109,39 @@ with c2:
 # Metric builder
 # ======================
 def build_metric(res, signup):
-    checkin = (
-        res.groupby(["hotel_key", RES_CITY, BRAND_MODEL])[RES_TENANT]
-        .nunique()
-        .reset_index(name="checkin")
-    )
+    # Find Guest Country column
+    guest_country_col = next((col for col in res.columns if "guest" in col.lower() and "country" in col.lower()), None)
+    
+    # Base checkin aggregation
+    checkin_agg = res.groupby(["hotel_key", RES_CITY, BRAND_MODEL])
+    
+    checkin_total = checkin_agg[RES_TENANT].nunique().reset_index(name="checkin")
+
+    # DOM/INT checkin
+    if guest_country_col:
+        res_copy = res.copy()
+        res_copy["_is_dom"] = res_copy[guest_country_col].astype(str).str.lower().str.strip() == "vietnam"
+        
+        dom_checkin = (
+            res_copy[res_copy["_is_dom"]]
+            .groupby(["hotel_key", RES_CITY, BRAND_MODEL])[RES_TENANT]
+            .nunique()
+            .reset_index(name="dom")
+        )
+        
+        int_checkin = (
+            res_copy[~res_copy["_is_dom"]]
+            .groupby(["hotel_key", RES_CITY, BRAND_MODEL])[RES_TENANT]
+            .nunique()
+            .reset_index(name="int")
+        )
+        
+        checkin = checkin_total.merge(dom_checkin, on=["hotel_key", RES_CITY, BRAND_MODEL], how="left")
+        checkin = checkin.merge(int_checkin, on=["hotel_key", RES_CITY, BRAND_MODEL], how="left").fillna(0)
+    else:
+        checkin = checkin_total
+        checkin["dom"] = 0
+        checkin["int"] = 0
 
     signup = (
         signup.groupby("hotel_key")[SIGNUP_COUNT]
@@ -172,12 +200,13 @@ def build_compare(last, current):
 
     df["rank_change"] = df["rank_last"] - df["rank_current"]
 
-    for col in ["checkin", "signup", "cr"]:
-        df[f"{col}_change_%"] = np.where(
-            df[f"{col}_last"] == 0,
-            0,
-            (df[f"{col}_current"] / df[f"{col}_last"]) - 1
-        )
+    for col in ["checkin", "signup", "cr", "dom", "int"]:
+        if f"{col}_last" in df.columns:
+            df[f"{col}_change_%"] = np.where(
+                df[f"{col}_last"] == 0,
+                0,
+                (df[f"{col}_current"] / df[f"{col}_last"]) - 1
+            )
 
     return df
 
@@ -193,7 +222,9 @@ def reorder_columns(df):
         "rank_last", "rank_current", "rank_change",
         "checkin_last", "checkin_current", "checkin_change_%",
         "signup_last", "signup_current", "signup_change_%",
-        "cr_last", "cr_current", "cr_change_%"
+        "cr_last", "cr_current", "cr_change_%",
+        "dom_last", "dom_current", "dom_change_%",
+        "int_last", "int_current", "int_change_%"
     ]
     return df[[c for c in cols if c in df.columns]]
 
@@ -231,6 +262,12 @@ def style_df(df):
         "cr_last": "{:.2f}",
         "cr_current": "{:.2f}",
         "cr_change_%": "{:.2%}",
+        "dom_last": "{:.0f}",
+        "dom_current": "{:.0f}",
+        "dom_change_%": "{:.2%}",
+        "int_last": "{:.0f}",
+        "int_current": "{:.0f}",
+        "int_change_%": "{:.2%}",
     })
 
     # Apply color highlighting to ALL change columns that exist in the dataframe
@@ -313,14 +350,14 @@ with tab_city_overview:
 
     city_last = (
         last_df
-        .groupby(RES_CITY)[["checkin", "signup"]]
+        .groupby(RES_CITY)[["checkin", "signup", "dom", "int"]]
         .sum()
         .reset_index()
     )
 
     city_cur = (
         current_df
-        .groupby(RES_CITY)[["checkin", "signup"]]
+        .groupby(RES_CITY)[["checkin", "signup", "dom", "int"]]
         .sum()
         .reset_index()
     )
@@ -356,6 +393,16 @@ with tab_city_overview:
         (city["cr_current"] / city["cr_last"]) - 1
     )
 
+    city["dom_change_%"] = np.where(
+        city["dom_last"] == 0, 0,
+        (city["dom_current"] / city["dom_last"]) - 1
+    )
+
+    city["int_change_%"] = np.where(
+        city["int_last"] == 0, 0,
+        (city["int_current"] / city["int_last"]) - 1
+    )
+
     # 👉 FORCE CITY ORDER
     city[RES_CITY] = (
         city[RES_CITY]
@@ -378,6 +425,10 @@ with tab_city_overview:
         "checkin_current": city["checkin_current"].sum(),
         "signup_last": city["signup_last"].sum(),
         "signup_current": city["signup_current"].sum(),
+        "dom_last": city["dom_last"].sum(),
+        "dom_current": city["dom_current"].sum(),
+        "int_last": city["int_last"].sum(),
+        "int_current": city["int_current"].sum(),
     }])
     
     # Recalculate derived metrics for grand total
@@ -386,6 +437,8 @@ with tab_city_overview:
     grand_total["cr_last"] = np.where(grand_total["checkin_last"] == 0, 0, grand_total["signup_last"] / grand_total["checkin_last"] * 100)
     grand_total["cr_current"] = np.where(grand_total["checkin_current"] == 0, 0, grand_total["signup_current"] / grand_total["checkin_current"] * 100)
     grand_total["cr_change_%"] = np.where(grand_total["cr_last"] == 0, 0, (grand_total["cr_current"] / grand_total["cr_last"]) - 1)
+    grand_total["dom_change_%"] = np.where(grand_total["dom_last"] == 0, 0, (grand_total["dom_current"] / grand_total["dom_last"]) - 1)
+    grand_total["int_change_%"] = np.where(grand_total["int_last"] == 0, 0, (grand_total["int_current"] / grand_total["int_last"]) - 1)
     
     city = pd.concat([city, grand_total], ignore_index=True)
 
@@ -394,7 +447,9 @@ with tab_city_overview:
          RES_CITY, 
          "checkin_last", "checkin_current", "checkin_change_%",
          "signup_last", "signup_current", "signup_change_%",
-         "cr_last", "cr_current", "cr_change_%"
+         "cr_last", "cr_current", "cr_change_%",
+         "dom_last", "dom_current", "dom_change_%",
+         "int_last", "int_current", "int_change_%"
     ]
     
     # Styling for Grand Total
@@ -415,14 +470,14 @@ with tab_city_overview:
     # Group by City + Brand
     cb_last = (
         last_df
-        .groupby([RES_CITY, BRAND_MODEL])[["checkin", "signup"]]
+        .groupby([RES_CITY, BRAND_MODEL])[["checkin", "signup", "dom", "int"]]
         .sum()
         .reset_index()
     )
 
     cb_cur = (
         current_df
-        .groupby([RES_CITY, BRAND_MODEL])[["checkin", "signup"]]
+        .groupby([RES_CITY, BRAND_MODEL])[["checkin", "signup", "dom", "int"]]
         .sum()
         .reset_index()
     )
@@ -460,12 +515,26 @@ with tab_city_overview:
         (cb["cr_current"] / cb["cr_last"]) - 1
     )
 
+    cb["dom_change_%"] = np.where(
+        cb["dom_last"] == 0, 0,
+        (cb["dom_current"] / cb["dom_last"]) - 1
+    )
+
+    cb["int_change_%"] = np.where(
+        cb["int_last"] == 0, 0,
+        (cb["int_current"] / cb["int_last"]) - 1
+    )
+
     # Calculate city totals to add as subtotal rows
     city_totals = cb.groupby(RES_CITY).agg({
         "checkin_last": "sum",
         "checkin_current": "sum",
         "signup_last": "sum",
-        "signup_current": "sum"
+        "signup_current": "sum",
+        "dom_last": "sum",
+        "dom_current": "sum",
+        "int_last": "sum",
+        "int_current": "sum"
     }).reset_index()
     city_totals[BRAND_MODEL] = "TOTAL"
     
@@ -475,6 +544,8 @@ with tab_city_overview:
     city_totals["cr_last"] = np.where(city_totals["checkin_last"] == 0, 0, city_totals["signup_last"] / city_totals["checkin_last"] * 100)
     city_totals["cr_current"] = np.where(city_totals["checkin_current"] == 0, 0, city_totals["signup_current"] / city_totals["checkin_current"] * 100)
     city_totals["cr_change_%"] = np.where(city_totals["cr_last"] == 0, 0, (city_totals["cr_current"] / city_totals["cr_last"]) - 1)
+    city_totals["dom_change_%"] = np.where(city_totals["dom_last"] == 0, 0, (city_totals["dom_current"] / city_totals["dom_last"]) - 1)
+    city_totals["int_change_%"] = np.where(city_totals["int_last"] == 0, 0, (city_totals["int_current"] / city_totals["int_last"]) - 1)
     
     # Append totals and filter/sort
     cb = pd.concat([cb, city_totals], ignore_index=True)
@@ -496,7 +567,9 @@ with tab_city_overview:
          RES_CITY, BRAND_MODEL,
          "checkin_last", "checkin_current", "checkin_change_%",
          "signup_last", "signup_current", "signup_change_%",
-         "cr_last", "cr_current", "cr_change_%"
+         "cr_last", "cr_current", "cr_change_%",
+         "dom_last", "dom_current", "dom_change_%",
+         "int_last", "int_current", "int_change_%"
     ]
     # Keep only what exists
     cols_order = [c for c in cols_order if c in cb.columns]

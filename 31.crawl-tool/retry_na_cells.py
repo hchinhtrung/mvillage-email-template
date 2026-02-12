@@ -36,8 +36,8 @@ ELEMENT_WAIT = 20            # ⬆️ Wait for elements
 RETRY_BACKOFF = 2.0          # Exponential backoff multiplier
 
 # TESTING OPTIONS
-TEST_MODE = False            # Set True để chỉ retry 50 cells đầu (test)
-AUTO_START = False           # Set True để skip confirmation prompt
+TEST_MODE = True             # ✅ Set True để chỉ retry 50 cells đầu (test)
+AUTO_START = True            # ✅ Set True để skip confirmation prompt
 
 # ENHANCED STEALTH
 USER_AGENTS = [

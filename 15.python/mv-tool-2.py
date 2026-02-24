@@ -966,6 +966,249 @@ with tab_country:
                                 
                     except Exception as e:
                         st.error(f"Error generating insight: {str(e)}")
+
+            # ======================
+            # DOM / INT Sign-up Tables
+            # ======================
+            st.markdown("---")
+
+            # Define successful sign-up statuses
+            signup_success = [
+                "Sign up trước 2 ngày check in",
+                "Sign up trước 1 ngày check in",
+                "Sign-up sau C/I"
+            ]
+            signup_success_norm = [s.replace("\xa0", " ").strip() for s in signup_success]
+
+            # Classify DOM / INT
+            for df_tmp in [current_res_country, last_res_country]:
+                if not df_tmp.empty:
+                    df_tmp["_is_dom"] = df_tmp[guest_country_col].astype(str).str.lower().str.strip() == "vietnam"
+                    df_tmp["_is_signup"] = df_tmp[signup_status_col].isin(signup_success_norm)
+
+            def calc_signup_dom_int(df, group_cols):
+                """Count unique sign-up tenants by DOM/INT, grouped by group_cols."""
+                if df.empty:
+                    return pd.DataFrame(columns=group_cols + ["dom_signup", "int_signup"])
+                signup_df_tmp = df[df["_is_signup"]]
+                dom = signup_df_tmp[signup_df_tmp["_is_dom"]].groupby(group_cols)[RES_TENANT].nunique().reset_index(name="dom_signup")
+                intl = signup_df_tmp[~signup_df_tmp["_is_dom"]].groupby(group_cols)[RES_TENANT].nunique().reset_index(name="int_signup")
+                result = dom.merge(intl, on=group_cols, how="outer").fillna(0)
+                return result
+
+            def pct_change_safe(cur, last):
+                """Calculate % change, return 0 if last is 0."""
+                if last == 0:
+                    return float('inf') if cur > 0 else 0.0
+                return (cur - last) / last
+
+            def build_dom_int_table(last_agg, cur_agg, index_cols):
+                """Build combined LAST/CURRENT/% table for DOM and INT."""
+                # Merge
+                merged = cur_agg.merge(last_agg, on=index_cols, how="outer", suffixes=("_cur", "_last")).fillna(0)
+
+                result = pd.DataFrame()
+                for col_name in index_cols:
+                    result[col_name] = merged[col_name]
+
+                result["DOM Sign-up LAST"] = merged["dom_signup_last"]
+                result["DOM Sign-up CURRENT"] = merged["dom_signup_cur"]
+                result["DOM %"] = merged.apply(lambda r: pct_change_safe(r["dom_signup_cur"], r["dom_signup_last"]), axis=1)
+
+                result["INT Sign-up LAST"] = merged["int_signup_last"]
+                result["INT Sign-up CURRENT"] = merged["int_signup_cur"]
+                result["INT %"] = merged.apply(lambda r: pct_change_safe(r["int_signup_cur"], r["int_signup_last"]), axis=1)
+
+                result["TOTAL Sign-up LAST"] = result["DOM Sign-up LAST"] + result["INT Sign-up LAST"]
+                result["TOTAL Sign-up CURRENT"] = result["DOM Sign-up CURRENT"] + result["INT Sign-up CURRENT"]
+                result["TOTAL %"] = result.apply(lambda r: pct_change_safe(r["TOTAL Sign-up CURRENT"], r["TOTAL Sign-up LAST"]), axis=1)
+
+                return result
+
+            pct_cols_dom_int = ["DOM %", "INT %", "TOTAL %"]
+
+            def add_total_row(df, label="TOTAL", index_col=None):
+                """Add a total row to the dataframe."""
+                total = {}
+                for col in df.columns:
+                    if col in pct_cols_dom_int:
+                        # Recalculate % from sums
+                        base = col.replace(" %", " Sign-up LAST")
+                        cur = col.replace(" %", " Sign-up CURRENT")
+                        s_last = df[base].sum() if base in df.columns else 0
+                        s_cur = df[cur].sum() if cur in df.columns else 0
+                        total[col] = pct_change_safe(s_cur, s_last)
+                    elif df[col].dtype in ['float64', 'int64', 'int32', 'float32']:
+                        total[col] = df[col].sum()
+                    else:
+                        total[col] = label
+                total_row = pd.DataFrame([total])
+                return pd.concat([df, total_row], ignore_index=True)
+
+            def style_dom_int_table(row, total_labels, pct_cols, city_total_labels=None):
+                styles = [''] * len(row)
+                is_grand = False
+                is_city_total = False
+
+                # Check if this is a total row
+                for col in row.index:
+                    val = row[col]
+                    if isinstance(val, str):
+                        if val in total_labels:
+                            is_grand = True
+                        if city_total_labels and val in city_total_labels:
+                            is_city_total = True
+
+                for i, col in enumerate(row.index):
+                    if is_grand:
+                        styles[i] = "font-weight: bold; background-color: #1e2129; color: #ffffff; border-top: 2px solid #E24D14;"
+                    elif is_city_total:
+                        styles[i] = "font-weight: bold; background-color: #fffb91; color: #000000;"
+
+                    if col in pct_cols:
+                        chg_style = color_change(row[col])
+                        if is_grand or is_city_total:
+                            styles[i] += chg_style
+                        else:
+                            styles[i] = chg_style
+
+                return styles
+
+            def fmt_dom_int(df, pct_cols):
+                fmt = {}
+                for col in df.columns:
+                    if col in pct_cols:
+                        fmt[col] = "{:.2%}"
+                    elif df[col].dtype in ['float64', 'int64', 'int32', 'float32']:
+                        fmt[col] = "{:.0f}"
+                return fmt
+
+            # ---- TABLE 1: BY CITY ----
+            st.subheader("🏙️ Sign-up by City (DOM / INT)")
+            group_city = [RES_CITY]
+            cur_city = calc_signup_dom_int(current_res_country, group_city)
+            last_city = calc_signup_dom_int(last_res_country, group_city)
+            city_table = build_dom_int_table(last_city, cur_city, group_city)
+
+            # Sort by CITY_ORDER
+            city_order_map = {c: i for i, c in enumerate(CITY_ORDER)}
+            city_table["_sort"] = city_table[RES_CITY].map(city_order_map).fillna(99)
+            city_table = city_table.sort_values("_sort").drop(columns=["_sort"])
+
+            city_table = city_table.replace([float('inf'), float('-inf')], [9.99, -9.99])
+            city_table = add_total_row(city_table, label="TOTAL", index_col=RES_CITY)
+
+            st.dataframe(
+                city_table.style.apply(
+                    style_dom_int_table, axis=1,
+                    total_labels=["TOTAL"], pct_cols=pct_cols_dom_int
+                ).format(fmt_dom_int(city_table, pct_cols_dom_int)),
+                use_container_width=True,
+                hide_index=True
+            )
+
+            # ---- TABLE 2: SEGMENT (City × Brand) ----
+            st.subheader("🏷️ Sign-up by Segment (DOM / INT)")
+            group_seg = [RES_CITY, BRAND_MODEL]
+            cur_seg = calc_signup_dom_int(current_res_country, group_seg)
+            last_seg = calc_signup_dom_int(last_res_country, group_seg)
+            seg_table = build_dom_int_table(last_seg, cur_seg, group_seg)
+
+            # Sort by CITY_ORDER then BRAND_ORDER
+            brand_order_map = {b: i for i, b in enumerate(BRAND_ORDER)}
+            seg_table["_city_sort"] = seg_table[RES_CITY].map(city_order_map).fillna(99)
+            seg_table["_brand_sort"] = seg_table[BRAND_MODEL].astype(str).str.lower().map(brand_order_map).fillna(99)
+            seg_table = seg_table.sort_values(["_city_sort", "_brand_sort"]).drop(columns=["_city_sort", "_brand_sort"])
+
+            # Add city subtotals
+            city_total_labels = []
+            seg_rows = []
+            for city in seg_table[RES_CITY].unique():
+                city_data = seg_table[seg_table[RES_CITY] == city]
+                seg_rows.append(city_data)
+                # City subtotal
+                subtotal = {}
+                label = f"TOTAL {city}"
+                city_total_labels.append(label)
+                for col in seg_table.columns:
+                    if col == RES_CITY:
+                        subtotal[col] = label
+                    elif col == BRAND_MODEL:
+                        subtotal[col] = ""
+                    elif col in pct_cols_dom_int:
+                        base = col.replace(" %", " Sign-up LAST")
+                        cur_col = col.replace(" %", " Sign-up CURRENT")
+                        s_last = city_data[base].sum() if base in city_data.columns else 0
+                        s_cur = city_data[cur_col].sum() if cur_col in city_data.columns else 0
+                        subtotal[col] = pct_change_safe(s_cur, s_last)
+                    elif city_data[col].dtype in ['float64', 'int64', 'int32', 'float32']:
+                        subtotal[col] = city_data[col].sum()
+                    else:
+                        subtotal[col] = ""
+                seg_rows.append(pd.DataFrame([subtotal]))
+
+            seg_table_final = pd.concat(seg_rows, ignore_index=True)
+            seg_table_final = seg_table_final.replace([float('inf'), float('-inf')], [9.99, -9.99])
+
+            # Grand total
+            grand = {}
+            for col in seg_table_final.columns:
+                if col == RES_CITY:
+                    grand[col] = "GRAND TOTAL"
+                elif col == BRAND_MODEL:
+                    grand[col] = ""
+                elif col in pct_cols_dom_int:
+                    # Sum from original seg_table (not subtotals)
+                    base = col.replace(" %", " Sign-up LAST")
+                    cur_col = col.replace(" %", " Sign-up CURRENT")
+                    s_last = seg_table[base].sum() if base in seg_table.columns else 0
+                    s_cur = seg_table[cur_col].sum() if cur_col in seg_table.columns else 0
+                    grand[col] = pct_change_safe(s_cur, s_last)
+                elif seg_table[col].dtype in ['float64', 'int64', 'int32', 'float32']:
+                    grand[col] = seg_table[col].sum()
+                else:
+                    grand[col] = ""
+            seg_table_final = pd.concat([seg_table_final, pd.DataFrame([grand])], ignore_index=True)
+            seg_table_final = seg_table_final.replace([float('inf'), float('-inf')], [9.99, -9.99])
+
+            # Rename columns for display
+            seg_display = seg_table_final.rename(columns={RES_CITY: "CITY", BRAND_MODEL: "SEGMENT"})
+
+            st.dataframe(
+                seg_display.style.apply(
+                    style_dom_int_table, axis=1,
+                    total_labels=["GRAND TOTAL"], pct_cols=pct_cols_dom_int,
+                    city_total_labels=city_total_labels
+                ).format(fmt_dom_int(seg_display, pct_cols_dom_int)),
+                use_container_width=True,
+                hide_index=True,
+                height=600
+            )
+
+            # ---- TABLE 3: BREAK BY BRANCH ----
+            st.subheader("🏨 Sign-up Break by Branch (DOM / INT)")
+            group_hotel = [RES_HOTEL]
+            cur_hotel = calc_signup_dom_int(current_res_country, group_hotel)
+            last_hotel = calc_signup_dom_int(last_res_country, group_hotel)
+            hotel_table = build_dom_int_table(last_hotel, cur_hotel, group_hotel)
+
+            # Sort by TOTAL CURRENT descending
+            hotel_table = hotel_table.sort_values("TOTAL Sign-up CURRENT", ascending=False)
+            hotel_table = hotel_table.replace([float('inf'), float('-inf')], [9.99, -9.99])
+            hotel_table = add_total_row(hotel_table, label="TOTAL", index_col=RES_HOTEL)
+
+            hotel_display = hotel_table.rename(columns={RES_HOTEL: "Hotel Name"})
+
+            st.dataframe(
+                hotel_display.style.apply(
+                    style_dom_int_table, axis=1,
+                    total_labels=["TOTAL"], pct_cols=pct_cols_dom_int
+                ).format(fmt_dom_int(hotel_display, pct_cols_dom_int)),
+                use_container_width=True,
+                hide_index=True,
+                height=600
+            )
+
     else:
         st.error(f"Could not find required columns in Reservation File. Looking for columns containing 'Guest Country' and 'Sign-up Status v2'. Available columns: {', '.join(res_df.columns)}")
 

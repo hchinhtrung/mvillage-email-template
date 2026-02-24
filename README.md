@@ -65,6 +65,7 @@ A comprehensive collection of email templates for M Village hotel booking platfo
 - **17.start-review-loyalty/** - Review initiation for loyalty members
   - `start-review-loyalty-EN.html` - English version
   - `start-review-loyalty-VI.html` - Vietnamese version
+  - `review-v2.html` - Review version 2
 
 - **18.end-review-loyalty/** - Review completion for loyalty members
   - `end-review-loyalty-EN.html` - English version
@@ -110,6 +111,9 @@ A comprehensive collection of email templates for M Village hotel booking platfo
   - `b2b-reminder-v3-en.html` - English B2B reminder v3
   - `b2b-reminder-v3-vi.html` - Vietnamese B2B reminder v3
 
+- **30.b2b-pricing/** - B2B pricing introduction
+  - `intr0-b2b-pricing.html` - B2B pricing intro template
+
 ### 🎖️ Loyalty Program Management
 
 - **13.upgrade-tier/** - Tier upgrade notifications
@@ -125,6 +129,7 @@ A comprehensive collection of email templates for M Village hotel booking platfo
 - **23.landlord/** - Landlord-specific templates
   - `landlord.html` - Main landlord template
   - `landlord-demo.html` - Demo version
+  - `landlord-reject.html` - Rejection notification
 
 ### 🎁 Special Campaigns
 
@@ -133,7 +138,8 @@ A comprehensive collection of email templates for M Village hotel booking platfo
   - `platinum-vi.html` - Platinum tier Vietnamese version
   - `non-en.html` - Non-loyalty English version
   - `non-vi.html` - Non-loyalty Vietnamese version
-  - `resend-platinum.html` - Platinum resend template
+  - `resend-platinum-en.html` - Platinum resend English
+  - `resend-platinum-vi.html` - Platinum resend Vietnamese
 
 ### 🎯 Project Savvy (Complete Email Suite)
 
@@ -163,6 +169,18 @@ A comprehensive collection of email templates for M Village hotel booking platfo
   - `landlord-landing-page.html` - Landlord landing page
   - `original.html` - Original template
   - `survey-typeform-v1.html` - Typeform survey integration
+
+### 🕷️ Crawl Tools
+
+- **31.crawl-tool/** - Hotel price crawling and data collection tools
+  - `Crawl Price.ipynb` - Jupyter notebook for crawling hotel prices from OTAs
+  - `diagnose.py` - Diagnostic script for debugging crawl issues
+  - `export_location.py` - Export hotel location data
+  - `install_undetected.sh` - Setup script for undetected Chrome driver
+  - `raw.csv` / `raw20.csv` - Input data files with hotel URLs
+  - `hotel_prices_temp.csv` - Temporary crawl results
+  - `debug/` - Debug HTML pages and screenshots for troubleshooting
+  - `debug_screenshots/` - Crawl debug screenshots by hotel and week
 
 ### ⚠️ Issue Management
 
@@ -335,32 +353,6 @@ streamlit run mv-tool-2.py
 
 ---
 
-##### **mv-tool-2-1.py** - Weekly Ranking Comparison Dashboard
-
-**Purpose**: Advanced weekly comparison with styled visualizations
-
-**Usage:**
-
-```bash
-streamlit run mv-tool-2-1.py
-```
-
-**Features:**
-
-- Dual-period comparison (select any two date ranges)
-- Global, city, and city-brand ranking analysis
-- Color-coded performance indicators
-- Styled dataframes with custom headers
-- Comprehensive city overview with metrics
-- Export-ready formatted tables
-
-**Input Requirements:**
-
-- Signup file with date and count columns
-- Reservation file with hotel, city, and check-in data
-
----
-
 ##### **mv-tool-3.py** - Daily Recruit Funnel Dashboard
 
 **Purpose**: Daily signup funnel analysis with week-over-week metrics
@@ -414,112 +406,48 @@ streamlit run mv-tool-4.py
 
 #### 🔧 Utility Scripts
 
-##### **agoda_review.py** - Agoda Guest Type Analyzer
+##### **export_location.py** - Hotel Location Exporter
 
-**Purpose**: Analyze guest type distribution from Agoda reviews via API
-
-**Usage:**
-
-```bash
-streamlit run agoda_review.py
-```
-
-**Features:**
-
-- API-based analysis (no web scraping required)
-- No property ID needed - just paste Agoda URLs
-- Guest type breakdown: Solo, Couple, Family, Group, Business
-- Insight layer with guest mix classification
-- Percentage analysis (Couple %, Business %)
-- CSV export for further analysis
-- Batch processing of multiple hotels
-
-**Input Requirements:**
-
-- Agoda hotel URLs (one per line)
-
----
-
-##### **send-b2b-lead.py** - B2B Lead Email Automation
-
-**Purpose**: Automated B2B lead email sending
+**Purpose**: Export hotel location data for analysis
 
 **Usage:**
 
 ```bash
-python send-b2b-lead.py
+python export_location.py
 ```
-
-**Features:**
-
-- CSV data import for batch processing
-- API integration with M Village backend
-- Error handling and retry logic
-- Success/failure logging
-
----
-
-##### **detect_booking_id.py** - Booking ID Detection
-
-**Purpose**: Utility for detecting and validating booking IDs
-
-**Usage:**
-
-```bash
-python detect_booking_id.py
-```
-
----
-
-##### **process-csv.py** - CSV Processing Utility
-
-**Purpose**: General CSV data processing and transformation
-
-**Usage:**
-
-```bash
-python process-csv.py
-```
-
----
-
-##### **retry.py** - Retry Logic Utility
-
-**Purpose**: Helper module for implementing retry logic in API calls
 
 ---
 
 #### 📓 Data Analysis Notebooks
 
-##### **Updated_Trip - VAT.ipynb** - Jupyter Notebook
+##### **Crawl Price.ipynb** - Hotel Price Crawling Notebook
 
-**Purpose**: Data analysis and VAT calculations for trip data
+**Purpose**: Crawl and analyze hotel prices from OTAs
 
 **Usage:**
 
 ```bash
-jupyter notebook "Updated_Trip - VAT.ipynb"
+jupyter notebook "Crawl Price.ipynb"
 ```
 
 **Features:**
 
-- Trip data analysis
-- VAT calculations and reporting
-- Data visualization
-- Export capabilities
+- OTA price data crawling
+- Price comparison and analysis
+- Data export capabilities
 
 ---
 
 ### Tool Selection Guide
 
-| Use Case                       | Recommended Tool                   |
-| ------------------------------ | ---------------------------------- |
-| Analyze hotel conversion rates | `mv-tool-1.py`                     |
-| Track weekly ranking changes   | `mv-tool-2.py` or `mv-tool-2-1.py` |
-| Monitor daily signup funnel    | `mv-tool-3.py`                     |
-| Executive performance overview | `mv-tool-4.py`                     |
-| Understand guest demographics  | `agoda_review.py`                  |
-| Send B2B lead emails           | `send-b2b-lead.py`                 |
+| Use Case                       | Recommended Tool     |
+| ------------------------------ | -------------------- |
+| Analyze hotel conversion rates | `mv-tool-1.py`       |
+| Track weekly ranking changes   | `mv-tool-2.py`       |
+| Monitor daily signup funnel    | `mv-tool-3.py`       |
+| Executive performance overview | `mv-tool-4.py`       |
+| Export hotel locations         | `export_location.py` |
+| Crawl hotel prices             | `Crawl Price.ipynb`  |
 
 ### Tips for Using Python Tools
 
@@ -606,6 +534,6 @@ When adding new templates or modifying existing ones:
 
 ---
 
-**Last Updated**: January 2025  
-**Version**: 2.1  
+**Last Updated**: February 2026
+**Version**: 2.2
 **Maintained by**: M Village Development Team

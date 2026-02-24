@@ -320,11 +320,12 @@ st.markdown("""
 # ======================================================
 # TABS
 # ======================================================
-tab_global, tab_city_overview, tab_city_rank, tab_city_brand, tab_chart, tab_insight = st.tabs([
+tab_global, tab_city_overview, tab_city_rank, tab_city_brand, tab_country, tab_chart, tab_insight = st.tabs([
     "📊 Global Ranking",
     "🏙️ City Performance Overview",
     "🏙️ City-level Ranking",
     "🏷️ City × Brand Model Ranking",
+    "🌍 Country",
     "📈 Chart",
     "💡 Insight"
 ])
@@ -687,6 +688,109 @@ with tab_city_brand:
                 use_container_width=True,
                 hide_index=True
             )
+
+
+# ======================
+# TAB – Country
+# ======================
+with tab_country:
+    st.subheader("🌍 Analysis by Guest Country (Current Period)")
+    
+    # --- Filter Logic for Country Tab ---
+    fc1, fc2 = st.columns(2)
+    with fc1:
+        # Brand Filter
+        all_brands = sorted(res_df[BRAND_MODEL].astype(str).unique()) if BRAND_MODEL in res_df.columns else []
+        selected_brands = st.multiselect("🏷️ Filter by Brand Model", options=all_brands, key="country_brand_filter")
+    
+    with fc2:
+        # Hotel Filter
+        hotel_options_df = res_df.copy()
+        if selected_brands:
+            hotel_options_df = hotel_options_df[hotel_options_df[BRAND_MODEL].astype(str).isin(selected_brands)]
+        
+        all_hotels_options = sorted(hotel_options_df[RES_HOTEL].unique())
+        selected_hotels = st.multiselect("🏨 Filter by Hotel", options=all_hotels_options, key="country_hotel_filter")
+
+    # Auto-find columns
+    guest_country_col = next((col for col in res_df.columns if "guest" in col.lower() and "country" in col.lower()), None)
+    signup_status_col = next((col for col in res_df.columns if "sign" in col.lower() and "status" in col.lower() and "v2" in col.lower()), None)
+    
+    if guest_country_col and signup_status_col:
+        # Filter data for current period
+        current_res_country = filter_period(res_df, RES_DATE, current_from, current_to).copy()
+        
+        # Apply Brand/Hotel Filters
+        if selected_brands:
+            current_res_country = current_res_country[current_res_country[BRAND_MODEL].astype(str).isin(selected_brands)]
+        if selected_hotels:
+            current_res_country = current_res_country[current_res_country[RES_HOTEL].isin(selected_hotels)]
+        
+        if current_res_country.empty:
+            st.warning("No data found for the Current Period with selected filters.")
+        else:
+            # Normalize status strings
+            current_res_country[signup_status_col] = (
+                current_res_country[signup_status_col]
+                .astype(str)
+                .str.replace("\xa0", " ", regex=False)
+                .str.strip()
+            )
+            
+            # Specific statuses requested
+            target_statuses = [
+                "Chưa Sign-up",
+                "Sign-up sau C/I",
+                "Sign up trước 1 ngày check in",
+                "Đã Sign-up từ trước",
+                "Sign up trước 2 ngày check in"
+            ]
+            target_statuses_norm = [s.replace("\xa0", " ").strip() for s in target_statuses]
+            
+            # Group and count unique tenants
+            country_stats = current_res_country.groupby([guest_country_col, signup_status_col])[RES_TENANT].nunique().reset_index(name="count")
+            
+            # Pivot
+            pivot_df = country_stats.pivot_table(
+                index=guest_country_col,
+                columns=signup_status_col,
+                values="count",
+                fill_value=0
+            )
+            
+            # Ensure all target columns exist
+            for status in target_statuses_norm:
+                if status not in pivot_df.columns:
+                    pivot_df[status] = 0
+            
+            # Filter and order columns
+            display_df = pivot_df[target_statuses_norm].copy()
+            display_df.columns = target_statuses
+            
+            # Calculate Total
+            display_df["Total Guests"] = display_df.sum(axis=1)
+            
+            # Sort
+            display_df = display_df.sort_values("Total Guests", ascending=False)
+            
+            # Grand Total
+            grand_total = display_df.sum().to_frame().T
+            grand_total.index = ["GRAND TOTAL"]
+            display_df = pd.concat([display_df, grand_total])
+            
+            # Styling for Grand Total and Header
+            def style_country_rows(row):
+                if row.name == "GRAND TOTAL":
+                    return ["font-weight: bold; background-color: #1e2129; color: #ffffff; border-top: 2px solid #E24D14;"] * len(row)
+                return [""] * len(row)
+            
+            st.dataframe(
+                display_df.style.apply(style_country_rows, axis=1).format("{:.0f}"),
+                use_container_width=True,
+                height=600
+            )
+    else:
+        st.error(f"Could not find required columns in Reservation File. Looking for columns containing 'Guest Country' and 'Sign-up Status v2'. Available columns: {', '.join(res_df.columns)}")
 
 
 # ======================

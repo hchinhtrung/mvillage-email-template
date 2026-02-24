@@ -989,11 +989,16 @@ with tab_country:
             def calc_signup_dom_int(df, group_cols):
                 """Count unique sign-up tenants by DOM/INT, grouped by group_cols."""
                 if df.empty:
-                    return pd.DataFrame(columns=group_cols + ["dom_signup", "int_signup"])
+                    return pd.DataFrame(columns=group_cols + ["dom_signup", "int_signup", "dom_checkin", "int_checkin"])
+                # Sign-up counts
                 signup_df_tmp = df[df["_is_signup"]]
-                dom = signup_df_tmp[signup_df_tmp["_is_dom"]].groupby(group_cols)[RES_TENANT].nunique().reset_index(name="dom_signup")
-                intl = signup_df_tmp[~signup_df_tmp["_is_dom"]].groupby(group_cols)[RES_TENANT].nunique().reset_index(name="int_signup")
-                result = dom.merge(intl, on=group_cols, how="outer").fillna(0)
+                int_su = signup_df_tmp[~signup_df_tmp["_is_dom"]].groupby(group_cols)[RES_TENANT].nunique().reset_index(name="int_signup")
+                # Check-in counts (all guests)
+                dom_ci = df[df["_is_dom"]].groupby(group_cols)[RES_TENANT].nunique().reset_index(name="dom_checkin")
+                int_ci = df[~df["_is_dom"]].groupby(group_cols)[RES_TENANT].nunique().reset_index(name="int_checkin")
+                result = dom_su.merge(int_su, on=group_cols, how="outer")
+                result = result.merge(dom_ci, on=group_cols, how="outer")
+                result = result.merge(int_ci, on=group_cols, how="outer").fillna(0)
                 return result
 
             def pct_change_safe(cur, last):
@@ -1003,7 +1008,7 @@ with tab_country:
                 return (cur - last) / last
 
             def build_dom_int_table(last_agg, cur_agg, index_cols):
-                """Build combined LAST/CURRENT/% table for DOM and INT."""
+                """Build combined LAST/CURRENT/% table for DOM and INT checkin + signup."""
                 # Merge
                 merged = cur_agg.merge(last_agg, on=index_cols, how="outer", suffixes=("_cur", "_last")).fillna(0)
 
@@ -1011,32 +1016,52 @@ with tab_country:
                 for col_name in index_cols:
                     result[col_name] = merged[col_name]
 
+                # DOM Checkin
+                result["DOM Checkin LAST"] = merged["dom_checkin_last"]
+                result["DOM Checkin CURRENT"] = merged["dom_checkin_cur"]
+                result["DOM Checkin %"] = merged.apply(lambda r: pct_change_safe(r["dom_checkin_cur"], r["dom_checkin_last"]), axis=1)
+
+                # DOM Sign-up
                 result["DOM Sign-up LAST"] = merged["dom_signup_last"]
                 result["DOM Sign-up CURRENT"] = merged["dom_signup_cur"]
-                result["DOM %"] = merged.apply(lambda r: pct_change_safe(r["dom_signup_cur"], r["dom_signup_last"]), axis=1)
+                result["DOM Sign-up %"] = merged.apply(lambda r: pct_change_safe(r["dom_signup_cur"], r["dom_signup_last"]), axis=1)
 
+                # INT Checkin
+                result["INT Checkin LAST"] = merged["int_checkin_last"]
+                result["INT Checkin CURRENT"] = merged["int_checkin_cur"]
+                result["INT Checkin %"] = merged.apply(lambda r: pct_change_safe(r["int_checkin_cur"], r["int_checkin_last"]), axis=1)
+
+                # INT Sign-up
                 result["INT Sign-up LAST"] = merged["int_signup_last"]
                 result["INT Sign-up CURRENT"] = merged["int_signup_cur"]
-                result["INT %"] = merged.apply(lambda r: pct_change_safe(r["int_signup_cur"], r["int_signup_last"]), axis=1)
+                result["INT Sign-up %"] = merged.apply(lambda r: pct_change_safe(r["int_signup_cur"], r["int_signup_last"]), axis=1)
 
+                # TOTAL
                 result["TOTAL Sign-up LAST"] = result["DOM Sign-up LAST"] + result["INT Sign-up LAST"]
                 result["TOTAL Sign-up CURRENT"] = result["DOM Sign-up CURRENT"] + result["INT Sign-up CURRENT"]
-                result["TOTAL %"] = result.apply(lambda r: pct_change_safe(r["TOTAL Sign-up CURRENT"], r["TOTAL Sign-up LAST"]), axis=1)
+                result["TOTAL Sign-up %"] = result.apply(lambda r: pct_change_safe(r["TOTAL Sign-up CURRENT"], r["TOTAL Sign-up LAST"]), axis=1)
 
                 return result
 
-            pct_cols_dom_int = ["DOM %", "INT %", "TOTAL %"]
+            pct_cols_dom_int = ["DOM Checkin %", "DOM Sign-up %", "INT Checkin %", "INT Sign-up %", "TOTAL Sign-up %"]
+
+            # Mapping: % col -> (LAST col, CURRENT col) for recalculating totals
+            pct_col_pairs = {
+                "DOM Checkin %": ("DOM Checkin LAST", "DOM Checkin CURRENT"),
+                "DOM Sign-up %": ("DOM Sign-up LAST", "DOM Sign-up CURRENT"),
+                "INT Checkin %": ("INT Checkin LAST", "INT Checkin CURRENT"),
+                "INT Sign-up %": ("INT Sign-up LAST", "INT Sign-up CURRENT"),
+                "TOTAL Sign-up %": ("TOTAL Sign-up LAST", "TOTAL Sign-up CURRENT"),
+            }
 
             def add_total_row(df, label="TOTAL", index_col=None):
                 """Add a total row to the dataframe."""
                 total = {}
                 for col in df.columns:
-                    if col in pct_cols_dom_int:
-                        # Recalculate % from sums
-                        base = col.replace(" %", " Sign-up LAST")
-                        cur = col.replace(" %", " Sign-up CURRENT")
-                        s_last = df[base].sum() if base in df.columns else 0
-                        s_cur = df[cur].sum() if cur in df.columns else 0
+                    if col in pct_col_pairs:
+                        last_col, cur_col = pct_col_pairs[col]
+                        s_last = df[last_col].sum() if last_col in df.columns else 0
+                        s_cur = df[cur_col].sum() if cur_col in df.columns else 0
                         total[col] = pct_change_safe(s_cur, s_last)
                     elif df[col].dtype in ['float64', 'int64', 'int32', 'float32']:
                         total[col] = df[col].sum()
@@ -1135,11 +1160,10 @@ with tab_country:
                         subtotal[col] = label
                     elif col == BRAND_MODEL:
                         subtotal[col] = ""
-                    elif col in pct_cols_dom_int:
-                        base = col.replace(" %", " Sign-up LAST")
-                        cur_col = col.replace(" %", " Sign-up CURRENT")
-                        s_last = city_data[base].sum() if base in city_data.columns else 0
-                        s_cur = city_data[cur_col].sum() if cur_col in city_data.columns else 0
+                    elif col in pct_col_pairs:
+                        last_c, cur_c = pct_col_pairs[col]
+                        s_last = city_data[last_c].sum() if last_c in city_data.columns else 0
+                        s_cur = city_data[cur_c].sum() if cur_c in city_data.columns else 0
                         subtotal[col] = pct_change_safe(s_cur, s_last)
                     elif city_data[col].dtype in ['float64', 'int64', 'int32', 'float32']:
                         subtotal[col] = city_data[col].sum()
@@ -1157,12 +1181,10 @@ with tab_country:
                     grand[col] = "GRAND TOTAL"
                 elif col == BRAND_MODEL:
                     grand[col] = ""
-                elif col in pct_cols_dom_int:
-                    # Sum from original seg_table (not subtotals)
-                    base = col.replace(" %", " Sign-up LAST")
-                    cur_col = col.replace(" %", " Sign-up CURRENT")
-                    s_last = seg_table[base].sum() if base in seg_table.columns else 0
-                    s_cur = seg_table[cur_col].sum() if cur_col in seg_table.columns else 0
+                elif col in pct_col_pairs:
+                    last_c, cur_c = pct_col_pairs[col]
+                    s_last = seg_table[last_c].sum() if last_c in seg_table.columns else 0
+                    s_cur = seg_table[cur_c].sum() if cur_c in seg_table.columns else 0
                     grand[col] = pct_change_safe(s_cur, s_last)
                 elif seg_table[col].dtype in ['float64', 'int64', 'int32', 'float32']:
                     grand[col] = seg_table[col].sum()

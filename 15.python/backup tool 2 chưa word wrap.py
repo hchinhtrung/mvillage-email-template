@@ -248,34 +248,6 @@ def color_change(val):
     else:
         return "background-color:#27ae60;color:white;"
 
-def _short_label(col):
-    """Shorten column name for display in narrow equal-width columns."""
-    s = col
-    # Tab 1-4: underscore-based names
-    s = s.replace("checkin", "CI").replace("signup", "SU").replace("rank", "Rk")
-    s = s.replace("hotel_key", "Hotel")
-    s = s.replace("_change_%", " Δ%").replace("_change", " Δ")
-    s = s.replace("_last", " ←").replace("_current", " →")
-    s = s.replace("_", " ")
-    # Country tab: "Status LAST" / "Status CURRENT" / "Status %"
-    s = s.replace(" LAST", " ←").replace(" CURRENT", " →")
-    s = s.replace("Checkin", "CI").replace("Sign-up", "SU")
-    return s.upper()
-
-def equal_col_config(df_or_styler, min_width=80):
-    cols = df_or_styler.data.columns if hasattr(df_or_styler, 'data') else df_or_styler.columns
-    n = len(cols)
-    if n == 0:
-        return {}
-    w = max(min_width, 1200 // n)
-    return {
-        col: st.column_config.Column(
-            label=_short_label(col),
-            width=w,
-            help=col
-        ) for col in cols
-    }
-
 def style_df(df):
     styler = df.style.format({
         "rank_last": "{:.0f}",
@@ -369,9 +341,8 @@ with tab_global:
             add_global_rank(current_df)
         ).sort_values("rank_current")
     )
-    styled = style_df(df)
-    st.dataframe(styled, use_container_width=True, hide_index=True, column_config=equal_col_config(styled))
-
+    st.dataframe(style_df(df), use_container_width=True, hide_index=True)
+    
 # ======================
 # TAB 2 – City Overview
 # ======================
@@ -488,12 +459,10 @@ with tab_city_overview:
             return ["font-weight: bold; background-color: #1e2129; color: #ffffff; border-top: 2px solid #E24D14;"] * len(row)
         return [""] * len(row)
 
-    styled = style_df(city[cols_order]).apply(style_grand_total, axis=1)
     st.dataframe(
-        styled,
+        style_df(city[cols_order]).apply(style_grand_total, axis=1),
         use_container_width=True,
-        hide_index=True,
-        column_config=equal_col_config(styled)
+        hide_index=True
     )
 
     st.markdown("---")
@@ -612,12 +581,10 @@ with tab_city_overview:
             return ["font-weight: bold; background-color: #1e2129; color: #ffffff; border-bottom: 1px solid #E24D14;"] * len(row)
         return [""] * len(row)
 
-    styled = style_df(cb[cols_order]).apply(bold_total, axis=1)
     st.dataframe(
-        styled,
+        style_df(cb[cols_order]).apply(bold_total, axis=1), 
         use_container_width=True,
-        hide_index=True,
-        column_config=equal_col_config(styled)
+        hide_index=True
     )
 
 
@@ -652,16 +619,14 @@ with tab_city_rank:
         .groupby(RES_CITY, sort=False)
     ):
         st.markdown(f"### 📍 {city}")
-        styled = style_df(
-            reorder_columns(
-                cdf.sort_values("rank_current")
-            )
-        )
         st.dataframe(
-            styled,
+            style_df(
+                reorder_columns(
+                    cdf.sort_values("rank_current")
+                )
+            ),
             use_container_width=True,
-            hide_index=True,
-            column_config=equal_col_config(styled)
+            hide_index=True
         )
 
 
@@ -718,12 +683,10 @@ with tab_city_brand:
                 continue
 
             st.markdown(f"### 🏷️ Brand Model: {bm}")
-            styled = style_df(reorder_columns(bm_df))
             st.dataframe(
-                styled,
+                style_df(reorder_columns(bm_df)),
                 use_container_width=True,
-                hide_index=True,
-                column_config=equal_col_config(styled)
+                hide_index=True
             )
 
 
@@ -886,12 +849,10 @@ with tab_country:
                             styles[i] = chg_style
                 return styles
 
-            styled = display_df.style.apply(style_country_df, axis=1).format(fmt)
             st.dataframe(
-                styled,
+                display_df.style.apply(style_country_df, axis=1).format(fmt),
                 use_container_width=True,
-                height=600,
-                column_config=equal_col_config(styled, min_width=130)
+                height=600
             )
 
             # --- AI Summary for Country Tab ---
@@ -1163,15 +1124,13 @@ with tab_country:
             city_table = city_table.replace([float('inf'), float('-inf')], [9.99, -9.99])
             city_table = add_total_row(city_table, label="TOTAL", index_col=RES_CITY)
 
-            styled = city_table.style.apply(
-                style_dom_int_table, axis=1,
-                total_labels=["TOTAL"], pct_cols=pct_cols_dom_int
-            ).format(fmt_dom_int(city_table, pct_cols_dom_int))
             st.dataframe(
-                styled,
+                city_table.style.apply(
+                    style_dom_int_table, axis=1,
+                    total_labels=["TOTAL"], pct_cols=pct_cols_dom_int
+                ).format(fmt_dom_int(city_table, pct_cols_dom_int)),
                 use_container_width=True,
-                hide_index=True,
-                column_config=equal_col_config(styled)
+                hide_index=True
             )
 
             # ---- TABLE 2: SEGMENT (City × Brand) ----
@@ -1238,17 +1197,15 @@ with tab_country:
             # Rename columns for display
             seg_display = seg_table_final.rename(columns={RES_CITY: "CITY", BRAND_MODEL: "SEGMENT"})
 
-            styled = seg_display.style.apply(
-                style_dom_int_table, axis=1,
-                total_labels=["GRAND TOTAL"], pct_cols=pct_cols_dom_int,
-                city_total_labels=city_total_labels
-            ).format(fmt_dom_int(seg_display, pct_cols_dom_int))
             st.dataframe(
-                styled,
+                seg_display.style.apply(
+                    style_dom_int_table, axis=1,
+                    total_labels=["GRAND TOTAL"], pct_cols=pct_cols_dom_int,
+                    city_total_labels=city_total_labels
+                ).format(fmt_dom_int(seg_display, pct_cols_dom_int)),
                 use_container_width=True,
                 hide_index=True,
-                height=600,
-                column_config=equal_col_config(styled)
+                height=600
             )
 
             # ---- TABLE 3: BREAK BY BRANCH ----
@@ -1265,16 +1222,14 @@ with tab_country:
 
             hotel_display = hotel_table.rename(columns={RES_HOTEL: "Hotel Name"})
 
-            styled = hotel_display.style.apply(
-                style_dom_int_table, axis=1,
-                total_labels=["TOTAL"], pct_cols=pct_cols_dom_int
-            ).format(fmt_dom_int(hotel_display, pct_cols_dom_int))
             st.dataframe(
-                styled,
+                hotel_display.style.apply(
+                    style_dom_int_table, axis=1,
+                    total_labels=["TOTAL"], pct_cols=pct_cols_dom_int
+                ).format(fmt_dom_int(hotel_display, pct_cols_dom_int)),
                 use_container_width=True,
                 hide_index=True,
-                height=600,
-                column_config=equal_col_config(styled)
+                height=600
             )
 
     else:
@@ -1873,8 +1828,7 @@ with tab_insight:
                 styled_df,
                 use_container_width=True,
                 hide_index=True,
-                height=500,
-                column_config=equal_col_config(styled_df)
+                height=500
             )
             
             return final_df

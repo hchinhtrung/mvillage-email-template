@@ -717,78 +717,255 @@ with tab_country:
     signup_status_col = next((col for col in res_df.columns if "sign" in col.lower() and "status" in col.lower() and "v2" in col.lower()), None)
     
     if guest_country_col and signup_status_col:
-        # Filter data for current period
+        # Filter data for both periods
         current_res_country = filter_period(res_df, RES_DATE, current_from, current_to).copy()
-        
+        last_res_country = filter_period(res_df, RES_DATE, last_from, last_to).copy()
+
         # Apply Brand/Hotel Filters
-        if selected_brands:
-            current_res_country = current_res_country[current_res_country[BRAND_MODEL].astype(str).isin(selected_brands)]
-        if selected_hotels:
-            current_res_country = current_res_country[current_res_country[RES_HOTEL].isin(selected_hotels)]
-        
-        if current_res_country.empty:
-            st.warning("No data found for the Current Period with selected filters.")
+        for df_tmp in [current_res_country, last_res_country]:
+            if selected_brands:
+                df_tmp.drop(df_tmp[~df_tmp[BRAND_MODEL].astype(str).isin(selected_brands)].index, inplace=True)
+            if selected_hotels:
+                df_tmp.drop(df_tmp[~df_tmp[RES_HOTEL].isin(selected_hotels)].index, inplace=True)
+
+        if current_res_country.empty and last_res_country.empty:
+            st.warning("No data found for the selected filters.")
         else:
             # Normalize status strings
-            current_res_country[signup_status_col] = (
-                current_res_country[signup_status_col]
-                .astype(str)
-                .str.replace("\xa0", " ", regex=False)
-                .str.strip()
-            )
-            
-            # Specific statuses requested
+            for df_tmp in [current_res_country, last_res_country]:
+                if not df_tmp.empty:
+                    df_tmp[signup_status_col] = (
+                        df_tmp[signup_status_col]
+                        .astype(str)
+                        .str.replace("\xa0", " ", regex=False)
+                        .str.strip()
+                    )
+
             target_statuses = [
                 "Chưa Sign-up",
-                "Sign-up sau C/I",
-                "Sign up trước 1 ngày check in",
                 "Đã Sign-up từ trước",
-                "Sign up trước 2 ngày check in"
+                "Sign up trước 2 ngày check in",
+                "Sign up trước 1 ngày check in",
+                "Sign-up sau C/I"
             ]
             target_statuses_norm = [s.replace("\xa0", " ").strip() for s in target_statuses]
-            
-            # Group and count unique tenants
-            country_stats = current_res_country.groupby([guest_country_col, signup_status_col])[RES_TENANT].nunique().reset_index(name="count")
-            
-            # Pivot
-            pivot_df = country_stats.pivot_table(
-                index=guest_country_col,
-                columns=signup_status_col,
-                values="count",
-                fill_value=0
+
+            def build_pivot(df):
+                if df.empty:
+                    pivot = pd.DataFrame(columns=target_statuses_norm)
+                    pivot.index.name = guest_country_col
+                    return pivot
+                stats = df.groupby([guest_country_col, signup_status_col])[RES_TENANT].nunique().reset_index(name="count")
+                pivot = stats.pivot_table(index=guest_country_col, columns=signup_status_col, values="count", fill_value=0)
+                for s in target_statuses_norm:
+                    if s not in pivot.columns:
+                        pivot[s] = 0
+                return pivot[target_statuses_norm]
+
+            pivot_current = build_pivot(current_res_country)
+            pivot_last = build_pivot(last_res_country)
+
+            # Union of all countries
+            all_countries = sorted(set(pivot_current.index) | set(pivot_last.index))
+            pivot_current = pivot_current.reindex(all_countries, fill_value=0)
+            pivot_last = pivot_last.reindex(all_countries, fill_value=0)
+
+            # Build combined display: LAST | CURRENT | %change for each status, then Total
+            display_cols = []
+            change_cols = []
+            for i, status in enumerate(target_statuses):
+                status_norm = target_statuses_norm[i]
+                col_last = f"{status} LAST"
+                col_cur = f"{status} CURRENT"
+                col_chg = f"{status} %"
+                display_cols.extend([col_last, col_cur, col_chg])
+                change_cols.append(col_chg)
+
+            display_df = pd.DataFrame(index=all_countries)
+            for i, status in enumerate(target_statuses):
+                status_norm = target_statuses_norm[i]
+                col_last = f"{status} LAST"
+                col_cur = f"{status} CURRENT"
+                col_chg = f"{status} %"
+                display_df[col_last] = pivot_last[status_norm]
+                display_df[col_cur] = pivot_current[status_norm]
+                # % change: (current - last) / last
+                display_df[col_chg] = display_df.apply(
+                    lambda row, cl=col_last, cc=col_cur: (row[cc] - row[cl]) / row[cl] if row[cl] != 0 else (float('inf') if row[cc] > 0 else 0.0),
+                    axis=1
+                )
+
+            # Total columns
+            last_total_cols = [f"{s} LAST" for s in target_statuses]
+            cur_total_cols = [f"{s} CURRENT" for s in target_statuses]
+            display_df["Total LAST"] = display_df[last_total_cols].sum(axis=1)
+            display_df["Total CURRENT"] = display_df[cur_total_cols].sum(axis=1)
+            display_df["Total %"] = display_df.apply(
+                lambda row: (row["Total CURRENT"] - row["Total LAST"]) / row["Total LAST"] if row["Total LAST"] != 0 else (float('inf') if row["Total CURRENT"] > 0 else 0.0),
+                axis=1
             )
-            
-            # Ensure all target columns exist
-            for status in target_statuses_norm:
-                if status not in pivot_df.columns:
-                    pivot_df[status] = 0
-            
-            # Filter and order columns
-            display_df = pivot_df[target_statuses_norm].copy()
-            display_df.columns = target_statuses
-            
-            # Calculate Total
-            display_df["Total Guests"] = display_df.sum(axis=1)
-            
-            # Sort
-            display_df = display_df.sort_values("Total Guests", ascending=False)
-            
+            change_cols.append("Total %")
+
+            # Sort by Total CURRENT
+            display_df = display_df.sort_values("Total CURRENT", ascending=False)
+
             # Grand Total
-            grand_total = display_df.sum().to_frame().T
-            grand_total.index = ["GRAND TOTAL"]
+            grand_total = pd.DataFrame(index=["GRAND TOTAL"])
+            for col in display_df.columns:
+                if col in change_cols:
+                    # Recalculate % from summed values
+                    base_col = col.replace(" %", " LAST")
+                    cur_col = col.replace(" %", " CURRENT")
+                    s_last = display_df[base_col].sum() if base_col in display_df.columns else 0
+                    s_cur = display_df[cur_col].sum() if cur_col in display_df.columns else 0
+                    grand_total[col] = [(s_cur - s_last) / s_last if s_last != 0 else (float('inf') if s_cur > 0 else 0.0)]
+                else:
+                    grand_total[col] = [display_df[col].sum()]
             display_df = pd.concat([display_df, grand_total])
-            
-            # Styling for Grand Total and Header
-            def style_country_rows(row):
-                if row.name == "GRAND TOTAL":
-                    return ["font-weight: bold; background-color: #1e2129; color: #ffffff; border-top: 2px solid #E24D14;"] * len(row)
-                return [""] * len(row)
-            
+
+            # Replace inf with a large number for display
+            display_df = display_df.replace([float('inf'), float('-inf')], [9.99, -9.99])
+
+            # Format dict
+            fmt = {}
+            for col in display_df.columns:
+                if col in change_cols:
+                    fmt[col] = "{:.2%}"
+                else:
+                    fmt[col] = "{:.0f}"
+
+            # Styling: Grand Total row + color_change on % columns
+            def style_country_df(row):
+                styles = [''] * len(row)
+                is_total = row.name == "GRAND TOTAL"
+                for i, col in enumerate(row.index):
+                    if is_total:
+                        styles[i] = "font-weight: bold; background-color: #1e2129; color: #ffffff; border-top: 2px solid #E24D14;"
+                    if col in change_cols:
+                        chg_style = color_change(row[col])
+                        if is_total:
+                            styles[i] += chg_style
+                        else:
+                            styles[i] = chg_style
+                return styles
+
             st.dataframe(
-                display_df.style.apply(style_country_rows, axis=1).format("{:.0f}"),
+                display_df.style.apply(style_country_df, axis=1).format(fmt),
                 use_container_width=True,
                 height=600
             )
+
+            # --- AI Summary for Country Tab ---
+            st.markdown("---")
+            st.subheader("🤖 AI Country Insight Generator")
+            
+            # API Key Input (try to use session state to share with Insight tab)
+            if 'openai_api_key' not in st.session_state:
+                st.session_state.openai_api_key = ""
+                
+            api_key_country = st.text_input(
+                "🔑 Enter OpenAI API Key (Required)", 
+                value=st.session_state.openai_api_key,
+                type="password",
+                key="country_tab_api_key"
+            )
+            
+            # Update session state
+            if api_key_country:
+                st.session_state.openai_api_key = api_key_country
+                
+            if st.button("✨ Generate Country Insight"):
+                if not api_key_country:
+                    st.error("Please provide an OpenAI API Key to continue.")
+                else:
+                    try:
+                        client = OpenAI(api_key=api_key_country)
+                        
+                        # 1. Prepare data for comparison
+                        last_res_country = filter_period(res_df, RES_DATE, last_from, last_to).copy()
+                        
+                        # Apply Brand/Hotel Filters to Last Period as well for fair comparison
+                        if selected_brands:
+                            last_res_country = last_res_country[last_res_country[BRAND_MODEL].astype(str).isin(selected_brands)]
+                        if selected_hotels:
+                            last_res_country = last_res_country[last_res_country[RES_HOTEL].isin(selected_hotels)]
+                            
+                        # Normalize status for both
+                        for df in [last_res_country, current_res_country]:
+                            if not df.empty:
+                                df[signup_status_col] = df[signup_status_col].astype(str).str.replace("\xa0", " ").str.strip()
+                        
+                        # Define Sign-up Success (using Group 3 from Insight tab logic)
+                        success_statuses = ["Sign-up sau C/I", "Sign up trước 1 ngày check in", "Sign up trước 2 ngày check in"]
+                        success_statuses_norm = [s.replace("\xa0", " ").strip() for s in success_statuses]
+                        
+                        def aggregate_country_data(df, period_name):
+                            if df.empty:
+                                return pd.DataFrame()
+                                
+                            # Total Guests per Country
+                            total = df.groupby(guest_country_col)[RES_TENANT].nunique().reset_index(name="Total_Guests")
+                            
+                            # Success Signups per Country
+                            success = df[df[signup_status_col].isin(success_statuses_norm)].groupby(guest_country_col)[RES_TENANT].nunique().reset_index(name="Signup_Count")
+                            
+                            merged = total.merge(success, on=guest_country_col, how="left").fillna(0)
+                            merged["Period"] = period_name
+                            return merged
+                            
+                        last_agg = aggregate_country_data(last_res_country, "Last")
+                        cur_agg = aggregate_country_data(current_res_country, "Current")
+                        
+                        comparison_agg = pd.concat([last_agg, cur_agg])
+                        
+                        # Pivot for easy AI reading
+                        pivot_ai = comparison_agg.pivot_table(
+                            index=guest_country_col,
+                            columns="Period",
+                            values=["Total_Guests", "Signup_Count"],
+                            fill_value=0
+                        ).reset_index()
+                        
+                        # Flatten columns
+                        pivot_ai.columns = [f"{col[0]}_{col[1]}" if col[1] else col[0] for col in pivot_ai.columns]
+                        
+                        csv_data_country = pivot_ai.to_csv(index=False)
+                        
+                        # 2. Construct Prompt
+                        prompt_country = f"""
+                        You are a Senior BI Strategy Consultant at MVillage.
+                        Analyze the Sign-up (membership registration) performance based on Guest Country for the current period vs the last period.
+
+                        --- DATA (CSV format) ---
+                        {csv_data_country}
+                        
+                        --- REQUIREMENTS ---
+                        1. Identify the TOP 5 countries with the highest growth in Sign-ups (absolute numbers).
+                        2. Identify any significant drops in either total guests or signup rates for major markets.
+                        3. Compare the "Signup Efficiency" (Signup_Count / Total_Guests) between periods.
+                        4. Provide sharp, actionable insights for the marketing or operations team based on these country trends.
+                        5. Use absolute numbers and percentages clearly.
+                        6. Format: Use professional business headings and bullet points. English language only.
+                        """
+                        
+                        with st.spinner("🤖 AI is analyzing country trends..."):
+                            response = client.chat.completions.create(
+                                model="gpt-4o",
+                                messages=[
+                                    {"role": "system", "content": "You are a strategic BI analyst expert in hospitality and guest behavior. You provide concise yet high-impact insights."},
+                                    {"role": "user", "content": prompt_country}
+                                ]
+                            )
+                            
+                            country_insight = response.choices[0].message.content
+                            st.success("Country Analysis Complete!")
+                            st.markdown(country_insight)
+                            
+                            with st.expander("📋 Copy Raw Country Analysis"):
+                                st.code(country_insight, language="markdown")
+                                
+                    except Exception as e:
+                        st.error(f"Error generating insight: {str(e)}")
     else:
         st.error(f"Could not find required columns in Reservation File. Looking for columns containing 'Guest Country' and 'Sign-up Status v2'. Available columns: {', '.join(res_df.columns)}")
 

@@ -992,6 +992,7 @@ with tab_country:
                     return pd.DataFrame(columns=group_cols + ["dom_signup", "int_signup", "dom_checkin", "int_checkin"])
                 # Sign-up counts
                 signup_df_tmp = df[df["_is_signup"]]
+                dom_su = signup_df_tmp[signup_df_tmp["_is_dom"]].groupby(group_cols)[RES_TENANT].nunique().reset_index(name="dom_signup")
                 int_su = signup_df_tmp[~signup_df_tmp["_is_dom"]].groupby(group_cols)[RES_TENANT].nunique().reset_index(name="int_signup")
                 # Check-in counts (all guests)
                 dom_ci = df[df["_is_dom"]].groupby(group_cols)[RES_TENANT].nunique().reset_index(name="dom_checkin")

@@ -1,10 +1,10 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
-Grand Signature by M Village Hoi An,Deluxe Garden View Twin Room,NA,SOLD OUT,NA,SOLD OUT,SOLD OUT,SOLD OUT
+Grand Signature by M Village Hoi An,Deluxe Garden View Twin Room,"₫1,634,286","₫2,017,637","₫1,634,286","₫1,725,079","₫1,634,286","₫1,997,460"
 Living Kỳ Đồng,Superior Room with Window,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,NA,NA
 M Village ĐN Centre,Superior Cozy Room for 2 People,SOLD OUT,NA,NA,SOLD OUT,SOLD OUT,SOLD OUT
 M Village ĐN Heritage,Standard Room,NA,NA,NA,NA,NA,NA
-Sheraton,"Guest room, 2 Twin, Ocean view",NA,NA,NA,NA,NA,NA
-Park Hotel Dalat,Standard Twin,NA,NA,NA,NA,NA,NA
+Sheraton,"Guest room, 2 Twin, Ocean view","₫3,700,000","₫5,300,000","₫4,200,000","₫4,800,000","₫3,700,000","₫3,200,000"
+Park Hotel Dalat,Standard Twin,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,NA
 Living 59 Thảo Điền,Standard Studio,NA,NA,NA,NA,NA,NA
 Express VVK,Standard Room without Window,"₫760,415","₫1,014,834","₫930,190","₫928,986","₫930,190","₫844,405"
 M Village Beachfront,Deluxe City View,NA,NA,NA,NA,NA,NA
@@ -27,7 +27,7 @@ Amanaki,Signature Double Room,"₫2,332,660","₫3,318,776","₫3,244,672","₫3
 Topas Ecolodge,Deluxe Suite,"₫8,125,697","₫9,285,629","₫9,495,542","₫9,285,629","₫10,802,487","₫10,369,100"
 Amanaki,Signature Twin Room,"₫3,287,133","₫3,318,776","₫3,332,899","₫3,179,141","₫3,314,241","₫2,563,606"
 Silk Path Grand Sapa Resort & Spa,Classic Garden View,"₫2,081,269","₫6,628,457","₫6,628,457","₫2,401,626","₫6,618,013","₫6,628,072"
-Hato,Deluxe Double No Window,SOLD OUT,SOLD OUT,NA,NA,"₫2,065,849",NA
+Hato,Deluxe Double No Window,SOLD OUT,SOLD OUT,"₫1,780,285",NA,"₫2,065,849",NA
 KK Sapa Hotel,Superior Twin City View,"₫1,443,791","₫1,534,664","₫1,634,037","₫1,492,321","₫1,487,623","₫1,444,143"
 Silverland Ben Thanh,Spring Field - No Window,"₫4,048,849","₫4,529,894","₫8,364,912","₫4,621,626","₫4,804,938","₫4,345,792"
 Hato,Premium Twin Room - Non-Smoking,"₫2,102,455","₫2,447,645","₫2,336,446","₫3,678,552","₫2,539,683","₫2,261,969"
@@ -47,5 +47,9 @@ M Village Living Tran Nao,Studio Room,"₫761,665","₫901,193","₫904,898","�
 Express NBK,Deluxe Room,"₫1,232,936","₫1,376,343","₫1,471,368","₫1,233,800","₫1,328,829","₫1,138,765"
 Silverland May,Narra Twin - No Window,"₫3,635,626","₫4,796,472","₫4,403,091","₫4,796,472","₫4,455,731","₫4,306,563"
 M Village Hotel Thợ Nhuộm,Hot TN - Trip com bao gồm 2 pax ăn sáng + thuế Superior,NA,NA,NA,NA,NA,NA
-M Village Tao Đàn,Superior Room,"₫2,600,060","₫2,979,881",NA,NA,NA,NA
-MV Thi sách,Superior with Bathtub,"₫1,877,423",NA,NA,NA,NA,NA
+M Village Tao Đàn,Superior Room,"₫2,600,060","₫2,979,881","₫2,710,267","₫2,765,346","₫2,336,309","₫1,860,559"
+MV Thi sách,Superior with Bathtub,"₫1,877,423","₫2,841,953","₫2,746,330","₫3,027,317","₫2,560,194","₫2,266,603"
+MV Tôn Thất Đạm,Standard Room without Window,"₫1,728,854","₫2,166,334","₫2,224,584","₫2,218,932","₫2,224,584","₫2,238,636"
+M Village Sig Tho Nhuom,Sig TN - Trip com bao gồm 2 pax ăn sáng + thuế STUDIO,NA,NA,NA,NA,NA,NA
+MV TTĐ,Deluxe Room,"₫2,320,756","₫2,555,810","₫2,731,239","₫2,966,065","₫2,731,239","₫2,299,090"
+MV TTĐ,Deluxe Room Twin,"₫2,704,396","₫2,573,029",NA,NA,NA,NA

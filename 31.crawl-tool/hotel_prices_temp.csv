@@ -1,11 +1,11 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
 Grand Signature by M Village Hoi An,Deluxe Garden View Twin Room,"₫1,634,286",SOLD OUT,"₫1,634,286",SOLD OUT,SOLD OUT,SOLD OUT
 Living Kỳ Đồng,Superior Room with Window,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,NA,NA
-M Village ĐN Centre,Superior Cozy Room for 2 People,SOLD OUT,NA,NA,SOLD OUT,SOLD OUT,SOLD OUT
+M Village ĐN Centre,Superior Cozy Room for 2 People,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
 M Village ĐN Heritage,Standard Room,NA,NA,NA,NA,NA,NA
 Sheraton,"Guest room, 2 Twin, Ocean view","₫3,700,000","₫5,300,000","₫4,200,000","₫4,800,000","₫3,700,000","₫3,200,000"
 Park Hotel Dalat,Standard Twin,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,NA
-Living 59 Thảo Điền,Standard Studio,NA,NA,NA,NA,NA,NA
+Living 59 Thảo Điền,Standard Studio,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,NA
 Express VVK,Standard Room without Window,"₫760,415","₫1,014,834","₫930,190","₫928,986","₫930,190","₫844,405"
 M Village Beachfront,Deluxe City View,NA,NA,NA,NA,NA,NA
 Mường Thanh,Deluxe Double City View,"₫961,395","₫963,878","₫961,395","₫963,878","₫961,755","₫963,878"
@@ -15,19 +15,19 @@ Vinpearl Resort,Deluxe Twin Room,"₫3,148,148","₫3,557,281","₫3,700,929","�
 Savvy by M Village Hai Bà Trưng,"Phòng cao cấp Giường Lớn, Hướng Thành Phố (Superior King Bed, City View)",NA,NA,NA,NA,NA,NA
 Signature Lê Thánh Tôn,Deluxe City View Twin Room,"₫3,536,419","₫4,686,480","₫4,613,496","₫4,973,507","₫4,613,496","₫4,399,464"
 Potique Hotel,Classic Room,"₫5,038,578","₫2,214,635","₫2,276,226","₫2,520,091","₫2,518,273","₫2,386,687"
-Hotel de la Coupole - MGallery,Classic Room Twin,"₫5,640,000",NA,"₫5,245,000","₫4,210,000",NA,NA
+Hotel de la Coupole - MGallery,Classic Room Twin,"₫5,640,000",SOLD OUT,"₫5,245,000","₫4,210,000",SOLD OUT,SOLD OUT
 InterContinental,2 Single Classic City View,"₫4,903,404","₫4,745,919","₫3,553,036","₫3,786,167","₫4,253,306","₫3,190,999"
 President Maison,Deluxe - 1 King Bed,"₫4,485,337","₫4,487,024","₫4,586,799","₫4,411,234","₫4,466,889","₫3,993,460"
 Ville De Mont Mountain Resort,On the Rock 1-Bedroom Executive Villa,"₫6,484,647","₫6,325,765","₫8,291,769","₫6,350,955","₫6,061,361","₫7,656,029"
 Au Lac Charner,Ruffier Deluxe Twin Room without Window,"₫2,630,952","₫3,239,467","₫2,625,422","₫2,781,218","₫2,781,218","₫2,765,873"
 Pao's Sapa Leisure Hotel,Deluxe Garden View,"₫1,952,312","₫2,114,705","₫1,962,479","₫1,935,962","₫2,012,000","₫1,940,891"
-Au Lac Charner,Vannier Premier Twin Room,"₫2,730,000","₫3,160,035",NA,NA,NA,NA
+Au Lac Charner,Vannier Premier Twin Room,"₫2,730,000","₫3,160,035",SOLD OUT,NA,NA,NA
 Sapa Jade Hill Resort & Spa,Deluxe Valley View Room,"₫1,743,467","₫1,744,264","₫2,659,293","₫1,575,904","₫1,575,904","₫1,575,904"
 Amanaki,Signature Double Room,"₫2,332,660","₫3,318,776","₫3,244,672","₫3,332,899","₫3,332,899","₫2,490,135"
 Topas Ecolodge,Deluxe Suite,"₫8,125,697","₫9,285,629","₫9,495,542","₫9,285,629","₫10,802,487","₫10,369,100"
 Amanaki,Signature Twin Room,"₫3,287,133","₫3,318,776","₫3,332,899","₫3,179,141","₫3,314,241","₫2,563,606"
 Silk Path Grand Sapa Resort & Spa,Classic Garden View,"₫2,081,269","₫6,628,457","₫6,628,457","₫2,401,626","₫6,618,013","₫6,628,072"
-Hato,Deluxe Double No Window,SOLD OUT,SOLD OUT,"₫1,780,285",NA,"₫2,065,849",NA
+Hato,Deluxe Double No Window,SOLD OUT,SOLD OUT,"₫1,780,285",SOLD OUT,"₫2,065,849",SOLD OUT
 KK Sapa Hotel,Superior Twin City View,"₫1,443,791","₫1,534,664","₫1,634,037","₫1,492,321","₫1,487,623","₫1,444,143"
 Silverland Ben Thanh,Spring Field - No Window,"₫4,048,849","₫4,529,894","₫8,364,912","₫4,621,626","₫4,804,938","₫4,345,792"
 Hato,Premium Twin Room - Non-Smoking,"₫2,102,455","₫2,447,645","₫2,336,446","₫3,678,552","₫2,539,683","₫2,261,969"

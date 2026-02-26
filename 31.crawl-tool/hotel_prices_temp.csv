@@ -1,23 +1,5 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
-radison red,Superior Room,"₫2,385,000","₫2,385,000","₫2,385,000","₫2,385,000","₫2,385,000","₫2,205,000"
-Pariat River Front Hotel Da Nang,Standard Double,"₫564,926","₫434,012","₫434,793","₫407,584","₫405,679","₫552,470"
-Pullman Danang Beach Resort,Deluxe 2 Single Beds with Balcony,"₫7,500,000","₫5,650,001","₫6,450,001","₫4,100,000","₫3,900,001","₫6,150,001"
-SALA DANANG BEACH HOTEL,Superior Double City View,"₫2,132,897","₫2,068,234","₫2,764,184","₫5,379,468","₫2,563,928","₫1,975,557"
-Rosamia Da Nang Hotel,Grand Deluxe Double,"₫1,948,184","₫1,901,553","₫1,859,467","₫1,859,467","₫1,859,467","₫1,859,467"
-Sanouva Danang Hotel,Deluxe Twin City View,"₫1,268,717","₫1,282,417","₫1,225,491","₫1,134,841","₫1,134,841","₫1,070,914"
-New Orient Da Nang,Superior Double or Twin Room without View,"₫1,290,852",SOLD OUT,"₫1,291,835","₫1,346,626","₫1,291,494",NA
-Nesta Hotel Da Nang,Superior Double Garden View,"₫1,793,670","₫2,249,750","₫1,716,886","₫1,489,272","₫1,489,272","₫1,489,272"
-Muong Thanh Luxury Song Han Hotel,Superior Twin City View,"₫1,007,516","₫1,255,732","₫1,255,732","₫1,255,732","₫774,098","₫767,453"
-M Hotel Da Nang,Deluxe Double City View,NA,NA,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
-Vanda Hotel,Superior Double City View,"₫1,375,438","₫1,425,270","₫1,239,434","₫1,187,891","₫1,280,162","₫1,316,326"
-Sun River Hotel,Standard Twin No Window,"₫683,672","₫690,530","₫722,627","₫722,627","₫690,530","₫577,594"
-TMS Hotel Da Nang Beach,Premier City View Twin Room with Balcony and Spa Included,"₫2,457,220","₫2,457,615","₫2,457,615","₫2,577,672","₫2,457,615","₫2,457,220"
-Shilla Monogram Danang,Superior Partial Ocean View Twin Room,"₫3,555,631","₫3,189,683","₫3,729,152","₫3,278,352","₫3,468,873","₫3,544,272"
-Sheraton Grand Danang Beach Resort & Spa,"Guest room, 2 Twin, Bay view","₫3,500,000","₫4,200,000","₫4,200,000","₫3,600,000","₫3,800,000","₫3,900,000"
-sel de mer,Superior Twin City View,"₫2,292,769","₫2,380,952","₫2,190,476","₫2,190,476","₫2,190,476","₫1,904,762"
-Satya Da Nang Hotel Han Market,Superior Double Balcony,SOLD OUT,SOLD OUT,"₫1,144,062",NA,NA,NA
-Hyatt Regency Danang Resort And Spa,2 Twin Beds,"₫6,500,000","₫4,410,000","₫4,410,000","₫6,700,000","₫4,320,000","₫6,650,000"
-Hilton Garden Inn,King Guest Room,"₫1,904,000","₫2,003,489","₫2,660,000","₫2,660,000","₫2,660,000","₫2,660,000"
-Hilton Da Nang,King Accessible Room,"₫3,450,000","₫3,450,000","₫3,277,500","₫3,780,000","₫2,660,000","₫2,707,500"
-Wink Hotel Danang Centre,1 Queen Bed,"₫232","₫360","₫280","₫360","₫280","₫360"
-voco Ma Belle,Deluxe Room,"₫3,003","₫2,844","₫2,742","₫5,458","₫3,627","₫2,872"
+MV Thi sách,Superior with Bathtub,"₫2,558,426","₫2,904,814","₫2,559,648",NA,NA,NA
+MV Tôn Thất Đạm,Standard Room without Window,"₫2,504,413","₫2,194,214","₫2,312,269","₫2,194,214",NA,NA
+M Village Tao Đàn,Superior Room,NA,NA,NA,NA,NA,NA
+MV TTĐ,Deluxe Room,"₫2,695,868","₫2,650,682",NA,NA,NA,NA

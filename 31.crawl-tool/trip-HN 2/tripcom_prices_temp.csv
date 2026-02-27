@@ -1,6 +1,11 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
 Mercure Hanoi La Gare Hotel,Classic Double Bed Room With City View,"VND 2,835,000","VND 3,265,920","VND 2,540,160","VND 2,358,720","VND 2,721,600","VND 2,835,000"
-Muong Thanh Hanoi Centre Hotel,Superior King Room,"VND 1,650,000",NA,NA,NA,NA,NA
+Muong Thanh Hanoi Centre Hotel,Superior King Room,"VND 1,650,000",NA,NA,"VND 1,650,000","VND 1,650,000","VND 1,650,000"
 Minasi HanoiOi Hotel,Premier Double Bed Room,NA,NA,NA,NA,NA,NA
 Lotte Hotel (Khu Nhat Han HN),Deluxe Twin Room,"VND 5,312,819","VND 4,544,095","VND 5,370,294","VND 5,507,993","VND 4,681,794","VND 4,819,494"
-Nesta Hotel Hanoi,Superior Twin Room Non Smoking,NA,NA,NA,NA,NA,NA
+Nesta Hotel Hanoi,Superior Twin Room Non Smoking,"VND 1,648,349","VND 1,618,267","VND 1,677,244","VND 1,538,459","VND 1,538,459","VND 1,684,375"
+Pan Pacific Hanoi,Deluxe King Or Twin Room,"VND 5,115,172","VND 4,523,822","VND 4,523,822","VND 4,523,822","VND 4,021,175","VND 3,794,984"
+Novotel Suites Hanoi,Superior King Studio,"VND 2,908,710","VND 3,623,130","VND 2,650,725","VND 2,939,895","VND 2,939,895","VND 2,747,115"
+Melia Hanoi,Deluxe Room,NA,NA,NA,NA,NA,NA
+Novotel Hanoi Thai Ha,"Superior Room, 1 King Size Bed, City View","VND 3,265,920","VND 3,623,130","VND 3,084,480","VND 4,337,550","VND 3,277,260","VND 3,084,480"
+Movenpick Hotel Hanoi Centre,Classic Twin/King Room - Complimentary daily chocolate hour 5pm-6pm,NA,NA,NA,NA,NA,NA

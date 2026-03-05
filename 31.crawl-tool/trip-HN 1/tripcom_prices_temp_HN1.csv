@@ -1,7 +1,21 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
-Fukura (Boutique - Kim Ma),Standard Room,NA,NA,NA,NA,NA,NA
-Halais Hotel,Superior Room,NA,NA,NA,NA,NA,NA
-Bespoke Trendy Hotel Hanoi (Formerly Hanoi La Siesta Hotel Trendy),Cozy Deluxe Room,"VND 1,865,187","VND 1,963,355",NA,NA,NA,NA
-Grand Vista Hanoi (Kim Ma),Deluxe Twin Room,"VND 1,868,050","VND 1,868,050",NA,NA,NA,NA
+Fukura (Boutique - Kim Ma),Standard Room,"VND 1,332,964","VND 1,332,964","VND 1,332,964","VND 1,332,964","VND 1,332,964","VND 1,334,275"
+Halais Hotel,Superior Room,"VND 1,371,583","VND 1,371,583","VND 1,371,583","VND 1,371,583","VND 1,371,612","VND 1,371,612"
+Bespoke Trendy Hotel Hanoi (Formerly Hanoi La Siesta Hotel Trendy),Cozy Deluxe Room,"VND 1,865,187","VND 1,963,355","VND 2,208,775","VND 2,454,194","VND 2,789,999","VND 3,108,066"
+Grand Vista Hanoi (Kim Ma),Deluxe Twin Room,"VND 1,868,050","VND 1,868,050","VND 1,868,050","VND 1,868,050","VND 1,838,601","VND 1,838,601"
 Hotel du Lac Hanoi,Deluxe Twin Internal Window,NA,NA,NA,NA,NA,NA
-Aira Boutique Hanoi Hotel & Spa,Deluxe Room,"VND 3,298,563","VND 4,165,579","VND 3,937,041",NA,NA,NA
+Aira Boutique Hanoi Hotel & Spa,Deluxe Room,"VND 3,298,563","VND 4,165,579","VND 3,937,041","VND 3,885,148","VND 3,886,458","VND 2,707,076"
+Hanoi Daewooo (Khu Nhat Han HN),Deluxe King Room,"VND 2,442,657","VND 2,442,657",NA,NA,NA,NA
+Dolce Wyndham (Khu Nhat Han HN),Golden Classic Twin,"VND 2,825,928","VND 2,825,928","VND 2,825,928","VND 2,825,928","VND 2,825,928","VND 2,825,928"
+Hanoi le Jardin Hotel & Spa,Cozy Le Jardin Classic Room,NA,NA,NA,NA,NA,NA
+Ha Noi Hotel (Kim Ma),Deluxe Room,"VND 1,981,882","VND 2,029,586","VND 2,057,891","VND 2,220,039","VND 2,120,268","VND 2,120,268"
+L7 WEST LAKE HANOI BY LOTTE - L7 RESIDENCES,One Bedroom Apartment,NA,NA,NA,NA,NA,NA
+La Siesta Premium Hang Be,Superior Room No Window,NA,NA,NA,NA,NA,NA
+L'Signature Hotel & Spa,Superior Double No Window,NA,NA,NA,NA,NA,NA
+InterContinental Hanoi Westlake,Classic Room,NA,NA,NA,NA,NA,NA
+L7 WEST LAKE HANOI by LOTTE HOTELS,Superior Convertible,NA,NA,NA,NA,NA,NA
+InterContinental Hanoi Landmark72,1 King Bed Classic Room,NA,NA,NA,NA,NA,NA
+Lancaster Hanoi City (Kim Ma),Studio,NA,NA,NA,NA,NA,NA
+JW Marriott Hotel Hanoi,"Deluxe King, Guest Room, 1 King Bed","VND 5,103,000","VND 7,030,800","VND 7,938,000","VND 5,103,000","VND 5,103,000","VND 5,103,000"
+La Passion Premium Cau Go,Grand Double Room,"VND 3,606,939",NA,NA,NA,NA,NA
+Hotel du Parc Hanoi,Deluxe King Room,"VND 2,809,813","VND 3,142,035","VND 3,142,035","VND 3,142,035","VND 2,429,028","VND 2,244,311"

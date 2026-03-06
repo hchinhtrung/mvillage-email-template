@@ -1,12 +1,25 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
-Lotte Hotel,Deluxe Twin City View,"₫7,271,940","₫7,163,000","₫5,453,872","₫5,561,400","₫5,277,941",NA
+Lotte Hotel,Deluxe Twin City View,"₫7,271,940","₫7,163,000","₫5,453,872","₫5,561,400","₫5,277,941","₫3,978,000"
 Nicecy Saigon Hotel,Superior Double Room,SOLD OUT,NA,NA,NA,NA,NA
-Kin Hotel Thi Sach,Deluxe Twin Room,NA,NA,NA,NA,NA,NA
+Kin Hotel Thi Sach,Deluxe Twin Room,NA,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
 Mai House,Deluxe King,NA,NA,NA,NA,NA,NA
 M Gallery,"DELUXE ROOM, 1 King Size Bed, City View",NA,NA,NA,NA,NA,NA
-Nikko,Deluxe King,"₫7,424,887","₫7,426,493",NA,NA,NA,NA
+Nikko,Deluxe King,"₫7,424,887","₫7,426,493",SOLD OUT,NA,NA,NA
 Sheraton,"Guest Room, 1 King","₫11,000,000","₫11,000,000","₫11,000,000","₫9,200,000","₫6,500,000","₫6,500,000"
 La Siesta Premium Saigon,No Window - Superior Room,"₫7,863,316","₫6,375,000","₫6,059,314","₫7,440,000","₫8,307,124","₫7,285,714"
-Novotel,"Superior Room, 1 King Bed","₫5,110,000","₫3,540,000","₫4,090,000",NA,NA,NA
-Pullman Saigon Centre Hotel,Superior 2 Single Beds,"₫5,400,000","₫4,680,000","₫5,610,000","₫5,100,000","₫4,510,000",NA
-New World Saigon Hotel,Premier Room King,SOLD OUT,NA,NA,NA,NA,NA
+Novotel,"Superior Room, 1 King Bed","₫5,110,000","₫3,540,000","₫4,090,000",SOLD OUT,SOLD OUT,NA
+Pullman Saigon Centre Hotel,Superior 2 Single Beds,"₫5,400,000","₫4,680,000","₫5,610,000","₫5,100,000","₫4,510,000",SOLD OUT
+New World Saigon Hotel,Premier Room King,SOLD OUT,SOLD OUT,NA,NA,NA,NA
+Rex Hotel Saigon,Deluxe King,SOLD OUT,NA,NA,NA,NA,NA
+Silverland Mây,Narra Double,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,NA
+Sotetsu,Deluxe Double Room,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,NA,NA
+Sofitel,"Superior Room, 1 King Size Bed, city view",SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,NA,NA
+Mai Chau Ecolodge,Superior Twin Room with Garden View,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,NA
+Sky Gem Central Hotel,Deluxe,"₫2,001,812","₫2,548,137","₫3,533,479","₫1,876,248","₫1,653,730","₫1,800,118"
+TOKI Ecolodge Cao Răm,"Basic Room, Mountain View",SOLD OUT,"₫2,398,587",SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Nexus Thao Dien,Superior Studio with Garden,"₫1,481,481","₫1,048,561","₫1,052,688","₫1,048,984","₫1,052,688","₫1,048,984"
+Sedona Suites Ho Chi Minh City,Grand Studio,"₫5,677,903","₫10,977,494","₫5,677,903","₫4,304,160","₫3,926,364","₫3,926,364"
+Bakhan Village Resort,Bungalow - Garden View,"₫1,298,401","₫1,298,401","₫1,293,694","₫1,298,401","₫1,314,903","₫1,308,749"
+Silverland Min,Superior No Window,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Avana Retreat,Mountain Suite,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,"₫8,000,441"
+Mit Retreat,One Bedroom Deluxe Mountain View,SOLD OUT,SOLD OUT,NA,NA,NA,NA

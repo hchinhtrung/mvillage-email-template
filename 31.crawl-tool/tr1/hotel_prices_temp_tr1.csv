@@ -1,7 +1,7 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
 Park Hotel Dalat,Standard Twin,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
 Express NBK,Deluxe Room,"₫1,627,867","₫1,567,551","₫2,118,519","₫1,462,959","₫1,967,196","₫1,358,462"
-M Village Beachfront,Deluxe City View,"₫2,883,596","₫3,322,876","₫2,494,604",SOLD OUT,"₫2,495,150","₫2,495,150"
+M Village Beachfront,Deluxe City View,"₫2,883,596","₫3,322,876","₫2,494,604","₫2,305,296","₫2,495,150","₫2,495,150"
 Express VVK,Standard Room without Window,"₫1,156,173","₫1,159,747","₫1,159,747","₫1,157,380","₫1,054,294","₫1,052,100"
 Grand Signature by M Village Hoi An,Deluxe Garden View Twin Room,"₫2,570,194","₫1,950,871","₫1,597,968","₫1,775,520","₫1,953,072","₫1,775,520"
 Sheraton,"Guest room, 2 Twin, Ocean view","₫4,200,000","₫4,200,000","₫4,600,000","₫4,000,000","₫3,200,000","₫3,300,000"
@@ -17,10 +17,10 @@ M Village Living Tran Nao,Studio Room,"₫1,099,995","₫1,114,011","₫1,114,83
 M Village Tao Đàn,Superior Room,"₫3,309,234","₫2,771,638","₫2,451,699","₫2,343,863","₫1,913,508","₫1,773,073"
 M Village Living Vo Thi Sau,Standard Studio,"₫1,201,243","₫1,142,031","₫1,664,550","₫1,142,031","₫1,101,339","₫1,096,666"
 M Village Hotel Ho Guom,Standard Room without Window,SOLD OUT,NA,NA,NA,NA,NA
-MV TTĐ,Deluxe Room Twin,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+MV TTĐ,Deluxe Room Twin,"₫3,132,131","₫2,798,622","₫2,765,186","₫2,716,937","₫2,721,667","₫2,641,167"
 M Village Kim Mã,Superior No Window,NA,NA,NA,NA,NA,NA
 MV Thi sách,Superior with Bathtub,"₫3,062,460","₫2,618,571","₫3,398,175","₫3,133,333","₫2,745,397","₫2,324,282"
-MV Tôn Thất Đạm,Standard Room without Window,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,"₫2,256,705"
+MV Tôn Thất Đạm,Standard Room without Window,"₫3,325,262","₫2,303,764","₫3,074,299","₫2,441,833","₫2,142,833","₫2,256,705"
 M Village Express 46 Thao Dien,Standard Room (Non View),"₫1,489,383","₫1,107,434","₫1,360,988","₫1,360,988","₫1,002,757","₫1,002,757"
 M Village Hotel Thợ Nhuộm,Hot TN - Trip com bao gồm 2 pax ăn sáng + thuế Superior,NA,NA,NA,NA,NA,NA
 MV TTĐ,Deluxe Room,"₫3,186,484","₫2,921,000","₫3,052,739","₫2,718,375","₫2,781,420","₫2,740,833"

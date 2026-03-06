@@ -1,10 +1,10 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
-A La Carte,1-Bedroom City View Twin Studio,"₫1,972,089","₫2,149,817","₫1,874,742","₫1,862,706",SOLD OUT,SOLD OUT
+A La Carte,1-Bedroom City View Twin Studio,"₫1,972,089","₫2,149,817","₫1,874,742","₫1,862,706","₫1,764,712","₫1,709,697"
 Furama Villas Danang-3 Bedroom Pool Villa,3 Bedroom Pool Villa,"₫13,416,605","₫13,422,580","₫16,059,483","₫14,965,408","₫14,700,230","₫14,015,223"
 Furama Resort Danang-Lagoon Superior,Lagoon Superior,"₫5,626,441","₫6,952,865","₫7,565,332","₫6,732,315","₫5,712,523","₫5,283,831"
 Central Hotel & Spa,Standard Double Room,"₫851,285","₫815,697","₫785,857","₫793,651","₫788,937","₫771,605"
 Furama Villas Danang-1 Bedroom Pool Villa,1 Bedroom Pool Villa,"₫9,501,846","₫8,696,851","₫16,487,136","₫11,164,669","₫8,017,290","₫10,214,485"
-Avora Hotel,Superior Twin Room - Non-Smoking,"₫1,131,687","₫1,131,687",SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Avora Hotel,Superior Twin Room - Non-Smoking,"₫1,131,687","₫1,131,687","₫1,131,687","₫830,328","₫830,328","₫831,979"
 Brilliant Hotel Danang,Standard Double Room (No View),SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,NA,NA
 Crowne Plaza Danang City Centre,Standard Room,SOLD OUT,SOLD OUT,NA,NA,NA,NA
 Furama Villas Danang-2 Bedroom Pool Villa,2 Bedroom Pool Villa,NA,NA,NA,NA,NA,NA
@@ -16,8 +16,26 @@ Fusion Resort-Suite,Garden View King Suite,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,N
 G8 Luxury,Superior Double Room,"₫1,095,011","₫1,268,784","₫1,094,767",SOLD OUT,SOLD OUT,SOLD OUT
 Hilton Da Nang,King Accessible Room,NA,NA,NA,NA,NA,NA
 Hyatt Regency Danang Resort And Spa,2 Twin Beds,"₫4,900,000","₫4,950,000","₫5,900,000",NA,NA,NA
-Furama Villas Danang-4-Bedroom Beachfront Villa with Private Pool,4-Bedroom Beachfront Villa with Private Pool,"₫48,345,679","₫48,345,679",NA,NA,NA,NA
+Furama Villas Danang-4-Bedroom Beachfront Villa with Private Pool,4-Bedroom Beachfront Villa with Private Pool,"₫48,345,679","₫48,345,679","₫47,057,315","₫48,346,649",NA,NA
 Fusion Resort-4 bedroom villa,Four Bedroom Premium Villa with Private Pool - Spa Inclusive,NA,NA,NA,NA,NA,NA
-Nesta Hotel Da Nang,Superior Double Garden View,NA,NA,NA,NA,NA,NA
-Avora Boutique,Superior Double Room - Non-Smoking,"₫894,207",NA,NA,NA,NA,NA
-Fusion Resort-3 bedroom villa,Three Bedroom Presidential Plunge Pool Loft - Spa Inclusive,NA,NA,NA,NA,NA,NA
+Nesta Hotel Da Nang,Superior Double Garden View,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Avora Boutique,Superior Double Room - Non-Smoking,"₫894,207","₫748,661","₫747,080",SOLD OUT,SOLD OUT,SOLD OUT
+Fusion Resort-3 bedroom villa,Three Bedroom Presidential Plunge Pool Loft - Spa Inclusive,"₫26,594,811","₫26,594,811","₫25,940,291","₫26,594,811",SOLD OUT,SOLD OUT
+Hilton Garden Inn,King Guest Room,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Muong Thanh Luxury Song Han Hotel,Superior Twin City View,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+New Orient Da Nang,Superior Double or Twin Room without View,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Pariat River Front Hotel Da Nang,Standard Double,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Grand Tourane Hotel,Deluxe Room,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+M Hotel Da Nang,Deluxe Double City View,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Fusion Resort-1bedroom villa,One Bedroom Villa with Private Pool - Spa Inclusive,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Sheraton Grand Danang Beach Resort & Spa,"Guest room, 2 Twin, Bay view",SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+sel de mer,Superior Twin City View,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Satya Da Nang Hotel Han Market,Superior Double Balcony,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+radison red,Superior Room,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,"₫2,115,000","₫2,205,000"
+Sanouva Danang Hotel,Deluxe Twin City View,SOLD OUT,SOLD OUT,SOLD OUT,"₫1,140,571","₫1,137,436","₫1,140,571"
+Sun River Hotel,Standard Twin No Window,SOLD OUT,SOLD OUT,SOLD OUT,"₫947,505","₫947,505","₫947,505"
+SALA DANANG BEACH HOTEL,Superior Double City View,"₫2,185,876","₫2,197,653","₫1,949,905","₫3,076,064","₫2,957,129","₫2,372,581"
+Rosamia Da Nang Hotel,Grand Deluxe Double,SOLD OUT,"₫1,980,685","₫1,980,685","₫2,314,722","₫1,980,685","₫1,997,996"
+Shilla Monogram Danang,Superior Partial Ocean View Twin Room,"₫3,808,939","₫3,905,787","₫3,905,787","₫3,700,000","₫4,000,000","₫3,700,000"
+Pullman Danang Beach Resort,Deluxe 2 Single Beds with Balcony,"₫6,300,000","₫7,250,001","₫4,000,000","₫4,300,000","₫5,450,001","₫4,300,001"
+Vanda Hotel,Superior Double City View,NA,NA,NA,NA,NA,NA

@@ -1,11 +1,11 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
 Grand Tourane Hotel,Deluxe Room,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
-Haian Riverfront Hotel Da Nang,Superior King Room,"₫1,140,268",SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,"₫1,140,106"
-Hilton Da Nang,King Accessible Room,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Haian Riverfront Hotel Da Nang,Superior King Room,"₫1,140,268","₫1,766,845","₫1,194,555","₫1,766,845","₫1,685,298","₫1,140,106"
+Hilton Da Nang,King Accessible Room,"₫2,551,200","₫3,610,000","₫2,550,000",SOLD OUT,SOLD OUT,SOLD OUT
 M Hotel Da Nang,Deluxe Double City View,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
-New Orient Da Nang,Superior Double or Twin Room without View,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
-Hilton Garden Inn,King Guest Room,"₫3,200,000","₫3,309,152","₫3,344,000","₫2,805,000",SOLD OUT,SOLD OUT
-Hyatt Regency Danang Resort And Spa,2 Twin Beds,"₫4,900,000","₫4,950,000","₫5,900,000","₫5,300,000",SOLD OUT,SOLD OUT
+New Orient Da Nang,Superior Double or Twin Room without View,"₫1,354,541","₫1,244,674","₫1,193,134","₫1,299,783",SOLD OUT,SOLD OUT
+Hilton Garden Inn,King Guest Room,"₫3,200,000","₫3,309,152","₫3,344,000","₫2,805,000","₫1,927,800","₫2,190,450"
+Hyatt Regency Danang Resort And Spa,2 Twin Beds,"₫4,900,000","₫4,950,000","₫5,900,000","₫5,300,000","₫5,400,000","₫4,700,000"
 Nesta Hotel Da Nang,Superior Double Garden View,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
 Muong Thanh Luxury Song Han Hotel,Superior Twin City View,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
 Pariat River Front Hotel Da Nang,Standard Double,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT

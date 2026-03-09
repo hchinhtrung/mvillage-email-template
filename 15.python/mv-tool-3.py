@@ -108,17 +108,27 @@ daily_df = df[
 ]
 
 # ======================
-# STATUS GROUPS (LOGIC GIỮ NGUYÊN)
+# STATUS GROUPS
 # ======================
-STATUS_CHUA_SIGNUP = ["chưa"]
-STATUS_MEMBER = ["đã", "trước"]
-STATUS_NEW_RECRUIT = ["sau", "trước 1", "trước 2"]
+STATUS_MAP = {
+    "đã sign up từ trước": "MEMBER",
+    "sign up sau c/i": "NEW_RECRUIT",
+    "sign up trước 2 ngày check in": "NEW_RECRUIT",
+    "sign up trước 1 ngày check in": "NEW_RECRUIT",
+    "chưa sign up": "CHUA_SIGNUP",
+}
 
-def agg_status(keyword_list):
-    mask = daily_df["_status_norm"].apply(
-        lambda x: any(k in x for k in keyword_list)
-    )
+def map_status(norm_val):
+    for key, group in STATUS_MAP.items():
+        if key in norm_val:
+            return group
+    return "OTHER"
 
+daily_df = daily_df.copy()
+daily_df["_status_group"] = daily_df["_status_norm"].apply(map_status)
+
+def agg_status(group_name):
+    mask = daily_df["_status_group"] == group_name
     return (
         daily_df[mask]
         .groupby(["date", CITY_COL])["signup_count"]
@@ -128,9 +138,9 @@ def agg_status(keyword_list):
         .fillna(0)
     )
 
-chua_signup = agg_status(STATUS_CHUA_SIGNUP)
-member = agg_status(STATUS_MEMBER)
-new_recruit = agg_status(STATUS_NEW_RECRUIT)
+chua_signup = agg_status("CHUA_SIGNUP")
+member = agg_status("MEMBER")
+new_recruit = agg_status("NEW_RECRUIT")
 
 # ======================
 # FINAL DAILY TABLE
@@ -220,9 +230,8 @@ last_week_start = last_week_end - timedelta(days=6)
 prev_week_end = last_week_start - timedelta(days=1)
 prev_week_start = prev_week_end - timedelta(days=6)
 
-nr_df = df[df["_status_norm"].apply(
-    lambda x: any(k in x for k in STATUS_NEW_RECRUIT)
-)]
+df["_status_group"] = df["_status_norm"].apply(map_status)
+nr_df = df[df["_status_group"] == "NEW_RECRUIT"]
 
 last_week_df = nr_df[
     (nr_df["date"] >= last_week_start) &

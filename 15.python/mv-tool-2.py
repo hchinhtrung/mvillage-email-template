@@ -873,9 +873,14 @@ with tab_country:
                     axis=1
                 )
 
-            # Total columns
-            last_total_cols = [f"{s} LAST" for s in target_statuses]
-            cur_total_cols = [f"{s} CURRENT" for s in target_statuses]
+            # Total columns (only sum 3 sign-up timing metrics)
+            total_statuses = [
+                "Sign up trước 2 ngày check in",
+                "Sign up trước 1 ngày check in",
+                "Sign-up sau C/I"
+            ]
+            last_total_cols = [f"{s} LAST" for s in total_statuses]
+            cur_total_cols = [f"{s} CURRENT" for s in total_statuses]
             display_df["Total LAST"] = display_df[last_total_cols].sum(axis=1)
             display_df["Total CURRENT"] = display_df[cur_total_cols].sum(axis=1)
             display_df["Total %"] = display_df.apply(

@@ -398,3 +398,109 @@ st.download_button(
     "wow_new_recruit.csv",
     "text/csv"
 )
+
+# ======================================================
+# ================ WoW CR SECTION =====================
+# ======================================================
+st.divider()
+st.subheader("📈 Week-over-Week CR")
+
+# New recruit per city per week (from signup file)
+nr_last_week = (
+    nr_df[
+        (nr_df["date"] >= last_week_start) &
+        (nr_df["date"] <= last_week_end)
+    ]
+    .groupby(CITY_COL)["signup_count"]
+    .sum()
+)
+nr_prev_week = (
+    nr_df[
+        (nr_df["date"] >= prev_week_start) &
+        (nr_df["date"] <= prev_week_end)
+    ]
+    .groupby(CITY_COL)["signup_count"]
+    .sum()
+)
+
+# Checkin per city per week (from reservation file)
+checkin_last_week = (
+    res_df[
+        (res_df["date"] >= last_week_start) &
+        (res_df["date"] <= last_week_end)
+    ]
+    .groupby(RES_CITY)[RES_TENANT]
+    .nunique()
+)
+checkin_prev_week = (
+    res_df[
+        (res_df["date"] >= prev_week_start) &
+        (res_df["date"] <= prev_week_end)
+    ]
+    .groupby(RES_CITY)[RES_TENANT]
+    .nunique()
+)
+
+# CR = New recruit / checkin * 100
+cr_last = (nr_last_week / checkin_last_week.replace(0, pd.NA) * 100).round(2)
+cr_prev = (nr_prev_week / checkin_prev_week.replace(0, pd.NA) * 100).round(2)
+
+wow_cr_df = pd.DataFrame({
+    "Last week CR (%)": cr_prev,
+    "This week CR (%)": cr_last
+}).fillna(0)
+
+wow_cr_df["WoW Δ (pp)"] = (wow_cr_df["This week CR (%)"] - wow_cr_df["Last week CR (%)"]).round(2)
+
+# Total row
+total_nr_prev = nr_prev_week.sum()
+total_nr_last = nr_last_week.sum()
+total_ci_prev = checkin_prev_week.sum()
+total_ci_last = checkin_last_week.sum()
+
+total_cr_prev = round(total_nr_prev / total_ci_prev * 100, 2) if total_ci_prev > 0 else 0
+total_cr_last = round(total_nr_last / total_ci_last * 100, 2) if total_ci_last > 0 else 0
+
+wow_cr_df.loc["Total"] = [
+    total_cr_prev,
+    total_cr_last,
+    round(total_cr_last - total_cr_prev, 2)
+]
+
+# Style: color the WoW Δ column
+def color_wow_cr(val):
+    try:
+        val = float(val)
+    except:
+        return ""
+    if val > 1:
+        return "background-color: #27ae60; color: white;"
+    elif val > 0:
+        return "background-color: #2ecc71;"
+    elif val == 0:
+        return ""
+    elif val > -1:
+        return "background-color: #f39c12;"
+    else:
+        return "background-color: #e74c3c; color: white;"
+
+wow_cr_display = wow_cr_df.reset_index().rename(columns={"index": "City"})
+
+styled_cr = wow_cr_display.style.format({
+    "Last week CR (%)": "{:.2f}%",
+    "This week CR (%)": "{:.2f}%",
+    "WoW Δ (pp)": "{:+.2f} pp"
+}).applymap(color_wow_cr, subset=["WoW Δ (pp)"])
+
+st.dataframe(
+    styled_cr,
+    use_container_width=True,
+    hide_index=True
+)
+
+st.download_button(
+    "⬇️ Download WoW CR CSV",
+    wow_cr_display.to_csv(index=False).encode("utf-8-sig"),
+    "wow_cr.csv",
+    "text/csv"
+)

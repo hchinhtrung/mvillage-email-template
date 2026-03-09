@@ -268,7 +268,7 @@ st.dataframe(
 
 st.download_button(
     "⬇️ Download WoW CSV",
-    wow_total.reset_index()
+    wow_df.reset_index()
     .rename(columns={"index": "City"})
     .to_csv(index=False)
     .encode("utf-8-sig"),

@@ -339,6 +339,25 @@ with st.expander("🔍 Status Debug"):
     )
 
 # ======================================================
+# ================ WoW STYLING ========================
+# ======================================================
+def color_wow(val):
+    try:
+        val = float(val)
+    except:
+        return ""
+    if val > 1:
+        return "background-color: #27ae60; color: #000000;"
+    elif val > 0:
+        return "background-color: #2ecc71; color: #000000;"
+    elif val == 0:
+        return ""
+    elif val > -1:
+        return "background-color: #f39c12; color: #000000;"
+    else:
+        return "background-color: #e74c3c; color: #000000;"
+
+# ======================================================
 # ====================== WoW SECTION ===================
 # ======================================================
 st.divider()
@@ -384,9 +403,18 @@ wow_df.loc["Total"] = [
     if total_prev > 0 else None
 ]
 
+wow_nr_display = wow_df.reset_index().rename(columns={"index": "City"})
+
+styled_nr = wow_nr_display.style.format({
+    "Last week": "{:.0f}",
+    "This week": "{:.0f}",
+    "WoW %": "{:+.2f}%"
+}).applymap(color_wow, subset=["WoW %"])
+
 st.dataframe(
-    wow_df.reset_index().rename(columns={"index": "City"}),
-    use_container_width=True
+    styled_nr,
+    use_container_width=True,
+    hide_index=True
 )
 
 st.download_button(
@@ -470,30 +498,13 @@ wow_cr_df.loc["Total"] = [
     round((total_cr_last / total_cr_prev - 1) * 100, 2) if total_cr_prev > 0 else 0
 ]
 
-# Style: color the WoW Δ column
-def color_wow_cr(val):
-    try:
-        val = float(val)
-    except:
-        return ""
-    if val > 1:
-        return "background-color: #27ae60; color: #000000;"
-    elif val > 0:
-        return "background-color: #2ecc71; color: #000000;"
-    elif val == 0:
-        return ""
-    elif val > -1:
-        return "background-color: #f39c12; color: #000000;"
-    else:
-        return "background-color: #e74c3c; color: #000000;"
-
 wow_cr_display = wow_cr_df.reset_index().rename(columns={"index": "City"})
 
 styled_cr = wow_cr_display.style.format({
     "Last week CR (%)": "{:.2f}%",
     "This week CR (%)": "{:.2f}%",
     "WoW %": "{:+.2f}%"
-}).applymap(color_wow_cr, subset=["WoW %"])
+}).applymap(color_wow, subset=["WoW %"])
 
 st.dataframe(
     styled_cr,

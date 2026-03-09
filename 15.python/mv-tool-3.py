@@ -253,13 +253,13 @@ def color_cr(val):
     if val == 0:
         return ""
     if val >= 15:
-        return "background-color: #27ae60; color: white;"
+        return "background-color: #27ae60; color: #000000;"
     elif val >= 10:
-        return "background-color: #2ecc71;"
+        return "background-color: #2ecc71; color: #000000;"
     elif val >= 5:
-        return "background-color: #f9e79f;"
+        return "background-color: #f9e79f; color: #000000;"
     else:
-        return "background-color: #f5b7b1;"
+        return "background-color: #f5b7b1; color: #000000;"
 
 def style_table(df):
     cr_cols = [c for c in df.columns if "_CR" in c or "CR_" in c]
@@ -477,15 +477,15 @@ def color_wow_cr(val):
     except:
         return ""
     if val > 1:
-        return "background-color: #27ae60; color: white;"
+        return "background-color: #27ae60; color: #000000;"
     elif val > 0:
-        return "background-color: #2ecc71;"
+        return "background-color: #2ecc71; color: #000000;"
     elif val == 0:
         return ""
     elif val > -1:
-        return "background-color: #f39c12;"
+        return "background-color: #f39c12; color: #000000;"
     else:
-        return "background-color: #e74c3c; color: white;"
+        return "background-color: #e74c3c; color: #000000;"
 
 wow_cr_display = wow_cr_df.reset_index().rename(columns={"index": "City"})
 

@@ -233,46 +233,87 @@ prev_week_start = prev_week_end - timedelta(days=6)
 df["_status_group"] = df["_status_norm"].apply(map_status)
 nr_df = df[df["_status_group"] == "NEW_RECRUIT"]
 
+NR_SUBSTATUS = {
+    "sign up sau c/i": "Sau C/I",
+    "sign up trước 2 ngày check in": "Trước 2 ngày",
+    "sign up trước 1 ngày check in": "Trước 1 ngày",
+}
+
+for substatus_key, substatus_label in NR_SUBSTATUS.items():
+    sub_df = nr_df[nr_df["_status_norm"].str.contains(substatus_key, na=False)]
+
+    last_sub = sub_df[
+        (sub_df["date"] >= last_week_start) &
+        (sub_df["date"] <= last_week_end)
+    ]
+    prev_sub = sub_df[
+        (sub_df["date"] >= prev_week_start) &
+        (sub_df["date"] <= prev_week_end)
+    ]
+
+    wow_sub = pd.DataFrame({
+        "Prev week": prev_sub.groupby(CITY_COL)["signup_count"].sum(),
+        "Last week": last_sub.groupby(CITY_COL)["signup_count"].sum()
+    }).fillna(0)
+
+    wow_sub["WoW %"] = (
+        (wow_sub["Last week"] - wow_sub["Prev week"]) /
+        wow_sub["Prev week"].replace(0, pd.NA)
+    * 100).round(2)
+
+    total_prev = prev_sub["signup_count"].sum()
+    total_last = last_sub["signup_count"].sum()
+    wow_sub.loc["Total"] = [
+        total_prev,
+        total_last,
+        round((total_last - total_prev) / total_prev * 100, 2)
+        if total_prev > 0 else None
+    ]
+
+    st.markdown(f"**{substatus_label}**")
+    st.dataframe(
+        wow_sub.reset_index().rename(columns={"index": "City"}),
+        use_container_width=True
+    )
+
+# --- Total New Recruit ---
 last_week_df = nr_df[
     (nr_df["date"] >= last_week_start) &
     (nr_df["date"] <= last_week_end)
 ]
-
 prev_week_df = nr_df[
     (nr_df["date"] >= prev_week_start) &
     (nr_df["date"] <= prev_week_end)
 ]
 
-wow_df = pd.DataFrame({
+wow_total = pd.DataFrame({
     "Prev week": prev_week_df.groupby(CITY_COL)["signup_count"].sum(),
     "Last week": last_week_df.groupby(CITY_COL)["signup_count"].sum()
 }).fillna(0)
 
-wow_df["WoW %"] = (
-    (wow_df["Last week"] - wow_df["Prev week"]) /
-    wow_df["Prev week"].replace(0, pd.NA)
-) * 100
-
-wow_df["WoW %"] = wow_df["WoW %"].round(2)
+wow_total["WoW %"] = (
+    (wow_total["Last week"] - wow_total["Prev week"]) /
+    wow_total["Prev week"].replace(0, pd.NA)
+* 100).round(2)
 
 total_prev = prev_week_df["signup_count"].sum()
 total_last = last_week_df["signup_count"].sum()
-
-wow_df.loc["Total"] = [
+wow_total.loc["Total"] = [
     total_prev,
     total_last,
     round((total_last - total_prev) / total_prev * 100, 2)
     if total_prev > 0 else None
 ]
 
+st.markdown("**Total New Recruit**")
 st.dataframe(
-    wow_df.reset_index().rename(columns={"index": "City"}),
+    wow_total.reset_index().rename(columns={"index": "City"}),
     use_container_width=True
 )
 
 st.download_button(
     "⬇️ Download WoW CSV",
-    wow_df.reset_index()
+    wow_total.reset_index()
     .rename(columns={"index": "City"})
     .to_csv(index=False)
     .encode("utf-8-sig"),

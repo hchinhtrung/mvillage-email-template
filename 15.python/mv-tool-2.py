@@ -378,19 +378,33 @@ with tab_global:
 with tab_city_overview:
     st.subheader("🏙️ City Performance Overview (Last vs Current)")
 
-    city_last = (
-        last_df
-        .groupby(RES_CITY)[["checkin", "signup", "dom", "int"]]
-        .sum()
-        .reset_index()
-    )
+    # --- Helper: compute city-level checkin using global nunique(tenant_id) ---
+    def city_checkin_global(res_filtered):
+        guest_country_col = next((col for col in res_filtered.columns if "guest" in col.lower() and "country" in col.lower()), None)
+        checkin = res_filtered.groupby(RES_CITY)[RES_TENANT].nunique().reset_index(name="checkin")
+        if guest_country_col:
+            res_copy = res_filtered.copy()
+            res_copy["_is_dom"] = res_copy[guest_country_col].astype(str).str.lower().str.strip() == "vietnam"
+            dom = res_copy[res_copy["_is_dom"]].groupby(RES_CITY)[RES_TENANT].nunique().reset_index(name="dom")
+            intl = res_copy[~res_copy["_is_dom"]].groupby(RES_CITY)[RES_TENANT].nunique().reset_index(name="int")
+            checkin = checkin.merge(dom, on=RES_CITY, how="left").merge(intl, on=RES_CITY, how="left").fillna(0)
+        else:
+            checkin["dom"] = 0
+            checkin["int"] = 0
+        return checkin
 
-    city_cur = (
-        current_df
-        .groupby(RES_CITY)[["checkin", "signup", "dom", "int"]]
-        .sum()
-        .reset_index()
-    )
+    last_res_filtered = filter_period(res_df, RES_DATE, last_from, last_to)
+    cur_res_filtered = filter_period(res_df, RES_DATE, current_from, current_to)
+
+    city_last_checkin = city_checkin_global(last_res_filtered)
+    city_cur_checkin = city_checkin_global(cur_res_filtered)
+
+    # Signup is still summed from hotel-level (no duplication issue)
+    city_last_signup = last_df.groupby(RES_CITY)[["signup"]].sum().reset_index()
+    city_cur_signup = current_df.groupby(RES_CITY)[["signup"]].sum().reset_index()
+
+    city_last = city_last_checkin.merge(city_last_signup, on=RES_CITY, how="left").fillna(0)
+    city_cur = city_cur_checkin.merge(city_cur_signup, on=RES_CITY, how="left").fillna(0)
 
     city = (
         city_last
@@ -448,17 +462,35 @@ with tab_city_overview:
 
     city = city.sort_values(RES_CITY)
 
-    # --- ADD GRAND TOTAL ---
+    # --- ADD GRAND TOTAL (global nunique across all cities) ---
+    guest_country_col_gt = next((col for col in last_res_filtered.columns if "guest" in col.lower() and "country" in col.lower()), None)
+
+    grand_checkin_last = last_res_filtered[RES_TENANT].nunique()
+    grand_checkin_cur = cur_res_filtered[RES_TENANT].nunique()
+
+    if guest_country_col_gt:
+        last_copy_gt = last_res_filtered.copy()
+        last_copy_gt["_is_dom"] = last_copy_gt[guest_country_col_gt].astype(str).str.lower().str.strip() == "vietnam"
+        cur_copy_gt = cur_res_filtered.copy()
+        cur_copy_gt["_is_dom"] = cur_copy_gt[guest_country_col_gt].astype(str).str.lower().str.strip() == "vietnam"
+
+        grand_dom_last = last_copy_gt[last_copy_gt["_is_dom"]][RES_TENANT].nunique()
+        grand_dom_cur = cur_copy_gt[cur_copy_gt["_is_dom"]][RES_TENANT].nunique()
+        grand_int_last = last_copy_gt[~last_copy_gt["_is_dom"]][RES_TENANT].nunique()
+        grand_int_cur = cur_copy_gt[~cur_copy_gt["_is_dom"]][RES_TENANT].nunique()
+    else:
+        grand_dom_last = grand_dom_cur = grand_int_last = grand_int_cur = 0
+
     grand_total = pd.DataFrame([{
         RES_CITY: "GRAND TOTAL",
-        "checkin_last": city["checkin_last"].sum(),
-        "checkin_current": city["checkin_current"].sum(),
+        "checkin_last": grand_checkin_last,
+        "checkin_current": grand_checkin_cur,
         "signup_last": city["signup_last"].sum(),
         "signup_current": city["signup_current"].sum(),
-        "dom_last": city["dom_last"].sum(),
-        "dom_current": city["dom_current"].sum(),
-        "int_last": city["int_last"].sum(),
-        "int_current": city["int_current"].sum(),
+        "dom_last": grand_dom_last,
+        "dom_current": grand_dom_cur,
+        "int_last": grand_int_last,
+        "int_current": grand_int_cur,
     }])
     
     # Recalculate derived metrics for grand total

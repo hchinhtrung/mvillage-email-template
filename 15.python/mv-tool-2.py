@@ -69,6 +69,15 @@ signup_df[SIGNUP_COUNT] = pd.to_numeric(
 signup_df = signup_df.dropna(subset=[SIGNUP_DATE])
 res_df = res_df.dropna(subset=[RES_DATE])
 
+# Filter signup to only include relevant statuses
+SIGNUP_STATUS = "Sign up status v2"
+SIGNUP_VALID_STATUSES = [
+    "Sign-up sau C/I",
+    "Sign up trước 2 ngày check in",
+    "Sign up trước 1 ngày check in",
+]
+signup_df = signup_df[signup_df[SIGNUP_STATUS].isin(SIGNUP_VALID_STATUSES)]
+
 def filter_period(df, col, start, end):
     return df[
         (df[col].dt.date >= start) &

@@ -450,7 +450,10 @@ wow_cr_df = pd.DataFrame({
     "This week CR (%)": cr_last
 }).fillna(0)
 
-wow_cr_df["WoW Δ (pp)"] = (wow_cr_df["This week CR (%)"] - wow_cr_df["Last week CR (%)"]).round(2)
+wow_cr_df["WoW %"] = np.where(
+    wow_cr_df["Last week CR (%)"] == 0, 0,
+    ((wow_cr_df["This week CR (%)"] / wow_cr_df["Last week CR (%)"]) - 1) * 100
+).round(2)
 
 # Total row
 total_nr_prev = nr_prev_week.sum()
@@ -464,7 +467,7 @@ total_cr_last = round(total_nr_last / total_ci_last * 100, 2) if total_ci_last >
 wow_cr_df.loc["Total"] = [
     total_cr_prev,
     total_cr_last,
-    round(total_cr_last - total_cr_prev, 2)
+    round((total_cr_last / total_cr_prev - 1) * 100, 2) if total_cr_prev > 0 else 0
 ]
 
 # Style: color the WoW Δ column
@@ -489,8 +492,8 @@ wow_cr_display = wow_cr_df.reset_index().rename(columns={"index": "City"})
 styled_cr = wow_cr_display.style.format({
     "Last week CR (%)": "{:.2f}%",
     "This week CR (%)": "{:.2f}%",
-    "WoW Δ (pp)": "{:+.2f} pp"
-}).applymap(color_wow_cr, subset=["WoW Δ (pp)"])
+    "WoW %": "{:+.2f}%"
+}).applymap(color_wow_cr, subset=["WoW %"])
 
 st.dataframe(
     styled_cr,

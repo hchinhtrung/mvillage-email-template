@@ -1,6 +1,6 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
 Nesta Hotel Hanoi,Superior Twin Room Non Smoking,NA,NA,NA,NA,NA,NA
-Mercure Hanoi La Gare Hotel,Classic Double Bed Room With City View,NA,NA,NA,NA,NA,NA
+Mercure Hanoi La Gare Hotel,Classic Double Bed Room With City View,"VND 3,878,280",NA,NA,NA,NA,NA
 Minasi HanoiOi Hotel,Premier Double Bed Room,"VND 3,923,166","VND 5,579,796","VND 3,945,584","VND 4,340,142","VND 4,340,142","VND 4,774,157"
 La Passion Premium Cau Go,Grand Double Room,NA,NA,NA,NA,NA,NA
 Silk Path Boutique Hanoi,Superior Room,"VND 2,287,349",NA,NA,NA,NA,NA
@@ -15,6 +15,7 @@ Hotel du Lac Hanoi,Deluxe Twin Internal Window,"VND 3,680,777","VND 3,153,499","
 Melia Hanoi,Phòng Deluxe,VND 509,VND 870,VND 870,VND 890,VND 890,VND 534
 La Siesta Premium Hang Be,Superior Room No Window,"VND 2,736,000","VND 4,680,000","VND 5,760,000","VND 5,760,000","VND 5,040,000","VND 4,680,000"
 Hotel du Parc Hanoi,Deluxe King Room,NA,NA,NA,NA,NA,NA
-Grand Vista Hanoi (Kim Ma),Deluxe Twin Room,"VND 1,927,197","VND 1,927,197","VND 1,927,197","VND 1,919,501",NA,NA
+Grand Vista Hanoi (Kim Ma),Deluxe Twin Room,"VND 1,927,197","VND 1,927,197","VND 1,927,197","VND 1,919,501","VND 1,818,320","VND 1,923,335"
 Ha Noi Hotel (Kim Ma),Deluxe Room,"VND 2,579,882","VND 2,579,882","VND 2,175,195","VND 1,857,883","VND 1,857,883","VND 1,857,883"
 The Oriental Jade Hotel,Oriental Pearl Twin,"VND 4,700,788","VND 5,766,545","VND 5,766,545",NA,NA,NA
+Movenpick Hotel Hanoi Centre,Classic King Room,NA,NA,NA,NA,NA,NA

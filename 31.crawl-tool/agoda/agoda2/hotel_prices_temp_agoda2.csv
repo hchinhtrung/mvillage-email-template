@@ -1,7 +1,7 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
 Hoi An Chic Green Retreat - Hotel,Chic Suite,2.191.915₫,2.356.052₫,NA,NA,NA,NA
 Hoi An Eco Lodge & Spa - Hotel,Phòng Superior giường King (Superior King Room),1.402.998₫,3.309.121₫,NA,NA,NA,NA
-Little Oasis - Hotel,Little Oasis Deluxe,1.958.598₫,2.304.233₫,NA,NA,NA,NA
+Little Oasis - Hotel,Little Oasis Deluxe,1.958.598₫,2.304.233₫,2.041.556₫,1.830.282₫,1.750.454₫,NA
 Maison Vy - Hotel,Giường Lớn Cao Cấp (Superior King),NA,NA,NA,NA,NA,NA
 Reu Boutique Hotel - Hotel,Superior 2 giường hoặc giường đôi (Superior Twin or Double),NA,NA,NA,NA,NA,NA
 Grand Sunrise Palace Hội An - Hotel,Phòng Loại Sang Giường Đôi (Deluxe Double Room),NA,NA,NA,NA,NA,NA
@@ -14,3 +14,7 @@ Hoi An Coco River Resort & Spa,Phòng Loại Sang Giường Đôi Hướng Vư�
 Harvest Day Hoi An - Hotel,Standard Double with Garden View,"₫3,104,056","₫3,104,056","₫3,104,056",SOLD OUT,NA,NA
 Palm Garden Beach Resort & Spa,Superior giường đôi hoặc 2 giường đơn Hướng vườn (Superior Double or Twin with Garden View),3.550.265₫,6.579.371₫,NA,NA,NA,NA
 Boutique Hoi An Resort,Phòng Superior (Superior Room),3.508.673₫,4.500.000₫,4.500.000₫,3.324.273₫,NA,NA
+KOI Resort and Spa Hoi An,Bungalow Nhìn ra vườn (Bungalow with Garden View),3.334.124₫,2.496.475₫,2.272.169₫,2.370.638₫,2.489.137₫,2.156.847₫
+Victoria Hoi An Beach Resort & Spa,Phòng Đôi Hướng Sông (River View Double Room),NA,4.006.408₫,NA,NA,NA,NA
+Shoreline Stay - Hotel,Cao cấp Hướng Bể Bơi (Superior Pool View),2.211.422₫,NA,NA,NA,NA,NA
+AIRA Boutique Hoi An Hotel & Spa - Hotel,Phòng Loại Sang (Deluxe Room),NA,NA,NA,NA,NA,NA

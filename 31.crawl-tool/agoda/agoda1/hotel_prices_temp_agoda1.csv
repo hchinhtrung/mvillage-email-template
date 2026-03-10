@@ -1,19 +1,21 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
 Amanaki,Signature Double Room,"₫3,911,562",NA,NA,NA,NA,NA
-Au Lac Charner,Ruffier Deluxe Twin Room without Window,SOLD OUT,NA,NA,NA,NA,NA
-Au Lac Charner,Vannier Premier Twin Room,"₫3,251,735","₫5,320,902","₫3,495,757","₫5,320,902",NA,NA
+Au Lac Charner,Ruffier Deluxe Twin Room without Window,"₫2,749,794","₫2,803,577",SOLD OUT,SOLD OUT,NA,NA
+Au Lac Charner,Vannier Premier Twin Room,"₫3,251,735","₫5,320,902","₫3,495,757","₫5,320,902",SOLD OUT,NA
 Silverland Ben Thanh_Sunshine Garden - Double or Twin,Sunshine Garden - Double or Twin,"₫4,963,492","₫4,852,477","₫4,854,320","₫4,528,009","₫4,666,666","₫4,576,437"
 Amanaki,Signature Twin Room,"₫4,006,966","₫3,911,562","₫3,318,619","₫2,813,315","₫2,562,245","₫3,176,124"
-Wink,1 Queen Bed,"₫3,150,000","₫2,200,000","₫2,120,000","₫2,080,000",NA,NA
-Silverland May,Narra Twin - No Window,SOLD OUT,SOLD OUT,NA,NA,NA,NA
+Wink,1 Queen Bed,"₫3,150,000","₫2,200,000","₫2,120,000","₫2,080,000","₫2,080,000","₫2,080,000"
+Silverland May,Narra Twin - No Window,"₫4,675,215","₫4,697,707","₫4,455,731","₫4,208,818",SOLD OUT,NA
 The Signature Hoi An,Signature Lantern Room,SOLD OUT,NA,NA,NA,NA,NA
 Silverland Ben Thanh_Spring Field - No Window,Spring Field - No Window,SOLD OUT,SOLD OUT,NA,NA,NA,NA
 Hato,Premium Twin Room - Non-Smoking,SOLD OUT,NA,NA,NA,NA,NA
 Silverland May,Narra Double,"₫4,746,649","₫4,591,110","₫4,354,624",SOLD OUT,NA,NA
-M Hotel,Zen Corner,SOLD OUT,SOLD OUT,NA,NA,NA,NA
+M Hotel,Zen Corner,"₫3,166,561",SOLD OUT,SOLD OUT,NA,NA,NA
 La Siesta Hoi An Resort & Spa,Club Wing Junior Suite with Balcony,SOLD OUT,SOLD OUT,NA,NA,NA,NA
 La Siesta Hoi An Resort & Spa 1,Classic Wing Deluxe Room,NA,NA,NA,NA,NA,NA
-Dechiu Hotel - Hotel,Double Room with Sea View,"₫4,466,524","₫4,466,524","₫4,508,947","₫4,197,771",SOLD OUT,NA
-Sol An Bang Beach Resort & Spa,Deluxe Room,"₫1,975,244",NA,NA,NA,NA,NA
+Dechiu Hotel - Hotel,Double Room with Sea View,"₫4,466,524","₫4,466,524","₫4,508,947","₫4,197,771",SOLD OUT,SOLD OUT
+Sol An Bang Beach Resort & Spa,Deluxe Room,"₫1,975,244",NA,SOLD OUT,NA,NA,NA
 Hato,Deluxe Double No Window,"₫1,788,715",NA,SOLD OUT,NA,NA,NA
 Wink,2 Twin Beds,"₫3,150,000","₫2,200,000","₫2,120,000","₫2,080,000","₫2,080,000","₫2,080,000"
+Dechiu Hotel 1 - Hotel,Double Room with Queen Bed - Non-Smoking,"₫3,548,826","₫3,547,703","₫3,264,600",SOLD OUT,"₫3,547,703",NA
+Moire Hoi An Vignette Collection By IHG,1 King Deluxe,"₫7,488,177","₫11,560,694","₫7,225,434","₫9,984,235",7.094.062₫,8.670.520₫

@@ -1,7 +1,7 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
 Silk Path Boutique Hanoi,Superior Room,"VND 2,153,110","VND 2,578,780","VND 1,993,902","VND 2,312,926","VND 2,312,926","VND 2,312,926"
 REY Hotel Hanoi,Standard Twin Room,NA,NA,NA,NA,NA,NA
-Mercure Hanoi La Gare Hotel,Classic Double Bed Room With City View,"VND 3,878,280","VND 4,354,560",NA,NA,NA,NA
+Mercure Hanoi La Gare Hotel,Classic Double Bed Room With City View,"VND 3,878,280","VND 4,354,560","VND 3,175,200","VND 2,835,000","VND 2,268,000","VND 2,347,380"
 La Passion Premium Cau Go,Grand Double Room,"VND 9,000,000",NA,NA,"VND 9,000,000","VND 9,000,000","VND 9,000,000"
 Muong Thanh Hanoi Centre Hotel,Superior King Room,"VND 1,650,000","VND 1,650,000","VND 1,650,000","VND 1,650,000","VND 1,650,000","VND 1,650,000"
 Minasi HanoiOi Hotel,Premier Double Bed Room,"VND 3,362,395","VND 4,191,960","VND 5,380,056","VND 3,945,374","VND 4,773,903","VND 3,945,374"
@@ -15,7 +15,7 @@ Halais Hotel,Superior Room,"VND 1,355,291","VND 1,355,291","VND 1,355,291","VND 
 La Siesta Premium Hang Be,Superior Room No Window,"VND 3,960,000","VND 4,320,000","VND 6,840,000","VND 5,760,000","VND 4,320,000","VND 4,320,000"
 Hotel du Lac Hanoi,Deluxe Twin Internal Window,"VND 3,153,499","VND 3,272,502","VND 3,272,502","VND 2,975,000","VND 2,617,999","VND 2,499,029"
 Hanoi le Jardin Hotel & Spa,Cozy Le Jardin Classic Room,"VND 2,750,800","VND 2,750,800","VND 2,750,800","VND 2,401,201","VND 1,932,000","VND 2,401,201"
-Grand Vista Hanoi (Kim Ma),Deluxe Twin Room,"VND 2,218,382",NA,NA,NA,NA,NA
+Grand Vista Hanoi (Kim Ma),Deluxe Twin Room,"VND 2,218,382","VND 2,206,241","VND 1,950,797","VND 1,912,350","VND 1,858,241","VND 1,919,989"
 Hotel du Parc Hanoi,Deluxe King Room,"VND 3,696,234","VND 3,465,219","VND 4,354,732","VND 2,574,162","VND 2,574,162","VND 2,772,176"
 The Oriental Jade Hotel,Oriental Pearl Twin,"VND 4,869,502","VND 5,461,016","VND 5,618,753","VND 5,429,469","VND 5,429,469","VND 4,877,389"
 Ha Noi Hotel (Kim Ma),Deluxe Room,"VND 2,173,803","VND 1,993,218","VND 1,992,364","VND 2,174,757","VND 2,052,737","VND 2,052,737"

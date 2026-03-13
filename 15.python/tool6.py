@@ -6,10 +6,11 @@ st.title("Hotel Price Availability Analyzer")
 
 PRICE_COLS = ["price_w1", "price_w2", "price_w3", "price_w4", "price_w5", "price_w6"]
 
-uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
+uploaded_files = st.file_uploader("Upload CSV files", type=["csv"], accept_multiple_files=True)
 
-if uploaded_file:
-    df = pd.read_csv(uploaded_file, keep_default_na=False)
+if uploaded_files:
+    dfs = [pd.read_csv(f, keep_default_na=False) for f in uploaded_files]
+    df = pd.concat(dfs, ignore_index=True)
 
     # Normalize: strip whitespace
     for col in PRICE_COLS:

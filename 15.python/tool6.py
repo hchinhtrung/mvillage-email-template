@@ -33,17 +33,17 @@ if uploaded_files:
     available_rate = available_count / total_cells * 100
 
     # --- Summary metrics ---
-    st.subheader("Tổng quan")
+    st.subheader("Overview")
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Tổng ô giá", total_cells)
+    c1.metric("Total Price Cells", total_cells)
     c2.metric("NA", f"{na_count} ({na_rate:.1f}%)")
     c3.metric("SOLD OUT", f"{sold_out_count} ({sold_out_rate:.1f}%)")
-    c4.metric("Có giá", f"{available_count} ({available_rate:.1f}%)")
+    c4.metric("Available", f"{available_count} ({available_rate:.1f}%)")
 
     st.divider()
 
     # --- Per-file breakdown ---
-    st.subheader("Tỉ lệ NA & Sold Out theo từng file")
+    st.subheader("NA & Sold Out Rate by File")
 
     file_rows = []
     for f, file_df in zip(uploaded_files, dfs):
@@ -70,14 +70,14 @@ if uploaded_files:
 
         file_rows.append({
             "File": f.name,
-            "Tổng ô giá": file_total,
+            "Total Cells": file_total,
             "NA": int(file_na),
             "NA %": round(na_pct, 1),
             "Sold Out": int(file_sold_out),
             "Sold Out %": round(sold_out_pct, 1),
             "NA + Sold Out %": round(na_pct + sold_out_pct, 1),
-            "Có giá": int(file_available),
-            "Có giá %": round(available_pct, 1),
+            "Available": int(file_available),
+            "Available %": round(available_pct, 1),
         })
 
     file_summary_df = pd.DataFrame(file_rows)
@@ -88,14 +88,14 @@ if uploaded_files:
     display_df["NA %"] = display_df["NA %"].apply(lambda x: f"{x:.1f}%")
     display_df["Sold Out %"] = display_df["Sold Out %"].apply(lambda x: f"{x:.1f}%")
     display_df["NA + Sold Out %"] = display_df["NA + Sold Out %"].apply(lambda x: f"{x:.1f}%")
-    display_df["Có giá %"] = display_df["Có giá %"].apply(lambda x: f"{x:.1f}%")
+    display_df["Available %"] = display_df["Available %"].apply(lambda x: f"{x:.1f}%")
 
     st.dataframe(display_df, use_container_width=True, hide_index=True)
 
     st.divider()
 
     # --- Per-hotel breakdown ---
-    st.subheader("Chi tiết theo khách sạn")
+    st.subheader("Detail by Hotel")
 
     rows = []
     for _, row in df.iterrows():
@@ -105,14 +105,14 @@ if uploaded_files:
         total = len(values)
         available = total - na - sold_out
         rows.append({
-            "Khách sạn": row.get("hotel_name", ""),
-            "Loại phòng": row.get("room_type", ""),
-            "Tổng tuần": total,
+            "Hotel": row.get("hotel_name", ""),
+            "Room Type": row.get("room_type", ""),
+            "Total Weeks": total,
             "NA": na,
             "NA %": f"{na/total*100:.0f}%",
             "Sold Out": sold_out,
             "Sold Out %": f"{sold_out/total*100:.0f}%",
-            "Có giá": available,
+            "Available": available,
         })
 
     detail_df = pd.DataFrame(rows)
@@ -120,21 +120,21 @@ if uploaded_files:
     # Filter
     filter_col, _ = st.columns([2, 5])
     with filter_col:
-        filter_opt = st.selectbox("Lọc", ["Tất cả", "Có NA", "Có Sold Out", "Không có giá nào"])
+        filter_opt = st.selectbox("Filter", ["All", "Has NA", "Has Sold Out", "No Price Available"])
 
-    if filter_opt == "Có NA":
+    if filter_opt == "Has NA":
         detail_df = detail_df[detail_df["NA"] > 0]
-    elif filter_opt == "Có Sold Out":
+    elif filter_opt == "Has Sold Out":
         detail_df = detail_df[detail_df["Sold Out"] > 0]
-    elif filter_opt == "Không có giá nào":
-        detail_df = detail_df[detail_df["Có giá"] == 0]
+    elif filter_opt == "No Price Available":
+        detail_df = detail_df[detail_df["Available"] == 0]
 
     st.dataframe(detail_df, use_container_width=True, hide_index=True)
 
     st.divider()
 
     # --- Per-week breakdown ---
-    st.subheader("Chi tiết theo tuần")
+    st.subheader("Detail by Week")
 
     week_rows = []
     for col in PRICE_COLS:
@@ -146,13 +146,13 @@ if uploaded_files:
         sold_out = (values.str.upper() == "SOLD OUT").sum()
         available = total - na - sold_out
         week_rows.append({
-            "Tuần": col,
-            "Tổng": total,
+            "Week": col,
+            "Total": total,
             "NA": int(na),
             "NA %": f"{na/total*100:.0f}%",
             "Sold Out": int(sold_out),
             "Sold Out %": f"{sold_out/total*100:.0f}%",
-            "Có giá": int(available),
+            "Available": int(available),
         })
 
     st.dataframe(pd.DataFrame(week_rows), use_container_width=True, hide_index=True)
@@ -160,5 +160,5 @@ if uploaded_files:
     st.divider()
 
     # --- Raw data ---
-    with st.expander("Xem dữ liệu gốc"):
+    with st.expander("View Raw Data"):
         st.dataframe(df, use_container_width=True, hide_index=True)

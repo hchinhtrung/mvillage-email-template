@@ -42,6 +42,58 @@ if uploaded_files:
 
     st.divider()
 
+    # --- Per-file breakdown ---
+    st.subheader("Tỉ lệ NA & Sold Out theo từng file")
+
+    file_rows = []
+    for f, file_df in zip(uploaded_files, dfs):
+        for col in PRICE_COLS:
+            if col in file_df.columns:
+                file_df[col] = file_df[col].astype(str).str.strip()
+
+        file_total = len(file_df) * len(PRICE_COLS)
+        if file_total == 0:
+            continue
+
+        file_na = 0
+        file_sold_out = 0
+        for col in PRICE_COLS:
+            if col in file_df.columns:
+                vals = file_df[col].str.upper()
+                file_na += (vals == "NA").sum()
+                file_sold_out += (vals == "SOLD OUT").sum()
+
+        file_available = file_total - file_na - file_sold_out
+        na_pct = file_na / file_total * 100
+        sold_out_pct = file_sold_out / file_total * 100
+        available_pct = file_available / file_total * 100
+
+        file_rows.append({
+            "File": f.name,
+            "Tổng ô giá": file_total,
+            "NA": int(file_na),
+            "NA %": round(na_pct, 1),
+            "Sold Out": int(file_sold_out),
+            "Sold Out %": round(sold_out_pct, 1),
+            "NA + Sold Out %": round(na_pct + sold_out_pct, 1),
+            "Có giá": int(file_available),
+            "Có giá %": round(available_pct, 1),
+        })
+
+    file_summary_df = pd.DataFrame(file_rows)
+    file_summary_df = file_summary_df.sort_values("NA + Sold Out %", ascending=False).reset_index(drop=True)
+
+    # Format percentage columns for display
+    display_df = file_summary_df.copy()
+    display_df["NA %"] = display_df["NA %"].apply(lambda x: f"{x:.1f}%")
+    display_df["Sold Out %"] = display_df["Sold Out %"].apply(lambda x: f"{x:.1f}%")
+    display_df["NA + Sold Out %"] = display_df["NA + Sold Out %"].apply(lambda x: f"{x:.1f}%")
+    display_df["Có giá %"] = display_df["Có giá %"].apply(lambda x: f"{x:.1f}%")
+
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
+
+    st.divider()
+
     # --- Per-hotel breakdown ---
     st.subheader("Chi tiết theo khách sạn")
 

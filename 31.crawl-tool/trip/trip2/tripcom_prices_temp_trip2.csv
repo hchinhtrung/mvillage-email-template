@@ -1,20 +1,19 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
+Sheraton Hanoi Hotel,Deluxe Twin Room,"VND 7,280,280","VND 4,622,400","VND 5,315,760","VND 5,893,560","VND 4,506,840","VND 4,333,500"
+JW Marriott Hotel Hanoi,"Deluxe King, Guest Room, 1 King Bed",NA,NA,NA,NA,NA,NA
 Dolce Wyndham (Khu Nhat Han HN),Golden Classic Twin,"VND 2,825,928","VND 2,825,928","VND 2,825,928","VND 2,825,928","VND 2,825,928","VND 2,825,928"
-Sheraton Hanoi West,"Deluxe, Guest Room, 1 King, Sofa Bed, City View","VND 5,329,800","VND 3,572,100","VND 3,572,100","VND 3,798,900","VND 3,572,100","VND 5,273,100"
-Lancaster Hanoi City (Kim Ma),Studio,NA,NA,NA,NA,NA,NA
-Lotte Hotel (Khu Nhat Han HN),Deluxe Twin Room,"VND 5,782,983","VND 5,645,699","VND 6,334,199","VND 6,058,799","VND 5,783,399","VND 5,507,999"
-Sheraton Hanoi Hotel,Deluxe Twin Room,"VND 5,315,760","VND 5,084,640","VND 6,240,240","VND 4,333,500","VND 4,564,620","VND 6,471,360"
-L7 WEST LAKE HANOI BY LOTTE - L7 RESIDENCES,One Bedroom Apartment,"VND 4,448,449","VND 4,448,449","VND 4,448,449",NA,NA,NA
-Hanoi Daewooo (Khu Nhat Han HN),Deluxe King Room,"VND 3,148,951","VND 3,129,215","VND 2,765,091","VND 2,765,091","VND 2,438,037","VND 3,405,267"
-Novotel Hanoi Thai Ha,"Superior Room, 1 King Size Bed, City View","VND 3,061,800","VND 4,592,700","VND 4,819,500","VND 3,711,016","VND 3,084,480","VND 3,084,480"
-InterContinental Hanoi Landmark72,1 King Bed Classic Room,"VND 5,960,644","VND 9,596,690","VND 4,291,769","VND 4,708,856","VND 5,066,548","VND 4,142,753"
-L7 WEST LAKE HANOI by LOTTE HOTELS,Superior Convertible,"VND 4,475,671","VND 5,696,308","VND 4,475,671","VND 3,865,352","VND 3,865,352","VND 3,661,912"
-JW Marriott Hotel Hanoi,"Deluxe King, Guest Room, 1 King Bed","VND 7,371,000","VND 6,237,000","VND 6,577,200","VND 6,804,000","VND 6,804,000","VND 11,907,000"
+Sheraton Hanoi West,"Deluxe, Guest Room, 1 King, Sofa Bed, City View","VND 5,556,600","VND 3,572,100","VND 5,159,700","VND 4,819,500","VND 5,103,000","VND 5,670,000"
+Lotte Hotel (Khu Nhat Han HN),Deluxe Twin Room,"VND 5,645,711","VND 5,783,408","VND 5,370,307","VND 5,370,307","VND 6,609,609","VND 5,783,408"
+L7 WEST LAKE HANOI BY LOTTE - L7 RESIDENCES,One Bedroom Apartment,"VND 4,400,422","VND 4,400,422","VND 3,432,328","VND 3,432,328","VND 3,432,328","VND 4,400,419"
+L7 WEST LAKE HANOI by LOTTE HOTELS,Superior Convertible,"VND 4,475,671","VND 4,068,792","VND 4,475,671","VND 4,679,110","VND 3,865,352","VND 3,865,352"
+M Village Sig Tho Nhuom,Phòng Studio,NA,NA,NA,NA,NA,NA
 Fukura (Boutique - Kim Ma),Standard Room,NA,NA,NA,NA,NA,NA
-InterContinental Hanoi Westlake,Classic Room,"VND 9,715,745","VND 11,652,954","VND 8,046,870","VND 5,245,262","VND 6,348,034","VND 10,967,533"
-Pullman Hotel (Khu Nhat Han HN),Superior Twin Room with City View,"VND 4,031,938","VND 3,572,100","VND 3,742,200","VND 3,283,498","VND 3,175,768","VND 3,180,870"
-Pan Pacific Hanoi,Deluxe King Or Twin Room,"VND 4,330,671","VND 4,558,601","VND 4,052,091","VND 3,866,667","VND 3,613,944","VND 4,043,573"
-M Village Sig Tho Nhuom,Phòng Studio,VND 600,VND 400,VND 600,VND 000,VND 464,VND 089
-Novotel Suites Hanoi,Superior King Studio,"VND 3,010,770","VND 3,623,130","VND 2,939,895","VND 2,747,115","VND 2,747,115","VND 2,747,115"
+InterContinental Hanoi Landmark72,1 King Bed Classic Room,"VND 5,187,444","VND 5,366,213","VND 5,932,751","VND 7,183,701","VND 5,216,457",NA
+Pullman Hotel (Khu Nhat Han HN),Superior Twin Room with City View,"VND 3,175,768","VND 3,175,768","VND 3,283,498","VND 2,841,238","VND 3,391,228","VND 2,841,238"
+Pan Pacific Hanoi,Deluxe King Or Twin Room,"VND 3,801,109","VND 4,559,536","VND 4,052,921","VND 4,027,591",NA,NA
+InterContinental Hanoi Westlake,Classic Room,"VND 8,346,331","VND 11,118,452","VND 5,782,920","VND 6,498,162","VND 9,717,408","VND 7,928,909"
 M Village Hotel Thợ Nhuộm,Superior,NA,NA,NA,NA,NA,NA
-M Village Hotel Ho Guom,Standard Room without Window,"VND 1,858,244","VND 1,639,627","VND 1,639,627","VND 1,803,590","VND 1,584,973","VND 1,584,973"
+Novotel Suites Hanoi,Superior King Studio,NA,NA,NA,NA,NA,NA
+M Village Hotel Ho Guom,Standard Room without Window,"VND 1,899,145","VND 1,899,145","VND 1,843,288","VND 1,619,859","VND 1,619,859","VND 1,619,859"
+Novotel Hanoi Thai Ha,"Superior Room, 1 King Size Bed, City View","VND 3,061,800","VND 3,572,100","VND 4,000,185","VND 2,891,700","VND 3,277,260","VND 4,674,916"
+Hanoi Daewooo (Khu Nhat Han HN),Deluxe King Room,"VND 2,489,234","VND 3,119,097","VND 2,797,622","VND 2,830,152","VND 2,438,036","VND 2,681,839"

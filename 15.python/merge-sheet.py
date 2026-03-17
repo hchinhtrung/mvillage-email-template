@@ -1,25 +1,37 @@
 import pandas as pd
+import os
 
-# đường dẫn file Excel local
-file_path = "/Users/hchinhtrung/Documents/GitHub/mvillage-email-template/15.python/Copy of Weekly Loyalty Insights Data Collection 2025.xlsx"
+file_path = "/Users/hchinhtrung/Documents/GitHub/mvillage-email-template/15.python/ota2025.xlsx"
 
-# đọc toàn bộ sheet
-xls = pd.ExcelFile(file_path)
+print("Opening Excel file...")
+
+xls = pd.ExcelFile(file_path, engine="openpyxl")
 
 dfs = []
 
-for sheet_name in xls.sheet_names:
+for sheet in xls.sheet_names:
 
-    if sheet_name == "Total":
+    if sheet == "Total":
         continue
 
-    df = pd.read_excel(file_path, sheet_name=sheet_name)
+    print(f"Reading sheet: {sheet}")
+
+    df = pd.read_excel(xls, sheet_name=sheet)
 
     if not df.empty:
+        df["sheet_name"] = sheet
         dfs.append(df)
+
+print("Combining sheets...")
+
+dfs = [df for df in dfs if not df.empty]
 
 merged = pd.concat(dfs, ignore_index=True)
 
-merged.to_csv("merged_guest_data.csv", index=False)
+output_path = os.path.join(os.path.dirname(__file__), "merged_output.csv")
 
-print("Merge completed!")
+print("Writing output file...")
+
+merged.to_csv(output_path, index=False)
+
+print(f"Merge completed. File saved at: {output_path}")

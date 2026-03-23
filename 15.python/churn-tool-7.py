@@ -54,8 +54,8 @@ def hl_cell(val):
     return f"background-color:{bg};color:{fg};font-weight:600" if bg else ""
 
 def hl_row(row, scol="Status"):
-    bg, _ = STATUS_STYLE.get(str(row.get(scol, "")), ("", ""))
-    s = f"background-color:{bg};color:#1a1a1a;font-weight:600" if bg else "color:#1a1a1a"
+    bg, fg = STATUS_STYLE.get(str(row.get(scol, "")), ("", "#1a1a1a"))
+    s = f"background-color:{bg};color:{fg};font-weight:600" if bg else "color:#1a1a1a"
     return [s] * len(row)
 
 def col_idx(df, name, offset=0):

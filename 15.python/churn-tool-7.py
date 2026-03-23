@@ -367,7 +367,8 @@ with tab3:
     fd = f.copy()
     fd["Last Booking"]             = fd["last_booking_date"].apply(lambda x: x.strftime("%Y-%m-%d") if pd.notna(x) else "—")
     fd["Months Since Last Booking"]= fd["months_since"].apply(lambda x: f"{x:.1f}" if pd.notna(x) else "—")
-    out2 = fd[["company_name","churn_status","Months Since Last Booking","Last Booking","total_bookings"]].rename(columns={
+    fd["Occupation"] = fd["_occupation"].fillna("—")
+    out2 = fd[["company_name","churn_status","Occupation","Months Since Last Booking","Last Booking","total_bookings"]].rename(columns={
         "company_name":"Company Name","churn_status":"Status","total_bookings":"Total Bookings"})
     st.dataframe(out2.style.applymap(hl_cell, subset=["Status"]), use_container_width=True, height=450, hide_index=True)
 

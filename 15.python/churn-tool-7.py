@@ -224,7 +224,7 @@ for col, val, color, label in zip(
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ── Tabs ───────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3 = st.tabs(["📋 Company Details", "📈 Status Distribution", "🔍 Filter & Search"])
+tab1, tab2, tab3, tab4 = st.tabs(["📋 Company Details", "📈 Status Distribution", "🔍 Filter & Search", "💡 Insights"])
 
 # ══ TAB 1 ══════════════════════════════════════════════════════════════════════
 with tab1:
@@ -371,6 +371,183 @@ with tab3:
     out2 = fd[["company_name","churn_status","Occupation","Months Since Last Booking","Last Booking","total_bookings"]].rename(columns={
         "company_name":"Company Name","churn_status":"Status","total_bookings":"Total Bookings"})
     st.dataframe(out2.style.applymap(hl_cell, subset=["Status"]), use_container_width=True, height=450, hide_index=True)
+
+
+# ══ TAB 4 – INSIGHTS ═══════════════════════════════════════════════════════════
+with tab4:
+    st.markdown("#### 💡 AI-Generated Insights")
+    st.markdown("Enter your OpenAI API key and generate strategic insights to help **increase B2B booking rates** based on your data.")
+
+    # ── API Key ────────────────────────────────────────────────────────────────
+    api_key = st.text_input("🔑 OpenAI API Key", type="password", placeholder="sk-...", key="oai_key")
+
+    # ── Focus area selector ────────────────────────────────────────────────────
+    st.markdown("##### 🎯 Insight Focus Areas")
+    focus_cols = st.columns(3)
+    with focus_cols[0]:
+        focus_churn    = st.checkbox("Churn recovery strategy",    value=True)
+        focus_active   = st.checkbox("Grow active companies",      value=True)
+    with focus_cols[1]:
+        focus_city     = st.checkbox("City-level opportunities",   value=True)
+        focus_source   = st.checkbox("Booking source performance", value=True)
+    with focus_cols[2]:
+        focus_occ      = st.checkbox("Occupation / industry mix",  value=True)
+        focus_segment  = st.checkbox("Room segment upsell",        value=True)
+
+    # ── Build data summary for prompt ─────────────────────────────────────────
+    def build_summary():
+        lines = []
+
+        # Status distribution
+        lines.append("=== CHURN STATUS DISTRIBUTION ===")
+        sc_raw = df_merged.groupby("churn_status").agg(
+            companies=("company_name","count"), revenue=("total_revenue","sum")
+        ).reset_index()
+        sc_raw["status_order"] = sc_raw["churn_status"].map({s:i for i,s in enumerate(STATUS_ORDER)})
+        sc_raw = sc_raw.sort_values("status_order")
+        total_rev_s = sc_raw["revenue"].sum()
+        for _, row in sc_raw.iterrows():
+            pct_c = row["companies"]/total*100
+            pct_r = row["revenue"]/total_rev_s*100 if total_rev_s > 0 else 0
+            lines.append(f"  {row['churn_status']}: {row['companies']} companies ({pct_c:.1f}%), Revenue: {row['revenue']:,.0f} ({pct_r:.1f}% of total)")
+
+        # City breakdown
+        if focus_city and "City" in df_rows.columns:
+            lines.append("\n=== CITY BREAKDOWN (bookings & revenue) ===")
+            city_g = df_rows.groupby("City").agg(companies=("company_col","nunique"), bookings=("bookings","sum"), revenue=("revenue","sum")).sort_values("revenue", ascending=False).head(10)
+            for dim, row in city_g.iterrows():
+                lines.append(f"  {dim}: {row['companies']} companies, {row['bookings']} bookings, Revenue: {row['revenue']:,.0f}")
+
+        # Booking source
+        if focus_source and "Booking Source" in df_rows.columns:
+            lines.append("\n=== BOOKING SOURCE BREAKDOWN ===")
+            src_g = df_rows.groupby("Booking Source").agg(companies=("company_col","nunique"), bookings=("bookings","sum"), revenue=("revenue","sum")).sort_values("revenue", ascending=False).head(10)
+            for dim, row in src_g.iterrows():
+                lines.append(f"  {dim}: {row['companies']} companies, {row['bookings']} bookings, Revenue: {row['revenue']:,.0f}")
+
+        # Occupation
+        if focus_occ and "Partner Occupation" in df_rows.columns:
+            lines.append("\n=== PARTNER OCCUPATION BREAKDOWN (top 15) ===")
+            occ_g = df_rows.groupby("Partner Occupation").agg(companies=("company_col","nunique"), revenue=("revenue","sum")).sort_values("revenue", ascending=False).head(15)
+            for dim, row in occ_g.iterrows():
+                lines.append(f"  {dim}: {row['companies']} companies, Revenue: {row['revenue']:,.0f}")
+
+        # Segment room type
+        if focus_segment and "Segment Room Type" in df_rows.columns:
+            lines.append("\n=== ROOM SEGMENT BREAKDOWN ===")
+            seg_g = df_rows.groupby("Segment Room Type").agg(companies=("company_col","nunique"), bookings=("bookings","sum"), revenue=("revenue","sum")).sort_values("revenue", ascending=False)
+            for dim, row in seg_g.iterrows():
+                lines.append(f"  {dim}: {row['companies']} companies, {row['bookings']} bookings, Revenue: {row['revenue']:,.0f}")
+
+        # Churn × City pivot
+        if focus_churn and focus_city and "City" in df_rows.columns:
+            lines.append("\n=== CHURN STATUS × CITY (companies) ===")
+            piv = df_rows.pivot_table(index="City", columns="churn_status", values="company_col", aggfunc="nunique", fill_value=0)
+            existing = [s for s in STATUS_ORDER if s in piv.columns]
+            piv = piv[existing]
+            lines.append(piv.to_string())
+
+        return "\n".join(lines)
+
+    # ── Focus instructions builder ─────────────────────────────────────────────
+    def build_focus_instructions():
+        areas = []
+        if focus_churn:   areas.append("- Churn recovery: strategies to re-engage Churn 6M/9M/12M companies before they become Lost")
+        if focus_active:  areas.append("- Active company growth: how to increase booking frequency and revenue from already-active companies")
+        if focus_city:    areas.append("- City opportunities: which cities have the most untapped potential or highest churn risk")
+        if focus_source:  areas.append("- Booking source: which channels to invest in or optimize")
+        if focus_occ:     areas.append("- Occupation/industry targeting: which business types to prioritize for B2B outreach")
+        if focus_segment: areas.append("- Room segment upsell: how to shift companies toward higher-value room tiers")
+        return "\n".join(areas) if areas else "General B2B booking growth"
+
+    # ── Generate button ────────────────────────────────────────────────────────
+    st.divider()
+    col_gen1, col_gen2 = st.columns([2,1])
+    with col_gen1:
+        model_choice = st.selectbox("GPT Model", ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"], index=1)
+    with col_gen2:
+        lang_choice  = st.selectbox("Output language", ["English", "Vietnamese"], index=0)
+
+    if st.button("🚀 Generate Insights", type="primary", use_container_width=True):
+        if not api_key or not api_key.startswith("sk-"):
+            st.error("Please enter a valid OpenAI API key (starts with sk-).")
+        else:
+            with st.spinner("Analyzing data and generating insights..."):
+                try:
+                    import requests, json
+
+                    data_summary    = build_summary()
+                    focus_instruct  = build_focus_instructions()
+                    lang_note       = "Respond entirely in Vietnamese." if lang_choice == "Vietnamese" else "Respond in English."
+
+                    system_prompt = f"""You are a senior hospitality revenue strategy consultant specializing in B2B corporate hotel bookings.
+You are analyzing data from M Village — a hotel group operating in Vietnam (Hanoi, Da Nang, Ho Chi Minh City).
+Your goal is to provide actionable, specific, data-driven insights to increase B2B booking rates and revenue.
+{lang_note}
+Format your response with clear sections using markdown headers (##), bullet points, and bold text for key numbers.
+Be specific and reference actual numbers from the data provided."""
+
+                    user_prompt = f"""Here is the current B2B booking data summary:
+
+{data_summary}
+
+Please generate strategic insights covering the following focus areas:
+{focus_instruct}
+
+Structure your response as:
+## Executive Summary (2-3 sentences on the overall situation)
+## Key Findings (bullet points with specific data references)
+## Priority Action Plan (ranked list of specific actions, most impactful first)
+## Quick Wins (actions that can be implemented within 30 days)
+## Long-term Strategy (3-6 month initiatives)
+
+Be specific: reference company counts, revenue figures, city names, and percentages from the data."""
+
+                    response = requests.post(
+                        "https://api.openai.com/v1/chat/completions",
+                        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                        json={
+                            "model": model_choice,
+                            "messages": [
+                                {"role": "system", "content": system_prompt},
+                                {"role": "user",   "content": user_prompt}
+                            ],
+                            "temperature": 0.7,
+                            "max_tokens": 2000,
+                        },
+                        timeout=60
+                    )
+
+                    if response.status_code == 200:
+                        result = response.json()
+                        insight_text = result["choices"][0]["message"]["content"]
+                        st.session_state["last_insight"] = insight_text
+                        st.session_state["last_prompt"]  = user_prompt
+                    else:
+                        err = response.json().get("error", {}).get("message", response.text)
+                        st.error(f"OpenAI API error ({response.status_code}): {err}")
+
+                except requests.exceptions.Timeout:
+                    st.error("Request timed out. Try gpt-4o-mini for faster response.")
+                except Exception as e:
+                    st.error(f"Error: {str(e)}")
+
+    # ── Display result ─────────────────────────────────────────────────────────
+    if "last_insight" in st.session_state:
+        st.divider()
+        st.markdown(st.session_state["last_insight"])
+
+        col_dl1, col_dl2 = st.columns(2)
+        with col_dl1:
+            st.download_button(
+                "⬇️ Download Insights (TXT)",
+                data=st.session_state["last_insight"].encode("utf-8"),
+                file_name=f"mv_insights_{today_input.strftime('%Y%m%d')}.txt",
+                mime="text/plain"
+            )
+        with col_dl2:
+            with st.expander("🔍 View raw data sent to GPT"):
+                st.text(st.session_state.get("last_prompt", ""))
 
 # ── Footer ─────────────────────────────────────────────────────────────────────
 st.divider()

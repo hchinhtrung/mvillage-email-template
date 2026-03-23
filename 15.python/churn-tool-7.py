@@ -324,6 +324,32 @@ with tab2:
                     st.markdown("**Revenue per dimension × status**")
                     st.dataframe(piv_rev_fmt, use_container_width=True)
 
+                    # % Revenue contribution table
+                    st.markdown("**% Revenue contribution per dimension × status**")
+                    grand_total = piv_rev["Total Revenue"].sum()
+                    piv_pct = piv_rev.copy()
+                    if grand_total > 0:
+                        for c in piv_pct.columns:
+                            piv_pct[c] = (piv_pct[c] / grand_total * 100).round(1).apply(lambda x: f"{x}%")
+                    piv_pct.index.name = sel_dim
+                    # Style: highlight rows with highest total % contribution
+                    def style_pct_table(df):
+                        styles = pd.DataFrame("", index=df.index, columns=df.columns)
+                        total_col = "Total Revenue"
+                        if total_col in df.columns:
+                            vals = df[total_col].str.replace("%","").astype(float)
+                            max_v = vals.max()
+                            for idx in df.index:
+                                v = float(df.loc[idx, total_col].replace("%",""))
+                                if v >= max_v * 0.7:
+                                    styles.loc[idx, total_col] = "background-color:#28a74533;color:#28a745;font-weight:700"
+                                elif v >= max_v * 0.4:
+                                    styles.loc[idx, total_col] = "background-color:#fd7e1433;color:#fd7e14;font-weight:600"
+                                else:
+                                    styles.loc[idx, total_col] = "color:#888"
+                        return styles
+                    st.dataframe(piv_pct.style.apply(style_pct_table, axis=None), use_container_width=True)
+
             else:
                 # Flat table for single status
                 grp = df_bd.groupby(sel_dim).agg(

@@ -28,6 +28,7 @@ STATUS_STYLE = {
     "Churn 12M":       ("#e2d9f3", "#432874"),
     "Lost (>12M)":     ("#d6d8db", "#1b1e21"),
     "No Reservation":  ("#f1f3f4", "#888888"),
+    "TOTAL":           ("#2c2c2c", "#ffffff"),
 }
 
 def classify_churn(m):

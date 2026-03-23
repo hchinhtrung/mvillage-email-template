@@ -252,12 +252,23 @@ with tab2:
     sc["Status"] = pd.Categorical(sc["Status"], categories=STATUS_ORDER, ordered=True)
     sc = sc.sort_values("Status").reset_index(drop=True)
     total_rev_sum = sc["Revenue"].sum()
+    total_companies_sum = sc["No. of Companies"].sum()
     sc["% of Companies"] = (sc["No. of Companies"] / total * 100).round(1).apply(lambda x: f"{x}%")
     sc["% of Revenue"]   = sc["Revenue"].apply(lambda x: f"{x/total_rev_sum*100:.1f}%" if (has_revenue and total_rev_sum>0) else "—")
     if has_revenue:
         sc["Revenue"] = sc["Revenue"].apply(fmt_rev)
     else:
         sc["Revenue"] = "—"; sc["% of Revenue"] = "—"
+
+    # Add TOTAL row
+    total_row = pd.DataFrame([{
+        "Status": "TOTAL",
+        "No. of Companies": total_companies_sum,
+        "Revenue": fmt_rev(total_rev_sum) if has_revenue else "—",
+        "% of Companies": "100.0%",
+        "% of Revenue": "100.0%" if (has_revenue and total_rev_sum > 0) else "—",
+    }])
+    sc = pd.concat([sc, total_row], ignore_index=True)
 
     col_sum, col_chart = st.columns([3,2])
     with col_sum:

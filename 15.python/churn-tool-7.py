@@ -106,6 +106,7 @@ with st.sidebar:
     res_source_col  = st.selectbox("Booking Source column",    ["(none)"]+res_cols, index=col_idx_list(["(none)"]+res_cols, "Booking Source"),    key="rs")
     res_seg_col     = st.selectbox("Segment Room Type column", ["(none)"]+res_cols, index=col_idx_list(["(none)"]+res_cols, "Segment Room Type"), key="rseg")
     res_occ_col     = st.selectbox("Partner Occupation column",["(none)"]+res_cols, index=col_idx_list(["(none)"]+res_cols, "Partner Occupation"),key="rocc")
+    res_state_col   = st.selectbox("Company State column",     ["(none)"]+res_cols, index=col_idx_list(["(none)"]+res_cols, "Company State"),     key="rstate")
 
     st.subheader("Partner file")
     partner_name_col = st.selectbox("Company name column", partner_cols, index=col_idx(df_partner, "Display Name"), key="pn")
@@ -171,6 +172,18 @@ if res_occ_col != "(none)" and res_occ_col in df_res_clean.columns:
 else:
     df_merged["_occupation"] = np.nan
 
+# Add Company State to company-level: first non-null value per company from res
+if res_state_col != "(none)" and res_state_col in df_res_clean.columns:
+    state_lookup = (
+        df_res_clean[df_res_clean[res_state_col].notna()]
+        .drop_duplicates(subset=["_company"])
+        [["_company", res_state_col]]
+        .rename(columns={"_company": "company_name", res_state_col: "_company_state"})
+    )
+    df_merged = df_merged.merge(state_lookup, on="company_name", how="left")
+else:
+    df_merged["_company_state"] = np.nan
+
 # Enrich res rows with churn_status → booking-level df for breakdown
 company_status_map = agg.set_index("company_name")["churn_status"].to_dict()
 df_res_clean["churn_status"] = df_res_clean["_company"].map(company_status_map).fillna("No Reservation")
@@ -218,6 +231,50 @@ for col, val, color, label in zip(
     [total, active, churn6, churn9, churn12, lost, no_res],
     ["#495057","#28a745","#fd7e14","#dc3545","#6f42c1","#343a40","#adb5bd"],
     ["Total Companies","✅ Active","⚠️ Churn 6M","🔴 Churn 9M","🟣 Churn 12M","⛔ Lost >12M","❓ No Reservation"]
+):
+    with col:
+        st.markdown(f'<div class="metric-card"><p class="metric-value" style="color:{color};">{val}</p><p class="metric-label">{label}</p></div>', unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# ── Score cards: Company Type (Travel Agent / Corporate / Other) ───────────────
+st.markdown("##### 🏢 Company Type (by Occupation)")
+occ_series = df_merged["_occupation"].fillna("(blank)").astype(str).str.strip()
+def classify_type(occ):
+    occ_lower = occ.lower()
+    if "travel" in occ_lower or occ_lower == "ta":
+        return "Travel Agent"
+    elif "corporate" in occ_lower or "corp" in occ_lower:
+        return "Corporate"
+    else:
+        return "Other"
+df_merged["_company_type"] = occ_series.apply(classify_type)
+type_ta   = (df_merged["_company_type"] == "Travel Agent").sum()
+type_corp = (df_merged["_company_type"] == "Corporate").sum()
+type_other= (df_merged["_company_type"] == "Other").sum()
+
+for col, val, color, label in zip(
+    st.columns(3),
+    [type_ta, type_corp, type_other],
+    ["#0d6efd", "#6610f2", "#6c757d"],
+    ["✈️ Travel Agent", "🏛️ Corporate", "📦 Other"]
+):
+    with col:
+        st.markdown(f'<div class="metric-card"><p class="metric-value" style="color:{color};">{val}</p><p class="metric-label">{label}</p></div>', unsafe_allow_html=True)
+
+# ── Score cards: Company State (New / Old / Null) ─────────────────────────────
+st.markdown("##### 🔄 Company State")
+state_series = df_merged["_company_state"].fillna("Null").astype(str).str.strip()
+state_series = state_series.replace({"nan": "Null", "": "Null"})
+state_new  = (state_series.str.lower() == "new").sum()
+state_old  = (state_series.str.lower() == "old").sum()
+state_null = total - state_new - state_old
+
+for col, val, color, label in zip(
+    st.columns(3),
+    [state_new, state_old, state_null],
+    ["#20c997", "#fd7e14", "#adb5bd"],
+    ["🆕 New", "📁 Old", "❓ Null"]
 ):
     with col:
         st.markdown(f'<div class="metric-card"><p class="metric-value" style="color:{color};">{val}</p><p class="metric-label">{label}</p></div>', unsafe_allow_html=True)

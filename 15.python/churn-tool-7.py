@@ -107,6 +107,7 @@ with st.sidebar:
     res_seg_col     = st.selectbox("Segment Room Type column", ["(none)"]+res_cols, index=col_idx_list(["(none)"]+res_cols, "Segment Room Type"), key="rseg")
     res_occ_col     = st.selectbox("Partner Occupation column",["(none)"]+res_cols, index=col_idx_list(["(none)"]+res_cols, "Partner Occupation"),key="rocc")
     res_state_col   = st.selectbox("Company State column",     ["(none)"]+res_cols, index=col_idx_list(["(none)"]+res_cols, "Company State"),     key="rstate")
+    res_type_col    = st.selectbox("Company Type column",      ["(none)"]+res_cols, index=col_idx_list(["(none)"]+res_cols, "Company Type (VAT)"),key="rtype")
 
     st.subheader("Partner file")
     partner_name_col = st.selectbox("Company name column", partner_cols, index=col_idx(df_partner, "Display Name"), key="pn")
@@ -184,6 +185,18 @@ if res_state_col != "(none)" and res_state_col in df_res_clean.columns:
 else:
     df_merged["_company_state"] = np.nan
 
+# Add Company Type to company-level: first non-null value per company from res
+if res_type_col != "(none)" and res_type_col in df_res_clean.columns:
+    type_lookup = (
+        df_res_clean[df_res_clean[res_type_col].notna()]
+        .drop_duplicates(subset=["_company"])
+        [["_company", res_type_col]]
+        .rename(columns={"_company": "company_name", res_type_col: "_company_type"})
+    )
+    df_merged = df_merged.merge(type_lookup, on="company_name", how="left")
+else:
+    df_merged["_company_type"] = np.nan
+
 # Enrich res rows with churn_status → booking-level df for breakdown
 company_status_map = agg.set_index("company_name")["churn_status"].to_dict()
 df_res_clean["churn_status"] = df_res_clean["_company"].map(company_status_map).fillna("No Reservation")
@@ -238,20 +251,12 @@ for col, val, color, label in zip(
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ── Score cards: Company Type (Travel Agent / Corporate / Other) ───────────────
-st.markdown("##### 🏢 Company Type (by Occupation)")
-occ_series = df_merged["_occupation"].fillna("(blank)").astype(str).str.strip()
-def classify_type(occ):
-    occ_lower = occ.lower()
-    if "travel" in occ_lower or occ_lower == "ta":
-        return "Travel Agent"
-    elif "corporate" in occ_lower or "corp" in occ_lower:
-        return "Corporate"
-    else:
-        return "Other"
-df_merged["_company_type"] = occ_series.apply(classify_type)
-type_ta   = (df_merged["_company_type"] == "Travel Agent").sum()
-type_corp = (df_merged["_company_type"] == "Corporate").sum()
-type_other= (df_merged["_company_type"] == "Other").sum()
+st.markdown("##### 🏢 Company Type")
+type_series = df_merged["_company_type"].fillna("Other").astype(str).str.strip()
+type_series = type_series.replace({"nan": "Other", "": "Other"})
+type_ta    = (type_series.str.lower().str.contains("travel")).sum()
+type_corp  = (type_series.str.lower().str.contains("corporate")).sum()
+type_other = total - type_ta - type_corp
 
 for col, val, color, label in zip(
     st.columns(3),

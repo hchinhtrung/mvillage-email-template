@@ -318,8 +318,9 @@ if not res_df.empty:
 
         # Add revenue if available
         if col_revenue in res_df.columns:
-            rev_by_company = rev_df.groupby("_norm")[col_revenue].sum()
-            churned_norms = churned_res.groupby("_norm")[col_res_company].first()
+            res_rev = res_df[["_norm", col_revenue]].copy()
+            res_rev[col_revenue] = pd.to_numeric(res_rev[col_revenue], errors="coerce")
+            rev_by_company = res_rev.groupby("_norm")[col_revenue].sum()
             churned_companies["Total Revenue"] = churned_companies["Company"].apply(
                 lambda c: f"{rev_by_company.get(normalize(c), 0):,.0f}"
             )

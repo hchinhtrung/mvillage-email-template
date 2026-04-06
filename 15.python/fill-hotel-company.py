@@ -40,7 +40,8 @@ with st.sidebar:
     st.header("⚙️ Column Mapping")
 
     with st.expander("res_partner columns", expanded=True):
-        col_partner_name = st.text_input("Company Name column", value="Display Name")
+        col_partner_name    = st.text_input("Company Name column",  value="Display Name")
+        col_partner_created = st.text_input("Created Date column",  value="Created on")
 
     with st.expander("Reservation columns", expanded=True):
         col_res_company = st.text_input("Company Name column", value="Company (VAT)", key="r_co")
@@ -70,6 +71,7 @@ def enrich_partners(
     partner_bytes: bytes,
     res_bytes: bytes,
     col_p_name: str,
+    col_p_created: str,
     col_r_company: str,
     col_r_hotel: str,
     col_r_city: str,
@@ -94,6 +96,7 @@ def enrich_partners(
     partner_df["_norm"] = partner_df[col_p_name].apply(normalize)
     before_dedup = len(partner_df)
     partner_df = partner_df.drop_duplicates(subset="_norm", keep="first")
+    partner_df = partner_df[partner_df["_norm"] != ""]
     after_dedup = len(partner_df)
 
     # --- Build unique hotel-city pairs per company from reservations ---
@@ -109,15 +112,37 @@ def enrich_partners(
     result = partner_df.merge(hotel_pairs, on="_norm", how="left")
     result["Stay Hotel"] = result["Stay Hotel"].fillna("")
     result["Stay City"]  = result["Stay City"].fillna("")
+
+    # --- Company State: NEW if created <= 7 days ago, else OLD ---
+    now = pd.Timestamp.now()
+    if col_p_created in result.columns:
+        created_dt = pd.to_datetime(result[col_p_created], errors="coerce")
+        result["Company State"] = created_dt.apply(
+            lambda d: "NEW" if pd.notna(d) and (now - d).days <= 7 else "OLD"
+        )
+    else:
+        result["Company State"] = "OLD"
+
     result.drop(columns=["_norm"], inplace=True)
 
     matched_companies = partner_df["_norm"].isin(hotel_pairs["_norm"].unique()).sum()
+
+    # Count NEW/OLD on deduplicated partners (before hotel expansion)
+    now = pd.Timestamp.now()
+    if col_p_created in partner_df.columns:
+        p_created = pd.to_datetime(partner_df[col_p_created], errors="coerce")
+        new_count = int(p_created.apply(lambda d: pd.notna(d) and (now - d).days <= 7).sum())
+    else:
+        new_count = 0
+
     stats = {
         "total":      after_dedup,
         "duplicates": before_dedup - after_dedup,
         "matched":    int(matched_companies),
         "no_match":   after_dedup - int(matched_companies),
         "rows":       len(result),
+        "new":        new_count,
+        "old":        after_dedup - new_count,
     }
 
     return result, stats, None
@@ -139,7 +164,8 @@ res_bytes     = res_file.read()
 with st.spinner("Processing..."):
     result_df, stats, error = enrich_partners(
         partner_bytes, res_bytes,
-        col_partner_name, col_res_company, col_res_hotel, col_res_city,
+        col_partner_name, col_partner_created,
+        col_res_company, col_res_hotel, col_res_city,
     )
 
 if error:
@@ -158,6 +184,15 @@ with c4:
     st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#dc2626">{stats["no_match"]}</div><div class="kpi-lbl">No History</div></div>', unsafe_allow_html=True)
 with c5:
     st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#0284c7">{stats["rows"]}</div><div class="kpi-lbl">Total Output Rows</div></div>', unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# ── KPI ROW 2: Company State ────────────────
+s1, s2 = st.columns(2)
+with s1:
+    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#0d9488">{stats["new"]}</div><div class="kpi-lbl">NEW Companies (≤ 7 days)</div></div>', unsafe_allow_html=True)
+with s2:
+    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#94a3b8">{stats["old"]}</div><div class="kpi-lbl">OLD Companies (> 7 days)</div></div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 

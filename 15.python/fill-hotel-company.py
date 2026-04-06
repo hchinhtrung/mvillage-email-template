@@ -232,54 +232,68 @@ if not res_df.empty:
     res_df["_norm"] = res_df[col_res_company].apply(normalize)
 
     # ── #1: TOP COMPANIES BY REVENUE ────────────
-    st.divider()
-    st.subheader("💰 Top Companies by Revenue")
-
     col_revenue = "Revenue"
     col_room_nights = "Room Night"
+    col_company_type = "Company Type (VAT)"
 
-    if col_revenue in res_df.columns:
-        rev_df = res_df[["_norm", col_res_company, col_revenue]].copy()
-        rev_df[col_revenue] = pd.to_numeric(rev_df[col_revenue], errors="coerce")
-        rev_df = rev_df.dropna(subset=[col_revenue])
+    def render_top_revenue(df, title, emoji):
+        """Render a top-20 revenue chart + table for a filtered subset of reservations."""
+        st.divider()
+        st.subheader(f"{emoji} {title}")
 
-        top_rev = (
-            rev_df.groupby("_norm", sort=False)
-            .agg(
-                Company=(col_res_company, "first"),
-                Total_Revenue=(col_revenue, "sum"),
-            )
+        if col_revenue not in df.columns or df.empty:
+            st.info("No data available for this section.")
+            return
+
+        rev = df[["_norm", col_res_company, col_revenue]].copy()
+        rev[col_revenue] = pd.to_numeric(rev[col_revenue], errors="coerce")
+        rev = rev.dropna(subset=[col_revenue])
+
+        if rev.empty:
+            st.info("No revenue data found.")
+            return
+
+        top = (
+            rev.groupby("_norm", sort=False)
+            .agg(Company=(col_res_company, "first"), Total_Revenue=(col_revenue, "sum"))
             .sort_values("Total_Revenue", ascending=False)
             .head(20)
             .reset_index(drop=True)
         )
 
-        if col_room_nights in res_df.columns:
-            rn_agg = res_df[["_norm", col_room_nights]].copy()
-            rn_agg[col_room_nights] = pd.to_numeric(rn_agg[col_room_nights], errors="coerce")
-            rn_by_company = rn_agg.groupby("_norm")[col_room_nights].sum()
-            # re-derive _norm for join
-            top_rev_norms = rev_df.groupby("_norm").agg(Total_Revenue=(col_revenue, "sum")).sort_values("Total_Revenue", ascending=False).head(20)
-            top_rev["Room Nights"] = top_rev["Company"].apply(
-                lambda c: int(rn_by_company.get(normalize(c), 0))
-            )
+        if col_room_nights in df.columns:
+            rn = df[["_norm", col_room_nights]].copy()
+            rn[col_room_nights] = pd.to_numeric(rn[col_room_nights], errors="coerce")
+            rn_map = rn.groupby("_norm")[col_room_nights].sum()
+            top["Room Nights"] = top["Company"].apply(lambda c: int(rn_map.get(normalize(c), 0)))
 
-        top_rev["Total_Revenue"] = top_rev["Total_Revenue"].apply(lambda x: f"{x:,.0f}")
-        top_rev.index = range(1, len(top_rev) + 1)
-        top_rev.index.name = "#"
+        # Chart (numeric) + Table (formatted)
+        chart_data = (
+            rev.groupby(col_res_company, sort=False)[col_revenue]
+            .sum().sort_values(ascending=False).head(20)
+        )
+
+        top_display = top.copy()
+        top_display["Total_Revenue"] = top_display["Total_Revenue"].apply(lambda x: f"{x:,.0f}")
+        top_display.index = range(1, len(top_display) + 1)
+        top_display.index.name = "#"
 
         col_chart, col_table = st.columns([2, 1])
         with col_chart:
-            # Bar chart data (numeric for chart)
-            chart_data = (
-                rev_df.groupby(col_res_company, sort=False)[col_revenue]
-                .sum()
-                .sort_values(ascending=False)
-                .head(20)
-            )
             st.bar_chart(chart_data, use_container_width=True, height=400)
         with col_table:
-            st.dataframe(top_rev, use_container_width=True, height=400)
+            st.dataframe(top_display, use_container_width=True, height=400)
+
+    if col_revenue in res_df.columns:
+        if col_company_type in res_df.columns:
+            corp_df = res_df[res_df[col_company_type].str.lower().str.strip() == "corporate"]
+            ta_df   = res_df[res_df[col_company_type].str.lower().str.strip() == "travel_agent"]
+
+            render_top_revenue(corp_df, "Top Corporate Companies by Revenue", "🏢")
+            render_top_revenue(ta_df,   "Top Travel Agents by Revenue",      "✈️")
+        else:
+            # Fallback: show all if Company Type column not found
+            render_top_revenue(res_df, "Top Companies by Revenue", "💰")
     else:
         st.info(f"Column `{col_revenue}` not found in reservation data. Skipping revenue analysis.")
 

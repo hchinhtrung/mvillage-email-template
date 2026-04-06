@@ -223,3 +223,145 @@ st.download_button(
     file_name="company_hotel_lookup.csv",
     mime="text/csv",
 )
+
+# ═════════════════════════════════════════════
+# ANALYTICS SECTIONS
+# ═════════════════════════════════════════════
+res_df = load_csv(res_bytes, res_file.name)
+if not res_df.empty:
+    res_df["_norm"] = res_df[col_res_company].apply(normalize)
+
+    # ── #1: TOP COMPANIES BY REVENUE ────────────
+    st.divider()
+    st.subheader("💰 Top Companies by Revenue")
+
+    col_revenue = "Revenue"
+    col_room_nights = "Room Night"
+
+    if col_revenue in res_df.columns:
+        rev_df = res_df[["_norm", col_res_company, col_revenue]].copy()
+        rev_df[col_revenue] = pd.to_numeric(rev_df[col_revenue], errors="coerce")
+        rev_df = rev_df.dropna(subset=[col_revenue])
+
+        top_rev = (
+            rev_df.groupby("_norm", sort=False)
+            .agg(
+                Company=(col_res_company, "first"),
+                Total_Revenue=(col_revenue, "sum"),
+            )
+            .sort_values("Total_Revenue", ascending=False)
+            .head(20)
+            .reset_index(drop=True)
+        )
+
+        if col_room_nights in res_df.columns:
+            rn_agg = res_df[["_norm", col_room_nights]].copy()
+            rn_agg[col_room_nights] = pd.to_numeric(rn_agg[col_room_nights], errors="coerce")
+            rn_by_company = rn_agg.groupby("_norm")[col_room_nights].sum()
+            # re-derive _norm for join
+            top_rev_norms = rev_df.groupby("_norm").agg(Total_Revenue=(col_revenue, "sum")).sort_values("Total_Revenue", ascending=False).head(20)
+            top_rev["Room Nights"] = top_rev["Company"].apply(
+                lambda c: int(rn_by_company.get(normalize(c), 0))
+            )
+
+        top_rev["Total_Revenue"] = top_rev["Total_Revenue"].apply(lambda x: f"{x:,.0f}")
+        top_rev.index = range(1, len(top_rev) + 1)
+        top_rev.index.name = "#"
+
+        col_chart, col_table = st.columns([2, 1])
+        with col_chart:
+            # Bar chart data (numeric for chart)
+            chart_data = (
+                rev_df.groupby(col_res_company, sort=False)[col_revenue]
+                .sum()
+                .sort_values(ascending=False)
+                .head(20)
+            )
+            st.bar_chart(chart_data, use_container_width=True, height=400)
+        with col_table:
+            st.dataframe(top_rev, use_container_width=True, height=400)
+    else:
+        st.info(f"Column `{col_revenue}` not found in reservation data. Skipping revenue analysis.")
+
+    # ── #4: CHURN ALERT ─────────────────────────
+    st.divider()
+    st.subheader("🚨 Churn Alert")
+    st.caption("Companies flagged as churned in reservation data — consider re-engagement")
+
+    col_churn = "company churn status"
+    if col_churn in res_df.columns:
+        churned_res = res_df[res_df[col_churn].str.contains("churn", case=False, na=False)]
+        churned_companies = (
+            churned_res.groupby("_norm", sort=False)
+            .agg(
+                Company=(col_res_company, "first"),
+                Churn_Status=(col_churn, "first"),
+                Last_Hotel=(col_res_hotel, "last"),
+                Last_City=(col_res_city, "last"),
+            )
+            .reset_index(drop=True)
+        )
+
+        # Add revenue if available
+        if col_revenue in res_df.columns:
+            rev_by_company = rev_df.groupby("_norm")[col_revenue].sum()
+            churned_norms = churned_res.groupby("_norm")[col_res_company].first()
+            churned_companies["Total Revenue"] = churned_companies["Company"].apply(
+                lambda c: f"{rev_by_company.get(normalize(c), 0):,.0f}"
+            )
+
+        churn_count = len(churned_companies)
+
+        ch1, ch2 = st.columns([1, 3])
+        with ch1:
+            st.markdown(
+                f'<div class="kpi-box"><div class="kpi-num" style="color:#ef4444">{churn_count}</div>'
+                f'<div class="kpi-lbl">Churned Companies</div></div>',
+                unsafe_allow_html=True,
+            )
+        with ch2:
+            st.dataframe(churned_companies, use_container_width=True, height=350)
+
+        churn_csv = churned_companies.to_csv(index=False).encode("utf-8-sig")
+        st.download_button(
+            "⬇️ Export Churn List (CSV)",
+            data=churn_csv,
+            file_name="churn_alert_companies.csv",
+            mime="text/csv",
+        )
+    else:
+        st.info(f"Column `{col_churn}` not found in reservation data. Skipping churn analysis.")
+
+    # ── #5: NEW COMPANY PIPELINE ────────────────
+    st.divider()
+    st.subheader("🌱 New Company Pipeline")
+    st.caption("Companies created in the last 7 days with NO booking history — prioritize outreach")
+
+    new_no_history = result_df[
+        (result_df["Company State"] == "NEW") & (result_df["Stay Hotel"] == "")
+    ]
+
+    # Deduplicate for display (one row per company)
+    display_cols = [c for c in [col_partner_name, "Company State", "Created on", "Email", "Phone", "Mobile", "Industry"]
+                    if c in new_no_history.columns]
+    pipeline = new_no_history[display_cols].drop_duplicates(subset=[col_partner_name]) if display_cols else new_no_history
+
+    pipe_count = len(pipeline)
+
+    p1, p2 = st.columns([1, 3])
+    with p1:
+        st.markdown(
+            f'<div class="kpi-box"><div class="kpi-num" style="color:#0d9488">{pipe_count}</div>'
+            f'<div class="kpi-lbl">New Leads (no bookings)</div></div>',
+            unsafe_allow_html=True,
+        )
+    with p2:
+        st.dataframe(pipeline, use_container_width=True, height=350)
+
+    pipeline_csv = pipeline.to_csv(index=False).encode("utf-8-sig")
+    st.download_button(
+        "⬇️ Export Pipeline (CSV)",
+        data=pipeline_csv,
+        file_name="new_company_pipeline.csv",
+        mime="text/csv",
+    )

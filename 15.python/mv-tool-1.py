@@ -176,11 +176,12 @@ if signup_file and reservation_file:
     # ======================
     # TABS
     # ======================
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "📊 Overall Summary",
         "🏆 Overall Ranking",
         "🌆 Ranking by City",
-        "🏷️ Ranking by Brand Model"
+        "🏷️ Ranking by Brand Model",
+        "🗺️ Ranking by City Group"
     ])
 
     # TAB 1 – SUMMARY
@@ -289,6 +290,84 @@ if signup_file and reservation_file:
                     'recruit_count': 'Signups',
                     'CR_percent': 'CR %'
                 })[['Rank', 'Hotel', 'City', 'Check-ins', 'Signups', 'CR %']],
+                use_container_width=True,
+                hide_index=True
+            )
+
+    # TAB 5 – BY CITY GROUP
+    with tab5:
+        # ── HCM ──────────────────────────────────────────────────────────────
+        hcm_df = final_df[final_df[RES_CITY] == "HCM"].copy()
+
+        if not hcm_df.empty:
+            st.markdown("### 📍 HCM")
+
+            # Define sub-groups for HCM
+            HCM_GROUPS = {
+                "Savvy & Signature": ["savvy", "signature"],
+                "Express & Living":  ["express", "living"],
+                "Hotel":             ["hotel"],
+            }
+
+            for group_name, brands in HCM_GROUPS.items():
+                grp_df = hcm_df[hcm_df['brand_model_norm'].isin(brands)]
+                if grp_df.empty:
+                    continue
+
+                st.markdown(f"#### 🏷️ {group_name}")
+
+                grp_rank = (
+                    grp_df
+                    .groupby(['hotel_display', 'brand_model'])
+                    .agg({'checkin_count': 'sum', 'recruit_count': 'sum'})
+                    .reset_index()
+                )
+                grp_rank['CR_percent'] = (
+                    grp_rank.recruit_count / grp_rank.checkin_count * 100
+                ).round(2)
+                grp_rank = grp_rank.sort_values('CR_percent', ascending=False).reset_index(drop=True)
+                grp_rank['Rank'] = range(1, len(grp_rank) + 1)
+
+                st.dataframe(
+                    grp_rank.rename(columns={
+                        'hotel_display': 'Hotel',
+                        'brand_model': 'Brand Model',
+                        'checkin_count': 'Check-ins',
+                        'recruit_count': 'Signups',
+                        'CR_percent': 'CR %'
+                    })[['Rank', 'Hotel', 'Brand Model', 'Check-ins', 'Signups', 'CR %']],
+                    use_container_width=True,
+                    hide_index=True
+                )
+
+        # ── DN & HN ──────────────────────────────────────────────────────────
+        for city in ["DN", "HN"]:
+            city_df = final_df[final_df[RES_CITY] == city].copy()
+            if city_df.empty:
+                continue
+
+            st.markdown(f"### 📍 {city}")
+
+            city_grp = (
+                city_df
+                .groupby(['hotel_display', 'brand_model'])
+                .agg({'checkin_count': 'sum', 'recruit_count': 'sum'})
+                .reset_index()
+            )
+            city_grp['CR_percent'] = (
+                city_grp.recruit_count / city_grp.checkin_count * 100
+            ).round(2)
+            city_grp = city_grp.sort_values('CR_percent', ascending=False).reset_index(drop=True)
+            city_grp['Rank'] = range(1, len(city_grp) + 1)
+
+            st.dataframe(
+                city_grp.rename(columns={
+                    'hotel_display': 'Hotel',
+                    'brand_model': 'Brand Model',
+                    'checkin_count': 'Check-ins',
+                    'recruit_count': 'Signups',
+                    'CR_percent': 'CR %'
+                })[['Rank', 'Hotel', 'Brand Model', 'Check-ins', 'Signups', 'CR %']],
                 use_container_width=True,
                 hide_index=True
             )

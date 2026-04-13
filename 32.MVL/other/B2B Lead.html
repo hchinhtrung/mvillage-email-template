@@ -1,187 +1,328 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+    xmlns:o="urn:schemas-microsoft-com:office:office">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B2B LEAD</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>New B2B Lead - MVillage</title>
+
+    <!--[if !mso]><!-->
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <!--<![endif]-->
+
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+
     <style type="text/css">
-        body,
+        /* Import Google Font for supported clients */
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+
+        /* Client-specific Styles */
+        #outlook a {
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
         table,
-        td,
-        p,
-        a,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-size: 16px !important;
+        td {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
         }
 
-        h1 {
-            font-size: 22px !important;
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+            -ms-interpolation-mode: bicubic;
         }
 
-        h2 {
-            font-size: 18px !important;
+        p {
+            display: block;
+            margin: 0;
         }
 
-        .confirmation-title {
-            font-size: 18px !important;
-        }
+        /* Mobile Styles */
+        @media only screen and (max-width: 599px) {
+            .container {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
 
-        .section-title {
-            font-size: 16px !important;
-        }
+            .mobile-padding {
+                padding: 20px !important;
+            }
 
-        td,
-        p,
-        a {
-            font-size: 16px !important;
-        }
-
-        .footer p {
-            font-size: 12px !important;
-        }
-
-        @media only screen and (max-width: 480px) {
-
-            body,
-            table,
-            td,
-            p,
-            a,
-            h1,
-            h2,
-            h3,
-            h4,
-            h5,
-            h6 {
-                font-size: 15px !important;
+            .mobile-font-size {
+                font-size: 14px !important;
+                line-height: 20px !important;
             }
 
             h1 {
                 font-size: 18px !important;
-            }
-
-            h2 {
-                font-size: 16px !important;
-            }
-
-            .confirmation-title {
-                font-size: 18px !important;
-            }
-
-            .section-title {
-                font-size: 15px !important;
-            }
-
-            td,
-            p,
-            a {
-                font-size: 15px !important;
-            }
-
-            .footer p {
-                font-size: 11px !important;
+                line-height: 26px !important;
             }
         }
     </style>
 </head>
 
-<body
-    style="font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; line-height: 1.5; color: #333; background-color: #f5f7fa; font-size: 16px; margin: 0; padding: 0;">
-    <table border="0" cellpadding="0" cellspacing="0"
-        style="max-width: 600px; margin: 0 auto; background-color: #fff; border-radius: 0px; overflow: hidden;"
-        width="100%">
-        <!-- Header -->
-        <tbody>
-            <!-- Banner -->
-            <tr>
-                <td style="padding: 0;"><img alt="Hotel Banner"
-                        src="https://s3.ap-southeast-1.amazonaws.com/cdn-v2.mvillage.vn/cms/Frame_1948753573_205687a204.png"
-                        style="width: 100%; height: auto; display: block;" /></td>
-            </tr>
-            <!-- Booking Details -->
-            <tr>
-                <td style="padding: 4px; margin-bottom: 20px;">
-                    <h1
-                        style="text-align: center; font-size: 22px; font-weight: 700; margin: 15px 0; padding-bottom: 15px; border-bottom: 1px solid #eaeaea; color: #000; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                        NEW B2B LEAD</h1>
+<body style="margin: 0; padding: 0; word-spacing: normal; background-color: #f5f7fa;">
+    <div role="article" aria-roledescription="email" lang="en"
+        style="text-size-adjust: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
 
-                    <!-- table 1 -->
-                    <table border="0" cellpadding="0" cellspacing="0"
-                        style="margin: 20px 0; background-color: #f9f9f9; border-radius: 8px; overflow: hidden;"
-                        width="100%">
-                        <tbody>
-                            <tr style="background-color: rgba(0,0,0,0.02);">
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-                                    width="40%"><strong>Work Email</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                                    {{.WorkEmail}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-                                    width="40%"><strong>Contact Person</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                                    {{.ContactPerson}}</td>
-                            </tr>
-                            <tr style="background-color: rgba(0,0,0,0.02);">
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-                                    width="40%"><strong>Company Name</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                                    {{.CompanyName}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-                                    width="40%"><strong>Phone Number</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                                    {{.PhoneNumber}}</td>
-                            </tr>
-                            <tr style="background-color: rgba(0,0,0,0.02);">
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-                                    width="40%"><strong>Hotel City</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                                    {{.HotelCity}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-                                    width="40%"><strong>Budget per Night</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                                    {{.BudgetPerNight}}</td>
-                            </tr>
-                            <tr style="background-color: rgba(0,0,0,0.02);">
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-                                    width="40%"><strong>Message</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                                    {{.Message}}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;"
-                                    width="40%"><strong>Created Date</strong></td>
-                                <td
-                                    style="padding: 12px 15px; vertical-align: top; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
-                                    {{.CreatedAt}}</td>
-                            </tr>
-                        </tbody>
+        <!-- Preview Text -->
+        <div
+            style="display: none; font-size: 1px; color: #f5f7fa; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+            New B2B Lead received — {{.CompanyName}} | {{.HotelCity}}
+        </div>
+
+        <!-- Email Wrapper -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+            style="background-color: #f5f7fa;">
+            <tr>
+                <td align="center" style="padding: 24px 0;">
+
+                    <!-- Email Container -->
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600"
+                        class="container"
+                        style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+
+                        <!-- Header Banner -->
+                        <tr>
+                            <td style="padding: 0;">
+                                <img alt="MVillage"
+                                    src="https://s3.ap-southeast-1.amazonaws.com/cdn-v2.mvillage.vn/cms/Frame_1948753573_205687a204.png"
+                                    width="600"
+                                    style="width: 100%; max-width: 600px; height: auto; display: block; border: 0;" />
+                            </td>
+                        </tr>
+
+                        <!-- Title Bar -->
+                        <tr>
+                            <td style="background-color: #232323; padding: 0;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td align="center" style="padding: 18px 30px;">
+                                            <p style="margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #F16A26; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+                                                INTERNAL NOTIFICATION
+                                            </p>
+                                            <h1 style="margin: 6px 0 0 0; font-size: 22px; font-weight: 700; color: #ffffff; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; line-height: 1.3;">
+                                                New B2B Lead
+                                            </h1>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Intro Text -->
+                        <tr>
+                            <td style="padding: 28px 30px 20px 30px;">
+                                <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #555555; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+                                    A new corporate partnership inquiry has been submitted. Please review the company details below and reach out to the contact person promptly.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Company Info Section Header -->
+                        <tr>
+                            <td style="padding: 0 30px 0 30px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="padding: 0 0 12px 0; border-bottom: 2px solid #232323;">
+                                            <p style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #232323; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+                                                Company Information
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Company Details -->
+                        <tr>
+                            <td style="padding: 0 30px 24px 30px;">
+
+                                <!-- Row 1: Company Name -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td width="38%" style="padding: 14px 10px 14px 0; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 13px; color: #999999; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Company Name</p>
+                                        </td>
+                                        <td width="62%" style="padding: 14px 0 14px 10px; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 15px; font-weight: 700; color: #232323; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">{{.CompanyName}}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <!-- Row 2: Contact Person -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td width="38%" style="padding: 14px 10px 14px 0; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 13px; color: #999999; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Contact Person</p>
+                                        </td>
+                                        <td width="62%" style="padding: 14px 0 14px 10px; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 15px; font-weight: 600; color: #232323; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">{{.ContactPerson}}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <!-- Row 3: Work Email -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td width="38%" style="padding: 14px 10px 14px 0; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 13px; color: #999999; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Work Email</p>
+                                        </td>
+                                        <td width="62%" style="padding: 14px 0 14px 10px; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 15px; color: #232323; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">{{.WorkEmail}}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <!-- Row 4: Phone Number -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td width="38%" style="padding: 14px 10px 14px 0; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 13px; color: #999999; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Phone Number</p>
+                                        </td>
+                                        <td width="62%" style="padding: 14px 0 14px 10px; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 15px; color: #232323; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">{{.PhoneNumber}}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </td>
+                        </tr>
+
+                        <!-- Booking Preference Section Header -->
+                        <tr>
+                            <td style="padding: 0 30px 0 30px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td style="padding: 0 0 12px 0; border-bottom: 2px solid #F16A26;">
+                                            <p style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #F16A26; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+                                                Booking Preference
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Booking Details -->
+                        <tr>
+                            <td style="padding: 0 30px 30px 30px;">
+
+                                <!-- Row 5: Hotel City -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td width="38%" style="padding: 14px 10px 14px 0; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 13px; color: #999999; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Hotel City</p>
+                                        </td>
+                                        <td width="62%" style="padding: 14px 0 14px 10px; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 15px; font-weight: 600; color: #232323; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">{{.HotelCity}}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <!-- Row 6: Budget per Night -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td width="38%" style="padding: 14px 10px 14px 0; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 13px; color: #999999; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Budget per Night</p>
+                                        </td>
+                                        <td width="62%" style="padding: 14px 0 14px 10px; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 15px; font-weight: 700; color: #F16A26; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">{{.BudgetPerNight}}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <!-- Row 7: Message -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td width="38%" style="padding: 14px 10px 14px 0; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 13px; color: #999999; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Message</p>
+                                        </td>
+                                        <td width="62%" style="padding: 14px 0 14px 10px; vertical-align: top; border-bottom: 1px solid #f0f0f0;">
+                                            <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #555555; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">{{.Message}}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <!-- Row 8: Submitted On -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td width="38%" style="padding: 14px 10px 14px 0; vertical-align: top;">
+                                            <p style="margin: 0; font-size: 13px; color: #999999; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Submitted On</p>
+                                        </td>
+                                        <td width="62%" style="padding: 14px 0 14px 10px; vertical-align: top;">
+                                            <p style="margin: 0; font-size: 15px; color: #555555; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">{{.CreatedAt}}</p>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="padding: 24px 30px; background-color: #1a1a1a;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td align="center" style="padding: 0 0 16px 0;">
+                                            <p style="margin: 0; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #888888; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+                                                MVillage Joint Stock Company
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center">
+                                            <p style="margin: 0; font-size: 12px; color: #666666; line-height: 1.6; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+                                                Hotline: <a href="tel:19003311" style="color: #F16A26; text-decoration: none; font-weight: 600;">1900 3311</a>
+                                                &nbsp;&nbsp;|&nbsp;&nbsp;
+                                                <a href="mailto:booking@mvillage.vn" style="color: #F16A26; text-decoration: none;">booking@mvillage.vn</a>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center" style="padding-top: 16px; border-top: 1px solid #333333; margin-top: 16px;">
+                                            <p style="margin: 0; font-size: 11px; color: #555555; font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;">
+                                                &copy; MVillage Joint Stock Company. This is an automated internal notification.
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
                     </table>
+                    <!-- /Email Container -->
 
                 </td>
             </tr>
+        </table>
+        <!-- /Email Wrapper -->
 
-        </tbody>
-    </table>
+    </div>
 </body>
 
 </html>

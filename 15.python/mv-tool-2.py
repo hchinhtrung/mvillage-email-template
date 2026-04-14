@@ -310,7 +310,7 @@ def style_df(df):
     # Apply color highlighting to ALL change columns that exist in the dataframe
     change_cols = [c for c in df.columns if "_change_%" in c]
     if change_cols:
-        return styler.applymap(color_change, subset=change_cols)
+        return styler.map(color_change, subset=change_cols)
     return styler
 
 # ======================================================

@@ -1910,7 +1910,7 @@ with tab_insight:
                 "Total_last": "{:.0f}",
                 "Total_current": "{:.0f}",
                 "Total_change_%": "{:.1%}"
-            }, na_rep="0").applymap(
+            }, na_rep="0").map(
                 color_change,
                 subset=["DOM_change_%", "INT_change_%", "Total_change_%"]
             )

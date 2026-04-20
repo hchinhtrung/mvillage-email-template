@@ -1,0 +1,464 @@
+<?xml version="1.0"?>
+<t t-name="mvillage_hotel.report_template_hotel_registration_form">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.basic_layout">
+                <div class="page"
+                    style="font-family: 'Roboto', Arial, sans-serif; font-size: 8pt; color: #000; padding: 0; margin: 0;">
+
+                    <!-- ═══════════════ HEADER ═══════════════ -->
+                    <div class="header" style="margin-bottom: 0;">
+                        <table style="width: 100%; border: none; border-collapse: collapse;">
+                            <tr>
+                                <td style="text-align: right; padding: 6pt 0 0 0;">
+                                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"
+                                        style="max-height: 24pt" alt="Company Logo" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- ═══════════════ CONTENT ═══════════════ -->
+                    <div class="content">
+
+                        <!-- ── TITLE ── -->
+                        <table style="width: 100%; border: none; border-collapse: collapse; margin-bottom: 6pt;">
+                            <tr>
+                                <td style="text-align: center; padding: 0;">
+                                    <p
+                                        style="font-size: 13pt; font-weight: bold; letter-spacing: 1.5pt; color: #000; margin: 0; padding: 2pt 0 0 0; text-transform: uppercase;">
+                                        HOTEL REGISTRATION FORM
+                                    </p>
+                                    <p
+                                        style="font-size: 9pt; font-style: italic; color: #555; margin: 0; padding: 1pt 0 0 0; letter-spacing: 0.5pt;">
+                                        PHIẾU ĐĂNG KÝ LƯU TRÚ TẠI KHÁCH SẠN
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ─────── SEPARATOR LINE ─────── -->
+                        <!-- <table style="width: 100%; border: none; border-collapse: collapse;">
+                            <tr>
+                                <td style="border-bottom: 2pt solid #000; padding: 0; height: 1pt;"> </td>
+                            </tr>
+                        </table> -->
+
+                        <!-- ═══════════════ MAIN INFO TABLE ═══════════════ -->
+                        <table style="border-collapse: separate; border-spacing: 0; width: 100%; margin-top: 5pt; border-radius: 6pt; overflow: hidden;" cellspacing="0">
+
+                            <!-- ROW 1: Title -->
+                            <tr>
+                                <td
+                                    style="border: 0.5pt solid #555; width: 25%; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0;">
+                                        Title /
+                                        <span style="color: #555; font-style: italic; font-weight: normal;">Danh
+                                            xưng</span>
+                                    </p>
+                                </td>
+                                <td
+                                    style="border: 0.5pt solid #555; width: 25%; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <input type="checkbox"
+                                            t-att-checked="'checked' if o.tenant_id.title_type == 'mr' else None" />
+                                        Mr. / <span style="color: #555; font-style: italic;">Ông</span>
+                                    </p>
+                                </td>
+                                <td
+                                    style="border: 0.5pt solid #555; width: 25%; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <input type="checkbox"
+                                            t-att-checked="'checked' if o.tenant_id.title_type == 'mrs' else None" />
+                                        Mrs. / <span style="color: #555; font-style: italic;">Bà</span>
+                                    </p>
+                                </td>
+                                <td
+                                    style="border: 0.5pt solid #555; width: 25%; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <input type="checkbox"
+                                            t-att-checked="'checked' if o.tenant_id.title_type == 'miss' else None" />
+                                        Ms. / <span style="color: #555; font-style: italic;">Cô</span>
+                                    </p>
+                                </td>
+                            </tr>
+
+                            <!-- ROW 2: Full Name -->
+                            <tr>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0;">
+                                        Full Name /
+                                        <span style="color: #555; font-style: italic; font-weight: normal;">Họ và
+                                            Tên</span>
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;"
+                                    colspan="3">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <t t-esc="o.reservation_line.tenant_id.name" />
+                                    </p>
+                                </td>
+                            </tr>
+
+                            <!-- ROW 3: Email + Telephone -->
+                            <tr>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0;">
+                                        Email
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <t t-esc="o.reservation_line.tenant_id.parent_id.email" />
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0;">
+                                        Telephone /
+                                        <span style="color: #555; font-style: italic; font-weight: normal;">Số điện
+                                            thoại</span>
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <t t-esc="o.reservation_line.tenant_id.mobile" />
+                                    </p>
+                                </td>
+                            </tr>
+
+                            <!-- ROW 4: Arrival / Departure -->
+                            <tr>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0;">
+                                        Arrival Date /
+                                        <span style="color: #555; font-style: italic; font-weight: normal;">Ngày
+                                            đến</span>
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <t t-if="o.expected_checkin_time">
+                                            <t t-esc="o.expected_checkin_time.strftime('%d/%m/%Y')" />
+                                        </t>
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0;">
+                                        Departure Date /
+                                        <span style="color: #555; font-style: italic; font-weight: normal;">Ngày
+                                            đi</span>
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <t t-if="o.expected_checkout_time">
+                                            <t t-esc="o.expected_checkout_time.strftime('%d/%m/%Y')" />
+                                        </t>
+                                    </p>
+                                </td>
+                            </tr>
+
+                            <!-- ROW 5: Room Number / Number of Guests -->
+                            <tr>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0;">
+                                        Room Number /
+                                        <span style="color: #555; font-style: italic; font-weight: normal;">Số
+                                            phòng</span>
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        &#160;
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0;">
+                                        Number of Guests /
+                                        <span style="color: #555; font-style: italic; font-weight: normal;">Số lượng
+                                            khách</span>
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <t t-esc="o.adults + o.childs + o.young_child + o.baby" />
+                                    </p>
+                                </td>
+                            </tr>
+
+                            <!-- ROW 6: Room Type -->
+                            <tr>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0;">
+                                        Booked Room Type /
+                                        <span style="color: #555; font-style: italic; font-weight: normal;">Loại phòng
+                                            đã đặt</span>
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <t t-esc="o.reservation_line.original_room_type.cat_id.name" />
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0;">
+                                        Room Type /
+                                        <span style="color: #555; font-style: italic; font-weight: normal;">Loại
+                                            phòng</span>
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555; padding: 3pt 6pt; vertical-align: middle;">
+                                    <p style="font-size: 8pt; color: #000; margin: 0;">
+                                        <t t-esc="o.reservation_line.room_type.cat_id.name" />
+                                    </p>
+                                </td>
+                            </tr>
+
+                        </table>
+
+                        <!-- ═══════════════ TERMS &amp; CONDITIONS ═══════════════ -->
+                        <table style="width: 100%; border: none; border-collapse: collapse; margin-top: 5pt;">
+                            <tr>
+                                <td style="padding: 0;">
+                                    <p style="font-size: 8pt; font-weight: bold; color: #000; margin: 0 0 2pt 0;">
+                                        I authorize the hotel to /
+                                        <span style="color: #555; font-style: italic; font-weight: normal;">Tôi đồng ý
+                                            uỷ quyền cho khách sạn:</span>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table style="width: 100%; border: none; border-collapse: collapse;" cellspacing="0">
+                            <!-- Term 1 -->
+                            <tr>
+                                <td style="padding: 1pt 0 1pt 8pt; vertical-align: top; width: 8pt; font-size: 8pt;">–
+                                </td>
+                                <td
+                                    style="padding: 1pt 0 1pt 4pt; font-size: 7.5pt; line-height: 130%; text-align: justify;">
+                                    Use my debit/credit card (provided online or directly at the hotel) to settle my
+                                    account for prepaid bookings (full reservations or incidentals).<br />
+                                    <span style="color: #555; font-style: italic;">
+                                        Sử dụng thẻ ghi nợ / thẻ tín dụng (được cung cấp online hoặc trực tiếp tại khách
+                                        sạn) để thanh toán khoản đặt phòng trước (thanh toán toàn bộ hoặc thanh toán chi
+                                        phí phát sinh).
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- Term 2 -->
+                            <tr>
+                                <td style="padding: 1pt 0 1pt 8pt; vertical-align: top; font-size: 8pt;">–</td>
+                                <td
+                                    style="padding: 1pt 0 1pt 4pt; font-size: 7.5pt; line-height: 130%; text-align: justify;">
+                                    M Village will not be responsible for any valuables left in the room. Safety deposit
+                                    boxes are available in each guestroom. In case they are unavailable, you can ask our
+                                    staff for assistance.<br />
+                                    <span style="color: #555; font-style: italic;">
+                                        M Village sẽ không chịu trách nhiệm cho bất kỳ tư trang cá nhân nào có giá trị
+                                        của quý khách trong phòng. Quý khách có thể sử dụng két sắt có sẵn. Trong trường
+                                        hợp nếu không có sẵn két sắt trong phòng, quý khách có thể liên hệ nhân viên để
+                                        được hỗ trợ lưu trữ tại quầy trong thời gian lưu trú.
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- Term 3 -->
+                            <tr>
+                                <td style="padding: 1pt 0 1pt 8pt; vertical-align: top; font-size: 8pt;">–</td>
+                                <td
+                                    style="padding: 1pt 0 1pt 4pt; font-size: 7.5pt; line-height: 130%; text-align: justify;">
+                                    Please be informed that check-out time is by 12 noon.<br />
+                                    <span style="color: #555; font-style: italic;">
+                                        Thời gian trả phòng quy định: Trước 12:00 trưa.
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- Term 4 -->
+                            <tr>
+                                <td style="padding: 1pt 0 1pt 8pt; vertical-align: top; font-size: 8pt;">–</td>
+                                <td
+                                    style="padding: 1pt 0 1pt 4pt; font-size: 7.5pt; line-height: 130%; text-align: justify;">
+                                    Please be informed that a fee of 100,000 VND will be charged for each lost key
+                                    card.<br />
+                                    <span style="color: #555; font-style: italic;">
+                                        Trong trường hợp làm mất thẻ phòng, chi phí 100,000 VND sẽ được tính cho mỗi
+                                        thẻ.
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- Term 5 -->
+                            <tr>
+                                <td style="padding: 1pt 0 1pt 8pt; vertical-align: top; font-size: 8pt;">–</td>
+                                <td
+                                    style="padding: 1pt 0 1pt 4pt; font-size: 7.5pt; line-height: 130%; text-align: justify;">
+                                    M Village collects and processes your personal information requested in this form to
+                                    manage your stay, providing personalized services and comply with local law
+                                    requirements.<br />
+                                    <span style="color: #555; font-style: italic;">
+                                        M Village được phép thu thập và sử dụng thông tin cá nhân mà quý khách đã điền
+                                        trong mẫu này để phục vụ cho mục đích lưu trú, cung cấp các dịch vụ dành riêng
+                                        cho khách hàng, và tuân thủ theo quy định của luật pháp địa phương.
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- Term 6: Smoking / strong-smelt food -->
+                            <tr>
+                                <td style="padding: 1pt 0 1pt 8pt; vertical-align: top; font-size: 8pt;">–</td>
+                                <td
+                                    style="padding: 1pt 0 1pt 4pt; font-size: 7.5pt; line-height: 130%; text-align: justify;">
+                                    For the guest's comfort, smoking or eating strong-smelt food is not allowed inside
+                                    the rooms. There will be an additional cleaning charge of 2,000,000 VND for any
+                                    incident found.<br />
+                                    <span style="color: #555; font-style: italic;">
+                                        Nhằm đảm bảo cho các khách hàng đến sau, quý khách vui lòng không hút thuốc hoặc
+                                        sử dụng thức ăn có mùi trong phòng. Trường hợp bị phát hiện, quý khách sẽ được
+                                        yêu cầu đóng một khoản phụ phí là 2.000.000 VND.
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Warning icons -->
+                        <table style="width: 100%; border: none; border-collapse: collapse; margin: 3pt 0;">
+                            <tr>
+                                <td style="text-align: center; width: 33%;">
+                                    <img width="45" height="45" t-if="warning2" t-att-src="image_data_uri(warning2)"
+                                        alt="Warning" />
+                                </td>
+                                <td style="text-align: center; width: 33%;">
+                                    <img width="44" height="44" t-if="warning1" t-att-src="image_data_uri(warning1)"
+                                        alt="Warning" />
+                                </td>
+                                <td style="text-align: center; width: 33%;">
+                                    <img width="44" height="44" t-if="warning3" t-att-src="image_data_uri(warning3)"
+                                        alt="Warning" />
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table style="width: 100%; border: none; border-collapse: collapse;" cellspacing="0">
+                            <!-- Term 7: Damages -->
+                            <tr>
+                                <td style="padding: 1pt 0 1pt 8pt; vertical-align: top; width: 8pt; font-size: 8pt;">–
+                                </td>
+                                <td
+                                    style="padding: 1pt 0 1pt 4pt; font-size: 7.5pt; line-height: 130%; text-align: justify;">
+                                    You are responsible for any damages (in any case) to the hotel's facilities caused
+                                    by yourself or others in your group, as prescribed by the hotel.<br />
+                                    <span style="color: #555; font-style: italic;">
+                                        Quý khách phải chịu trách nhiệm đền bù cho bất cứ thiệt hại nào (bao gồm cả vô
+                                        tình hoặc cố ý) đối với cơ sở vật chất của Khách sạn do chính Quý khách hoặc
+                                        người khác trong nhóm của Quý khách gây ra theo quy định của Khách sạn.
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- Term 8: Final agreement -->
+                            <tr>
+                                <td style="padding: 1pt 0 1pt 8pt; vertical-align: top; font-size: 8pt;">–</td>
+                                <td
+                                    style="padding: 1pt 0 1pt 4pt; font-size: 7.5pt; line-height: 130%; text-align: justify;">
+                                    In consideration for accepting my reservation and providing me with accommodation
+                                    and/or Hotel services, I hereby confirm that all the information on this form,
+                                    including my arrival &amp; and departure dates, is correct. I agree that any dispute
+                                    or claim that arises out of or is related to such accommodation and/or services
+                                    shall be subject to the law of the court of Vietnam and the exclusive jurisdiction
+                                    of the courts of Ho Chi Minh City.<br />
+                                    <span style="color: #555; font-style: italic;">
+                                        Để xem xét việc chấp nhận đặt phòng và cung cấp cho tôi chỗ ở và/hoặc dịch vụ
+                                        Khách sạn, tôi xác nhận rằng tất cả thông tin trên mẫu này, bao gồm cả ngày đến
+                                        và đi của tôi là chính xác. Tôi đồng ý rằng mọi tranh chấp hoặc khiếu nại phát
+                                        sinh từ hoặc liên quan đến chỗ ở và/hoặc dịch vụ đó sẽ phải tuân theo luật pháp
+                                        của tòa án Việt Nam và thẩm quyền xét xử riêng của tòa án Thành phố Hồ Chí Minh.
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ═══════════════ VAT INVOICE (moved here before signature) ═══════════════ -->
+                        <table style="border-collapse: separate; border-spacing: 0; width: 100%; margin-top: 5pt; border-radius: 6pt; overflow: hidden;" cellspacing="0">
+                            <tr style="">
+                                <td style="border: 0.5pt solid #555">
+                                    <p class="s1"
+                                        style="padding: 5pt 10pt 0 10pt; text-indent: 0pt; line-height: 120%; text-align: left; color: black; font-family: Roboto; font-size: 8.5pt; margin: 0;">
+                                        Do you need a VAT invoice?
+                                    </p>
+                                    <p class="s2"
+                                        style="padding-left: 10pt; text-indent: 0pt; line-height: 120%; text-align: left; color: #595959; font-family: Roboto; font-style: italic; font-size: 8.5pt; margin: 0;">
+                                        Yêu cầu xuất hóa đơn VAT?
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555" colspan="2">
+                                    <p class="s3"
+                                        style="padding: 5pt 10pt 0 10pt; text-indent: 0pt; text-align: left; color: black; font-family: Roboto; font-size: 8.5pt; margin: 0;">
+                                        <span class="s1"
+                                            style="color: black; font-family: Roboto; font-size: 8.5pt; margin: 0;">
+                                            <input type="checkbox"
+                                                t-att-checked="o.vat == 'yes' and 'checked' or None" />
+                                            Yes /
+                                        </span>
+                                        <span class="s2"
+                                            style="color: #595959; font-family: Roboto; font-style: italic; font-size: 8.5pt; margin: 0;">
+                                            Có
+                                        </span>
+                                    </p>
+                                    <p class="s1"
+                                        style="padding: 0pt 10pt 0 10pt; text-indent: 0pt; text-align: left; color: black; font-family: Roboto; font-size: 8.5pt; margin: 0; margin-bottom: 4pt;">
+                                        Tax number /
+                                        <span class="s2"
+                                            style="color: #595959; font-family: Roboto; font-style: italic; font-size: 8.5pt; margin: 0;">
+                                            Mã số thuế
+                                            <br />
+                                            <t t-esc="o.code_vat" />
+                                        </span>
+                                    </p>
+                                </td>
+                                <td style="border: 0.5pt solid #555">
+                                    <p class="s3"
+                                        style="padding: 7pt 0 0 5pt; text-indent: 0pt; text-align: left; color: black; font-family: Roboto; font-size: 8.5pt;">
+                                        <span class="s1"
+                                            style="color: black; font-family: Roboto; font-size: 8.5pt; margin: 0;">
+                                            <input type="checkbox"
+                                                t-att-checked="o.vat == 'no' and 'checked' or None" />
+                                            No /
+                                        </span>
+                                        <span class="s2"
+                                            style="color: #595959; font-family: Roboto; font-style: italic; font-size: 8.5pt; margin: 0;">Không</span>
+                                    </p>
+                                    <p class="s1"
+                                        style="padding: 2pt 0 0 4pt; text-indent: 0pt; text-align: left; color: black; font-family: Roboto; font-size: 8.5pt; margin: 0;">
+                                        <span class="s2"
+                                            style="color: #595959; font-family: Roboto; font-style: italic; font-size: 8.5pt; margin: 0;" />
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ═══════════════ SIGNATURE SECTION ═══════════════ -->
+                        <table style="width: 100%; border: none; border-collapse: collapse; margin-top: 10pt;">
+                            <tr>
+                                <td style="width: 50%; text-align: center; vertical-align: top; padding: 0 10pt;">
+                                    <p
+                                        style="font-size: 8pt; color: #000; margin: 0; padding-top: 15pt; border-top: 0.5pt solid #999;">
+                                        Guest's Signature
+                                    </p>
+                                    <p style="font-size: 7.5pt; font-style: italic; color: #555; margin: 2pt 0 0 0;">
+                                        Chữ ký của Khách hàng
+                                    </p>
+                                </td>
+                                <td style="width: 50%; text-align: center; vertical-align: top; padding: 0 10pt;">
+                                    <p
+                                        style="font-size: 8pt; color: #000; margin: 0; padding-top: 15pt; border-top: 0.5pt solid #999;">
+                                        Front Desk Supervisor
+                                    </p>
+                                    <p style="font-size: 7.5pt; font-style: italic; color: #555; margin: 2pt 0 0 0;">
+                                        Nhân viên lễ tân
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+            </t>
+        </t>
+    </t>
+</t>

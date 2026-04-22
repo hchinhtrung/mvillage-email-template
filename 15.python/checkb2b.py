@@ -16,7 +16,7 @@ from rapidfuzz import fuzz, process
 # DEFAULT DB PATH (same folder as this script)
 # ─────────────────────────────────────────────
 SCRIPT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_DB = SCRIPT_DIR / "sample-res.csv"
+DEFAULT_DB = SCRIPT_DIR / "checkb2b-res.csv"
 
 # ─────────────────────────────────────────────
 # CONFIG

@@ -110,7 +110,7 @@ def extract_domain(email: str) -> str:
 
 def parse_lead_text(text: str) -> dict:
     """Parse lead info from pasted text."""
-    result = {"email": "", "contact": "", "company": ""}
+    result = {"email": "", "contact": "", "company": "", "create_date": ""}
     
     for line in text.strip().split("\n"):
         line = line.strip()
@@ -122,7 +122,7 @@ def parse_lead_text(text: str) -> dict:
             match = re.search(r'[\w.+-]+@[\w.-]+\.\w+', line)
             if match:
                 result["email"] = match.group(0).strip().lower()
-        elif "contact" in low or "person" in low or "name" in low and "company" not in low:
+        elif "contact" in low or "person" in low or ("name" in low and "company" not in low):
             parts = re.split(r':\s*', line, maxsplit=1)
             if len(parts) > 1:
                 result["contact"] = parts[1].strip()
@@ -130,6 +130,10 @@ def parse_lead_text(text: str) -> dict:
             parts = re.split(r':\s*', line, maxsplit=1)
             if len(parts) > 1:
                 result["company"] = parts[1].strip()
+        elif "create" in low or "date" in low or "ngày" in low:
+            parts = re.split(r':\s*', line, maxsplit=1)
+            if len(parts) > 1:
+                result["create_date"] = parts[1].strip()
     
     # Fallback: try to find email anywhere
     if not result["email"]:
@@ -232,6 +236,7 @@ with st.sidebar:
         col_revenue = st.text_input("Revenue", value="Revenue")
         col_checkin = st.text_input("Check-in", value="Checkin")
         col_booking_type = st.text_input("Booking Type", value="Booking Type")
+        col_create_date = st.text_input("Booking Create Date", value="Create Date")
     
     fuzzy_threshold = st.slider("Fuzzy match threshold (%)", 60, 100, 80)
 
@@ -284,12 +289,12 @@ st.markdown("<br>", unsafe_allow_html=True)
 # INPUT
 # ─────────────────────────────────────────────
 st.subheader("📋 Paste Lead Info")
-st.caption("Hỗ trợ paste nhiều lead cùng lúc — mỗi block bắt đầu bằng `👉 Work Email`")
+st.caption("Supports multiple leads at once — each block starts with `👉 Work Email`")
 
 lead_text = st.text_area(
     "Paste the lead information below:",
     height=200,
-    placeholder="👉 Work Email: a@company.vn\n👉 Contact Person: Nguyễn A\n👉 Company Name: CÔNG TY A\n👉 Work Email: b@company.vn\n👉 Contact Person: Nguyễn B\n👉 Company Name: CÔNG TY B",
+    placeholder="👉 Work Email: a@company.vn\n👉 Contact Person: Nguyen A\n👉 Company Name: COMPANY A\n👉 Create Date: Apr 20, 2026\n👉 Work Email: b@company.vn\n👉 Contact Person: Nguyen B\n👉 Company Name: COMPANY B\n👉 Create Date: Apr 18, 2026",
 )
 
 if not lead_text.strip():
@@ -300,12 +305,9 @@ if not lead_text.strip():
 # ─────────────────────────────────────────────
 def split_leads(text: str) -> list[str]:
     """Split pasted text into individual lead blocks using '👉 Work Email' as delimiter."""
-    # Split on the emoji arrow before "Work Email"
     blocks = re.split(r'(?=👉\s*Work Email)', text.strip())
-    # Also handle bullet variants
     if len(blocks) <= 1:
         blocks = re.split(r'(?=(?:👉|🔹|•|\*)\s*Work Email)', text.strip())
-    # Clean up empty blocks
     blocks = [b.strip() for b in blocks if b.strip()]
     return blocks if blocks else [text.strip()]
 
@@ -318,21 +320,20 @@ for block in lead_blocks:
         leads.append(parsed)
 
 if not leads:
-    st.warning("Không parse được lead nào từ text đã paste.")
+    st.warning("Could not parse any leads from the pasted text.")
     st.stop()
 
-st.info(f"🔢 Đã phát hiện **{len(leads)}** lead(s)")
+st.info(f"🔢 Detected **{len(leads)}** lead(s)")
 
 # ─────────────────────────────────────────────
 # PROCESS ALL LEADS
 # ─────────────────────────────────────────────
 st.markdown("---")
-st.subheader("📊 Kết quả tổng hợp")
+st.subheader("📊 Summary")
 
-# Helper to display match details inside an expander
 display_cols_list = [col_res_no, col_company, col_hotel, col_city,
                      col_guest_email, col_company_email,
-                     col_checkin, col_room_night, col_revenue, col_booking_type]
+                     col_create_date, col_checkin, col_room_night, col_revenue, col_booking_type]
 
 summary_rows = []
 
@@ -360,13 +361,35 @@ for idx, lead in enumerate(leads):
     if not matches["company"].empty:
         match_types.append("Company")
     
+    # ── Status logic: YES / BEFORE / NO ──────
+    # Parse lead create date
+    lead_create_dt = None
+    if lead.get("create_date"):
+        lead_create_dt = pd.to_datetime(lead["create_date"], errors="coerce", dayfirst=False)
+    
+    if total_res_count == 0:
+        status = "❌ NO"
+    elif lead_create_dt is not None and pd.notna(lead_create_dt) and col_create_date in all_matched.columns:
+        res_dates = pd.to_datetime(all_matched[col_create_date], errors="coerce")
+        has_after = (res_dates >= lead_create_dt).any()
+        if has_after:
+            status = "✅ YES"
+        else:
+            status = "⚠️ BEFORE"
+    elif total_res_count > 0:
+        # No lead create date provided → just mark as YES if any booking exists
+        status = "✅ YES"
+    else:
+        status = "❌ NO"
+    
     summary_rows.append({
         "No.": idx + 1,
         "Email": lead["email"] or "—",
         "Domain": lead["domain"] or "—",
         "Company": lead["company"] or "—",
         "Contact": lead["contact"] or "—",
-        "Status": "✅ CÓ" if total_res_count > 0 else "❌ MỚI",
+        "Lead Create Date": lead.get("create_date", "—") or "—",
+        "Status": status,
         "Reservations": total_res_count,
         "Room Nights": total_rn,
         "Revenue": f"{total_rev:,.0f}" if total_rev else "0",
@@ -380,33 +403,35 @@ for idx, lead in enumerate(leads):
 summary_df = pd.DataFrame(summary_rows)
 display_summary = summary_df.drop(columns=["_matches", "_all_matched"])
 
-found_count = len([r for r in summary_rows if r["Reservations"] > 0])
-new_count = len(summary_rows) - found_count
+yes_count = len([r for r in summary_rows if r["Status"] == "✅ YES"])
+before_count = len([r for r in summary_rows if r["Status"] == "⚠️ BEFORE"])
+no_count = len([r for r in summary_rows if r["Status"] == "❌ NO"])
 
-k1, k2, k3 = st.columns(3)
+k1, k2, k3, k4 = st.columns(4)
 with k1:
-    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#38bdf8">{len(summary_rows)}</div><div class="kpi-lbl">Total Leads Checked</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#38bdf8">{len(summary_rows)}</div><div class="kpi-lbl">Total Leads</div></div>', unsafe_allow_html=True)
 with k2:
-    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#10b981">{found_count}</div><div class="kpi-lbl">Đã có Booking ✅</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#10b981">{yes_count}</div><div class="kpi-lbl">Booked After Lead ✅</div></div>', unsafe_allow_html=True)
 with k3:
-    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#f59e0b">{new_count}</div><div class="kpi-lbl">Khách mới ❌</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#f59e0b">{before_count}</div><div class="kpi-lbl">Booked Before Lead ⚠️</div></div>', unsafe_allow_html=True)
+with k4:
+    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#ef4444">{no_count}</div><div class="kpi-lbl">No Bookings ❌</div></div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 st.dataframe(display_summary, use_container_width=True, hide_index=True)
 
 # ── Detail per lead ─────────────────────────
 st.markdown("---")
-st.subheader("🔎 Chi tiết từng Lead")
+st.subheader("🔎 Lead Details")
 
 for row in summary_rows:
     matches = row["_matches"]
     all_matched = row["_all_matched"]
-    status_icon = "✅" if row["Reservations"] > 0 else "❌"
-    label = f'{status_icon} #{row["No."]} — {row["Company"]} ({row["Email"]}) — {row["Reservations"]} res'
+    label = f'{row["Status"]} #{row["No."]} — {row["Company"]} ({row["Email"]}) — {row["Reservations"]} res'
     
     with st.expander(label, expanded=(row["Reservations"] > 0)):
         # Parsed info
-        p1, p2, p3, p4 = st.columns(4)
+        p1, p2, p3, p4, p5 = st.columns(5)
         with p1:
             st.markdown(f'<div class="parsed-box">📧 <b>Email:</b><br><code>{row["Email"]}</code></div>', unsafe_allow_html=True)
         with p2:
@@ -415,21 +440,31 @@ for row in summary_rows:
             st.markdown(f'<div class="parsed-box">👤 <b>Contact:</b><br><code>{row["Contact"]}</code></div>', unsafe_allow_html=True)
         with p4:
             st.markdown(f'<div class="parsed-box">🏢 <b>Company:</b><br><code>{row["Company"]}</code></div>', unsafe_allow_html=True)
+        with p5:
+            st.markdown(f'<div class="parsed-box">📅 <b>Lead Date:</b><br><code>{row["Lead Create Date"]}</code></div>', unsafe_allow_html=True)
         
         if row["Reservations"] == 0:
             st.markdown("""
             <div class="result-not-found">
-                <h3>❌ Không tìm thấy booking nào</h3>
-                <p>→ Đây có thể là khách hàng MỚI hoàn toàn!</p>
+                <h3>❌ No bookings found</h3>
+                <p>→ This could be a completely NEW customer!</p>
             </div>
             """, unsafe_allow_html=True)
             continue
         
+        status_msg = row["Status"]
+        if "BEFORE" in status_msg:
+            color_class = "result-not-found"
+            desc = "All bookings were created BEFORE the lead date."
+        else:
+            color_class = "result-found"
+            desc = "Bookings found after the lead creation date."
+        
         st.markdown(f"""
-        <div class="result-found">
-            <h3>✅ Tìm thấy {row["Reservations"]} reservation(s)</h3>
+        <div class="{color_class}">
+            <h3>{status_msg} — {row["Reservations"]} reservation(s) found</h3>
             <p>Room Nights: <b>{row["Room Nights"]}</b> | Revenue: <b>{row["Revenue"]} VND</b> | Hotels: <b>{row["Hotels"]}</b></p>
-            <p>Match by: <b>{row["Match By"]}</b></p>
+            <p>Match by: <b>{row["Match By"]}</b> | {desc}</p>
         </div>
         """, unsafe_allow_html=True)
         

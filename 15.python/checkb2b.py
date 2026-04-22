@@ -373,12 +373,12 @@ for idx, lead in enumerate(leads):
         res_dates = pd.to_datetime(all_matched[col_create_date], errors="coerce")
         has_after = (res_dates >= lead_create_dt).any()
         if has_after:
-            status = "✅ YES"
+            status = "✅ AFTER"
         else:
             status = "⚠️ BEFORE"
     elif total_res_count > 0:
         # No lead create date provided → just mark as YES if any booking exists
-        status = "✅ YES"
+        status = "✅ AFTER"
     else:
         status = "❌ NO"
     
@@ -403,7 +403,7 @@ for idx, lead in enumerate(leads):
 summary_df = pd.DataFrame(summary_rows)
 display_summary = summary_df.drop(columns=["_matches", "_all_matched"])
 
-yes_count = len([r for r in summary_rows if r["Status"] == "✅ YES"])
+yes_count = len([r for r in summary_rows if r["Status"] == "✅ AFTER"])
 before_count = len([r for r in summary_rows if r["Status"] == "⚠️ BEFORE"])
 no_count = len([r for r in summary_rows if r["Status"] == "❌ NO"])
 

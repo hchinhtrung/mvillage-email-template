@@ -254,7 +254,7 @@ elif DEFAULT_DB.exists():
     res_bytes = DEFAULT_DB.read_bytes()
     res_df = load_res(res_bytes)
 else:
-    st.info("👈 Upload a **Reservation CSV** from the sidebar, or place `res.csv` in the script folder.")
+    st.info("👈 Upload a **Reservation CSV** from the sidebar, or place `checkb2b-res.csv` in the script folder.")
     st.stop()
 
 # Validate columns
@@ -284,134 +284,173 @@ st.markdown("<br>", unsafe_allow_html=True)
 # INPUT
 # ─────────────────────────────────────────────
 st.subheader("📋 Paste Lead Info")
+st.caption("Hỗ trợ paste nhiều lead cùng lúc — mỗi block bắt đầu bằng `👉 Work Email`")
 
 lead_text = st.text_area(
     "Paste the lead information below:",
-    height=120,
-    placeholder="👉 Work Email: annh@hann.vn\n👉 Contact Person: Nguyễn Hồng Ân\n👉 Company Name: Công ty TNHH Phân Phối và Dịch vụ HANN",
+    height=200,
+    placeholder="👉 Work Email: a@company.vn\n👉 Contact Person: Nguyễn A\n👉 Company Name: CÔNG TY A\n👉 Work Email: b@company.vn\n👉 Contact Person: Nguyễn B\n👉 Company Name: CÔNG TY B",
 )
 
 if not lead_text.strip():
     st.stop()
 
 # ─────────────────────────────────────────────
-# PARSE
+# SPLIT & PARSE MULTIPLE LEADS
 # ─────────────────────────────────────────────
-parsed = parse_lead_text(lead_text)
-domain = extract_domain(parsed["email"])
+def split_leads(text: str) -> list[str]:
+    """Split pasted text into individual lead blocks using '👉 Work Email' as delimiter."""
+    # Split on the emoji arrow before "Work Email"
+    blocks = re.split(r'(?=👉\s*Work Email)', text.strip())
+    # Also handle bullet variants
+    if len(blocks) <= 1:
+        blocks = re.split(r'(?=(?:👉|🔹|•|\*)\s*Work Email)', text.strip())
+    # Clean up empty blocks
+    blocks = [b.strip() for b in blocks if b.strip()]
+    return blocks if blocks else [text.strip()]
 
-st.markdown("---")
-st.subheader("🧩 Parsed Info")
+lead_blocks = split_leads(lead_text)
+leads = []
+for block in lead_blocks:
+    parsed = parse_lead_text(block)
+    if parsed["email"] or parsed["company"]:
+        parsed["domain"] = extract_domain(parsed["email"])
+        leads.append(parsed)
 
-p1, p2, p3, p4 = st.columns(4)
-with p1:
-    st.markdown(f'<div class="parsed-box">📧 <b>Email:</b><br><code>{parsed["email"] or "—"}</code></div>', unsafe_allow_html=True)
-with p2:
-    st.markdown(f'<div class="parsed-box">🌐 <b>Domain:</b><br><code>{domain or "—"}</code></div>', unsafe_allow_html=True)
-with p3:
-    st.markdown(f'<div class="parsed-box">👤 <b>Contact:</b><br><code>{parsed["contact"] or "—"}</code></div>', unsafe_allow_html=True)
-with p4:
-    st.markdown(f'<div class="parsed-box">🏢 <b>Company:</b><br><code>{parsed["company"] or "—"}</code></div>', unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────
-# SEARCH
-# ─────────────────────────────────────────────
-st.markdown("---")
-st.subheader("📊 Search Results")
-
-matches = search_reservations(res_df, parsed, col_company, col_company_email,
-                              col_guest_email, fuzzy_threshold)
-
-non_empty = [m for m in matches.values() if not m.empty]
-if non_empty:
-    all_matched = pd.concat(non_empty, ignore_index=False)
-    all_matched = all_matched[~all_matched.index.duplicated(keep="first")]
-else:
-    all_matched = pd.DataFrame()
-
-total_matched_res = len(all_matched)
-
-if total_matched_res == 0:
-    st.markdown("""
-    <div class="result-not-found">
-        <h3>❌ Không tìm thấy booking nào</h3>
-        <p>Lead này chưa có lịch sử đặt phòng tại M Village.</p>
-        <p><b>→ Đây có thể là khách hàng MỚI hoàn toàn!</b></p>
-    </div>
-    """, unsafe_allow_html=True)
+if not leads:
+    st.warning("Không parse được lead nào từ text đã paste.")
     st.stop()
 
-# ── Summary KPIs ────────────────────────────
-matched_companies = all_matched[col_company].dropna().unique()
-total_rn = 0
-total_rev = 0
-if col_room_night in all_matched.columns:
-    total_rn = int(pd.to_numeric(all_matched[col_room_night], errors="coerce").sum())
-if col_revenue in all_matched.columns:
-    total_rev = pd.to_numeric(all_matched[col_revenue], errors="coerce").sum()
+st.info(f"🔢 Đã phát hiện **{len(leads)}** lead(s)")
 
-st.markdown(f"""
-<div class="result-found">
-    <h3>✅ ĐÃ TÌM THẤY BOOKING!</h3>
-    <p>Lead này đã có <b>{total_matched_res}</b> reservation(s) trong hệ thống M Village.</p>
-    <p>Company: <b>{', '.join(matched_companies[:3])}</b></p>
-</div>
-""", unsafe_allow_html=True)
+# ─────────────────────────────────────────────
+# PROCESS ALL LEADS
+# ─────────────────────────────────────────────
+st.markdown("---")
+st.subheader("📊 Kết quả tổng hợp")
 
-k1, k2, k3, k4 = st.columns(4)
+# Helper to display match details inside an expander
+display_cols_list = [col_res_no, col_company, col_hotel, col_city,
+                     col_guest_email, col_company_email,
+                     col_checkin, col_room_night, col_revenue, col_booking_type]
+
+summary_rows = []
+
+for idx, lead in enumerate(leads):
+    matches = search_reservations(res_df, lead, col_company, col_company_email,
+                                  col_guest_email, fuzzy_threshold)
+    
+    non_empty = [m for m in matches.values() if not m.empty]
+    if non_empty:
+        all_matched = pd.concat(non_empty, ignore_index=False)
+        all_matched = all_matched[~all_matched.index.duplicated(keep="first")]
+    else:
+        all_matched = pd.DataFrame()
+    
+    total_res_count = len(all_matched)
+    total_rn = int(pd.to_numeric(all_matched[col_room_night], errors="coerce").sum()) if col_room_night in all_matched.columns and not all_matched.empty else 0
+    total_rev = pd.to_numeric(all_matched[col_revenue], errors="coerce").sum() if col_revenue in all_matched.columns and not all_matched.empty else 0
+    hotels_list = list(all_matched[col_hotel].dropna().unique()) if col_hotel in all_matched.columns and not all_matched.empty else []
+    
+    match_types = []
+    if not matches["email"].empty:
+        match_types.append("Email")
+    if not matches["domain"].empty:
+        match_types.append("Domain")
+    if not matches["company"].empty:
+        match_types.append("Company")
+    
+    summary_rows.append({
+        "No.": idx + 1,
+        "Email": lead["email"] or "—",
+        "Domain": lead["domain"] or "—",
+        "Company": lead["company"] or "—",
+        "Contact": lead["contact"] or "—",
+        "Status": "✅ CÓ" if total_res_count > 0 else "❌ MỚI",
+        "Reservations": total_res_count,
+        "Room Nights": total_rn,
+        "Revenue": f"{total_rev:,.0f}" if total_rev else "0",
+        "Hotels": ", ".join(hotels_list[:3]),
+        "Match By": ", ".join(match_types) if match_types else "—",
+        "_matches": matches,
+        "_all_matched": all_matched,
+    })
+
+# ── Summary table ───────────────────────────
+summary_df = pd.DataFrame(summary_rows)
+display_summary = summary_df.drop(columns=["_matches", "_all_matched"])
+
+found_count = len([r for r in summary_rows if r["Reservations"] > 0])
+new_count = len(summary_rows) - found_count
+
+k1, k2, k3 = st.columns(3)
 with k1:
-    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#10b981">{total_matched_res}</div><div class="kpi-lbl">Reservations Found</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#38bdf8">{len(summary_rows)}</div><div class="kpi-lbl">Total Leads Checked</div></div>', unsafe_allow_html=True)
 with k2:
-    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#f59e0b">{total_rn:,}</div><div class="kpi-lbl">Total Room Nights</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#10b981">{found_count}</div><div class="kpi-lbl">Đã có Booking ✅</div></div>', unsafe_allow_html=True)
 with k3:
-    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#6ee7b7">{total_rev:,.0f}</div><div class="kpi-lbl">Total Revenue (VND)</div></div>', unsafe_allow_html=True)
-with k4:
-    hotels = all_matched[col_hotel].dropna().unique() if col_hotel in all_matched.columns else []
-    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#a78bfa">{len(hotels)}</div><div class="kpi-lbl">Hotels Stayed</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="kpi-box"><div class="kpi-num" style="color:#f59e0b">{new_count}</div><div class="kpi-lbl">Khách mới ❌</div></div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
+st.dataframe(display_summary, use_container_width=True, hide_index=True)
 
-# ── Match breakdown ─────────────────────────
-def show_match_section(title, tag_class, tag_label, df):
-    if df.empty:
-        return
-    st.markdown(f'**{title}** — <span class="match-tag {tag_class}">{tag_label}: {len(df)} res</span>', unsafe_allow_html=True)
+# ── Detail per lead ─────────────────────────
+st.markdown("---")
+st.subheader("🔎 Chi tiết từng Lead")
+
+for row in summary_rows:
+    matches = row["_matches"]
+    all_matched = row["_all_matched"]
+    status_icon = "✅" if row["Reservations"] > 0 else "❌"
+    label = f'{status_icon} #{row["No."]} — {row["Company"]} ({row["Email"]}) — {row["Reservations"]} res'
     
-    display_cols = [c for c in [col_res_no, col_company, col_hotel, col_city,
-                                col_guest_email, col_company_email,
-                                col_checkin, col_room_night, col_revenue, col_booking_type]
-                    if c in df.columns]
-    st.dataframe(df[display_cols].reset_index(drop=True), use_container_width=True, height=min(250, 35 * len(df) + 38))
+    with st.expander(label, expanded=(row["Reservations"] > 0)):
+        # Parsed info
+        p1, p2, p3, p4 = st.columns(4)
+        with p1:
+            st.markdown(f'<div class="parsed-box">📧 <b>Email:</b><br><code>{row["Email"]}</code></div>', unsafe_allow_html=True)
+        with p2:
+            st.markdown(f'<div class="parsed-box">🌐 <b>Domain:</b><br><code>{row["Domain"]}</code></div>', unsafe_allow_html=True)
+        with p3:
+            st.markdown(f'<div class="parsed-box">👤 <b>Contact:</b><br><code>{row["Contact"]}</code></div>', unsafe_allow_html=True)
+        with p4:
+            st.markdown(f'<div class="parsed-box">🏢 <b>Company:</b><br><code>{row["Company"]}</code></div>', unsafe_allow_html=True)
+        
+        if row["Reservations"] == 0:
+            st.markdown("""
+            <div class="result-not-found">
+                <h3>❌ Không tìm thấy booking nào</h3>
+                <p>→ Đây có thể là khách hàng MỚI hoàn toàn!</p>
+            </div>
+            """, unsafe_allow_html=True)
+            continue
+        
+        st.markdown(f"""
+        <div class="result-found">
+            <h3>✅ Tìm thấy {row["Reservations"]} reservation(s)</h3>
+            <p>Room Nights: <b>{row["Room Nights"]}</b> | Revenue: <b>{row["Revenue"]} VND</b> | Hotels: <b>{row["Hotels"]}</b></p>
+            <p>Match by: <b>{row["Match By"]}</b></p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Show match details
+        display_cols = [c for c in display_cols_list if c in all_matched.columns]
+        if not matches["email"].empty:
+            st.markdown(f'<span class="match-tag tag-email">📧 Email: {len(matches["email"])} res</span>', unsafe_allow_html=True)
+        if not matches["domain"].empty:
+            st.markdown(f'<span class="match-tag tag-domain">🌐 Domain: {len(matches["domain"])} res</span>', unsafe_allow_html=True)
+        if not matches["company"].empty:
+            st.markdown(f'<span class="match-tag tag-company">🏢 Company: {len(matches["company"])} res</span>', unsafe_allow_html=True)
+        
+        st.dataframe(all_matched[display_cols].reset_index(drop=True), use_container_width=True,
+                      height=min(300, 35 * len(all_matched) + 38))
 
-show_match_section("📧 Email Match", "tag-email", "Email", matches["email"])
-show_match_section("🌐 Domain Match", "tag-domain", "Domain", matches["domain"])
-show_match_section("🏢 Company Name Match (Fuzzy)", "tag-company", "Company", matches["company"])
-
-# ── Hotel breakdown ─────────────────────────
+# ── Export all ──────────────────────────────
 st.markdown("---")
-st.subheader("🏨 Hotel Breakdown")
-
-if col_hotel in all_matched.columns:
-    hotel_summary = (
-        all_matched.groupby(col_hotel, sort=False)
-        .agg(
-            Reservations=(col_res_no, "count"),
-            **({f"Room Nights": (col_room_night, lambda x: int(pd.to_numeric(x, errors="coerce").sum()))} if col_room_night in all_matched.columns else {}),
-            **({f"Revenue": (col_revenue, lambda x: pd.to_numeric(x, errors="coerce").sum())} if col_revenue in all_matched.columns else {}),
-        )
-        .sort_values("Reservations", ascending=False)
-        .reset_index()
-    )
-    if "Revenue" in hotel_summary.columns:
-        hotel_summary["Revenue"] = hotel_summary["Revenue"].apply(lambda x: f"{x:,.0f}")
-    st.dataframe(hotel_summary, use_container_width=True)
-
-# ── Export ──────────────────────────────────
-st.markdown("---")
-export_bytes = all_matched.drop(columns=["_norm_company"], errors="ignore").to_csv(index=False).encode("utf-8-sig")
+export_summary = display_summary.to_csv(index=False).encode("utf-8-sig")
 st.download_button(
-    "⬇️ Export Matched Reservations (CSV)",
-    data=export_bytes,
-    file_name=f"lead_check_{parsed['email'] or 'result'}.csv",
+    "⬇️ Export Summary (CSV)",
+    data=export_summary,
+    file_name="lead_check_summary.csv",
     mime="text/csv",
 )

@@ -167,7 +167,7 @@ if signup_file and reservation_file:
     # ======================
     # ORDER CONFIG
     # ======================
-    CITY_ORDER = ["HCM", "HN", "DN"]
+    CITY_ORDER = ["HCM", "HN", "DN", "DL"]
     BRAND_MODEL_ORDER = ["savvy", "signature", "hotel", "living", "express"]
 
     final_df[RES_CITY] = final_df[RES_CITY].str.upper()
@@ -341,7 +341,7 @@ if signup_file and reservation_file:
                 )
 
         # ── DN & HN ──────────────────────────────────────────────────────────
-        for city in ["DN", "HN"]:
+        for city in ["DN", "HN", "DL"]:
             city_df = final_df[final_df[RES_CITY] == city].copy()
             if city_df.empty:
                 continue

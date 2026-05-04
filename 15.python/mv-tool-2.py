@@ -43,7 +43,7 @@ RES_DATE = "Checkin"
 RES_TENANT = "tenant_id"
 BRAND_MODEL = res_df.columns[1]
 
-CITY_ORDER = ["HCM", "HN", "DN"]
+CITY_ORDER = ["HCM", "HN", "DN", "DL"]
 BRAND_ORDER = ["savvy", "signature", "hotel", "living", "express"]
 
 

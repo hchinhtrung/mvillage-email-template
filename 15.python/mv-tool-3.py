@@ -51,7 +51,7 @@ RES_CITY = "City"
 RES_DATE = "Checkin"
 RES_TENANT = "tenant_id"
 
-CITY_ORDER = ["HCM", "HN", "DN"]
+CITY_ORDER = ["HCM", "HN", "DN", "DL"]
 
 # ======================
 # DATE NORMALIZATION - Signup
@@ -308,15 +308,9 @@ if view_mode == "📋 Table":
     )
 
 else:
-    chart_df = final_daily[
-        [
-            "Date",
-            "HCM_New_recruit",
-            "HN_New_recruit",
-            "DN_New_recruit",
-            "Total_New_Recruit"
-        ]
-    ].set_index("Date")
+    chart_cols = ["Date"] + [f"{c}_New_recruit" for c in CITY_ORDER] + ["Total_New_Recruit"]
+    chart_cols = [c for c in chart_cols if c in final_daily.columns]
+    chart_df = final_daily[chart_cols].set_index("Date")
 
     st.line_chart(chart_df, height=420)
 

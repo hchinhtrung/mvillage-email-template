@@ -1,6 +1,6 @@
 """
-B2B Lead Checker - M Village
-Check if a B2B lead already has bookings in the reservation system.
+B2B Lead Checker v2 - M Village
+Upload a CSV of B2B leads → check if they already have bookings in the reservation system.
 Matches by: email, email domain, company name (fuzzy ~80%).
 """
 
@@ -22,7 +22,7 @@ DEFAULT_DB = SCRIPT_DIR / "checkb2b-res.csv"
 # CONFIG
 # ─────────────────────────────────────────────
 st.set_page_config(
-    page_title="B2B Lead Checker",
+    page_title="B2B Lead Checker v2",
     page_icon="🔍",
     layout="wide",
 )
@@ -108,44 +108,8 @@ def extract_domain(email: str) -> str:
     return domain
 
 
-def parse_lead_text(text: str) -> dict:
-    """Parse lead info from pasted text."""
-    result = {"email": "", "contact": "", "company": "", "create_date": ""}
-    
-    for line in text.strip().split("\n"):
-        line = line.strip()
-        # Remove leading emoji arrows
-        line = re.sub(r'^[👉🔹•\-\s]+', '', line).strip()
-        
-        low = line.lower()
-        if "email" in low:
-            match = re.search(r'[\w.+-]+@[\w.-]+\.\w+', line)
-            if match:
-                result["email"] = match.group(0).strip().lower()
-        elif "contact" in low or "person" in low or ("name" in low and "company" not in low):
-            parts = re.split(r':\s*', line, maxsplit=1)
-            if len(parts) > 1:
-                result["contact"] = parts[1].strip()
-        elif "company" in low or "công ty" in low or "cty" in low:
-            parts = re.split(r':\s*', line, maxsplit=1)
-            if len(parts) > 1:
-                result["company"] = parts[1].strip()
-        elif "create" in low or "date" in low or "ngày" in low:
-            parts = re.split(r':\s*', line, maxsplit=1)
-            if len(parts) > 1:
-                result["create_date"] = parts[1].strip()
-    
-    # Fallback: try to find email anywhere
-    if not result["email"]:
-        match = re.search(r'[\w.+-]+@[\w.-]+\.\w+', text)
-        if match:
-            result["email"] = match.group(0).strip().lower()
-    
-    return result
-
-
 @st.cache_data(show_spinner=False)
-def load_res(file_bytes: bytes) -> pd.DataFrame:
+def load_csv(file_bytes: bytes) -> pd.DataFrame:
     return pd.read_csv(io.BytesIO(file_bytes), dtype=str)
 
 
@@ -220,12 +184,12 @@ with st.sidebar:
     st.header("📂 Reservation DB")
     if DEFAULT_DB.exists():
         st.success(f"✅ Default DB: `{DEFAULT_DB.name}`")
-    res_file = st.file_uploader("Upload CSV to override", type=["csv"])
+    res_file = st.file_uploader("Upload CSV to override", type=["csv"], key="res_upload")
     
     st.divider()
     st.header("⚙️ Settings")
     
-    with st.expander("Column Mapping", expanded=False):
+    with st.expander("Reservation Column Mapping", expanded=False):
         col_company = st.text_input("Company Name", value="Company (VAT)")
         col_company_email = st.text_input("Company Email", value="Company Email (VAT)")
         col_guest_email = st.text_input("Guest Email", value="Guest Email")
@@ -238,6 +202,14 @@ with st.sidebar:
         col_booking_type = st.text_input("Booking Type", value="Booking Type")
         col_create_date = st.text_input("Booking Create Date", value="Create Date")
     
+    with st.expander("Lead CSV Column Mapping", expanded=False):
+        lead_col_display_name = st.text_input("Lead: Display Name", value="Display Name")
+        lead_col_email = st.text_input("Lead: Email", value="Email")
+        lead_col_company = st.text_input("Lead: Company", value="Company")
+        lead_col_created_on = st.text_input("Lead: Created on", value="Created on")
+        lead_col_phone = st.text_input("Lead: Phone", value="Phone")
+        lead_col_country = st.text_input("Lead: Country", value="Country")
+    
     fuzzy_threshold = st.slider("Fuzzy match threshold (%)", 60, 100, 80)
 
 
@@ -246,18 +218,18 @@ with st.sidebar:
 # ─────────────────────────────────────────────
 st.markdown("""
 <div class="main-header">
-    <h1>🔍 B2B Lead Checker</h1>
-    <p>Paste lead info → instantly check existing bookings in M Village system</p>
+    <h1>🔍 B2B Lead Checker v2</h1>
+    <p>Upload lead CSV → instantly check existing bookings in M Village system</p>
 </div>
 """, unsafe_allow_html=True)
 
 # Load reservation data — uploaded file takes priority, else default
 if res_file:
     res_bytes = res_file.read()
-    res_df = load_res(res_bytes)
+    res_df = load_csv(res_bytes)
 elif DEFAULT_DB.exists():
     res_bytes = DEFAULT_DB.read_bytes()
-    res_df = load_res(res_bytes)
+    res_df = load_csv(res_bytes)
 else:
     st.info("👈 Upload a **Reservation CSV** from the sidebar, or place `checkb2b-res.csv` in the script folder.")
     st.stop()
@@ -286,44 +258,66 @@ with c2:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
-# INPUT
+# INPUT — Upload Lead CSV
 # ─────────────────────────────────────────────
-st.subheader("📋 Paste Lead Info")
-st.caption("Supports multiple leads at once — each block starts with `👉 Work Email`")
+st.subheader("📤 Upload Lead CSV")
+st.caption("Upload a CSV file with B2B leads. Required columns: `Display Name`, `Email`, `Company`, `Created on`")
 
-lead_text = st.text_area(
-    "Paste the lead information below:",
-    height=200,
-    placeholder="👉 Work Email: a@company.vn\n👉 Contact Person: Nguyen A\n👉 Company Name: COMPANY A\n👉 Create Date: Apr 20, 2026\n👉 Work Email: b@company.vn\n👉 Contact Person: Nguyen B\n👉 Company Name: COMPANY B\n👉 Create Date: Apr 18, 2026",
+lead_file = st.file_uploader(
+    "Upload your B2B Lead CSV file:",
+    type=["csv"],
+    key="lead_upload",
 )
 
-if not lead_text.strip():
+if lead_file is None:
+    st.info("👆 Please upload a **B2B Lead CSV** file to start checking.")
     st.stop()
 
 # ─────────────────────────────────────────────
-# SPLIT & PARSE MULTIPLE LEADS
+# PARSE LEADS FROM CSV
 # ─────────────────────────────────────────────
-def split_leads(text: str) -> list[str]:
-    """Split pasted text into individual lead blocks using '👉 Work Email' as delimiter."""
-    blocks = re.split(r'(?=👉\s*Work Email)', text.strip())
-    if len(blocks) <= 1:
-        blocks = re.split(r'(?=(?:👉|🔹|•|\*)\s*Work Email)', text.strip())
-    blocks = [b.strip() for b in blocks if b.strip()]
-    return blocks if blocks else [text.strip()]
+lead_bytes = lead_file.read()
+lead_df = load_csv(lead_bytes)
 
-lead_blocks = split_leads(lead_text)
+# Show preview of uploaded lead CSV
+with st.expander("📋 Preview uploaded lead CSV", expanded=False):
+    st.dataframe(lead_df.head(20), use_container_width=True, hide_index=True)
+    st.caption(f"Total rows: **{len(lead_df)}**")
+
+# Build leads list from CSV rows
 leads = []
-for block in lead_blocks:
-    parsed = parse_lead_text(block)
-    if parsed["email"] or parsed["company"]:
-        parsed["domain"] = extract_domain(parsed["email"])
-        leads.append(parsed)
+for _, row in lead_df.iterrows():
+    email_raw = str(row.get(lead_col_email, "") or "").strip().lower()
+    # Clean email — extract valid email if there's extra text
+    email_match = re.search(r'[\w.+-]+@[\w.-]+\.\w+', email_raw)
+    email = email_match.group(0) if email_match else ""
+    
+    company = str(row.get(lead_col_company, "") or "").strip()
+    contact = str(row.get(lead_col_display_name, "") or "").strip()
+    create_date = str(row.get(lead_col_created_on, "") or "").strip()
+    phone = str(row.get(lead_col_phone, "") or "").strip()
+    country = str(row.get(lead_col_country, "") or "").strip()
+    
+    # Skip rows with no email AND no company
+    if not email and not company:
+        continue
+    
+    domain = extract_domain(email)
+    leads.append({
+        "email": email,
+        "domain": domain,
+        "contact": contact,
+        "company": company,
+        "create_date": create_date,
+        "phone": phone,
+        "country": country,
+    })
 
 if not leads:
-    st.warning("Could not parse any leads from the pasted text.")
+    st.warning("No valid leads found in the uploaded CSV. Make sure the column names match the mapping in Settings.")
     st.stop()
 
-st.info(f"🔢 Detected **{len(leads)}** lead(s)")
+st.info(f"🔢 Loaded **{len(leads)}** lead(s) from CSV")
 
 # ─────────────────────────────────────────────
 # PROCESS ALL LEADS
@@ -352,7 +346,6 @@ for idx, lead in enumerate(leads):
     total_rn = int(pd.to_numeric(all_matched[col_room_night], errors="coerce").sum()) if col_room_night in all_matched.columns and not all_matched.empty else 0
     total_rev = pd.to_numeric(all_matched[col_revenue], errors="coerce").sum() if col_revenue in all_matched.columns and not all_matched.empty else 0
     hotels_list = list(all_matched[col_hotel].dropna().unique()) if col_hotel in all_matched.columns and not all_matched.empty else []
-    res_id_list = ", ".join(all_matched[col_res_no].dropna().astype(str).tolist()) if col_res_no in all_matched.columns and not all_matched.empty else "—"
     
     match_types = []
     if not matches["email"].empty:
@@ -392,7 +385,6 @@ for idx, lead in enumerate(leads):
         "Lead Create Date": lead.get("create_date", "—") or "—",
         "Status": status,
         "Reservations": total_res_count,
-        "Reservation List": res_id_list,
         "Room Nights": total_rn,
         "Revenue": f"{total_rev:,.0f}" if total_rev else "0",
         "Hotels": ", ".join(hotels_list[:3]),

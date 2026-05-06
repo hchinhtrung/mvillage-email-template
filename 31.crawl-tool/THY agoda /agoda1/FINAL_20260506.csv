@@ -1,24 +1,24 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
 Vanda Hotel,Superior Double City View,"₫ 1,104,309","₫ 1,104,309","₫ 1,104,309","₫ 1,104,309","1,785,714",1.785.714
 Muong Thanh Luxury Song Han Hotel,Superior Twin City View,"₫ 732,403","1,370,882","1,370,882",1.515.185,732.403₫,"₫ 732,403"
-Novotel,"Superior Room, balcony with Han river view - 2 single beds","2,400,000",NA,NA,SOLD OUT,SOLD OUT,"3,450,000"
+Novotel,"Superior Room, balcony with Han river view - 2 single beds","2,400,000","2,200,000","2,050,000","2,400,000","2,200,000","3,450,000"
 New Orient Da Nang,Superior Double or Twin Room without View,"₫ 1,039,802","₫ 1,039,802","1,120,370",1.642.593,"1,642,593","1,642,593"
-radison red,Superior Room,"2,295,000",SOLD OUT,"2,070,000",SOLD OUT,SOLD OUT,SOLD OUT
-Crowne Plaza Danang City Centre,Standard Room,SOLD OUT,"2,238,020","2,606,635","2,738,283",NA,"2,343,339"
+radison red,Superior Room,"2,295,000","2,070,000","2,070,000","2,070,000","2,655,000","2,655,000"
+Crowne Plaza Danang City Centre,Standard Room,"2,238,020","2,238,020","2,606,635","2,738,283",3.317.536,"2,343,339"
 M Hotel Da Nang,Phòng Loại Sang Hai Giường Đơn Hướng Thành Phố Có Bồn Tắm (Deluxe Twin Room City View with Bathtub),3.003.327,"₫ 2,385,027",2.866.387,"₫ 2,385,027","2,928,468","₫ 2,385,027"
-sel de mer,Superior Twin City View,SOLD OUT,"2,222,222","2,222,222",SOLD OUT,"2,063,492","2,063,492"
-Hilton Da Nang,King Accessible Room,NA,SOLD OUT,"₫ 2,311,304","3,400,000","₫ 2,316,570",NA
+sel de mer,Superior Twin City View,"2,222,222","2,222,222","2,222,222",2.222.222,"2,063,492","2,063,492"
+Hilton Da Nang,King Accessible Room,"₫ 2,316,570",2.316.570₫,"₫ 2,311,304","3,400,000","₫ 2,316,570","3,400,000"
 G8 Luxury,Superior Double Room,"783,069","₫ 686,765","783,069","783,069","1,174,603","1,076,048"
 Grand Tourane Hotel,Deluxe hướng thành phố (City Deluxe),1.551.429,"1,575,175","1,774,286","1,940,000","2,545,848","2,549,542"
-voco Ma Belle,Deluxe Room,"2,527,646",SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+voco Ma Belle,Deluxe Room,"2,527,646",2.127.655₫,"3,001,580","2,738,283","2,817,272",2.817.272
 Furama Villas Danang-4-Bedroom Beachfront Villa with Private Pool,4-Bedroom Beachfront Villa with Private Pool,"₫ 58,095,928","₫ 58,095,928",58.095.928₫,"₫ 58,095,928","₫ 58,095,928","₫ 58,095,928"
 Furama Villas Danang-2 Bedroom Pool Villa,2 Bedroom Pool Villa,"9,312,131","9,988,604","9,145,081","11,890,782",11.873.732,"14,269,105"
 Furama Villas Danang-3 Bedroom Pool Villa,3 Bedroom Pool Villa,"₫ 12,940,583","₫ 12,940,583","₫ 12,940,583","₫ 12,940,583","₫ 12,940,583","₫ 12,940,583"
 A La Carte,1-Bedroom City View Twin Studio,"2,149,817","₫ 1,608,741","₫ 1,608,741","1,874,742","₫ 1,608,741","1,874,742"
-Hilton Garden Inn,King Guest Room,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Hilton Garden Inn,King Guest Room,"1,955,860","2,004,945","1,804,000","1,954,111","1,758,617","1,797,771"
 Furama Resort Danang-Lagoon Superior,Lagoon Superior,"₫ 5,636,300","5,570,011",5.636.300₫,"6,191,787","6,182,921",6.191.787
 Furama Villas Danang-1 Bedroom Pool Villa,1 Bedroom Pool Villa,"8,311,805","8,323,836","8,311,805","10,226,428",10.211.647,12.604.376
-Pullman Danang Beach Resort,Deluxe 2 Single Beds with Balcony,"4,350,001","4,450,001",SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Pullman Danang Beach Resort,Deluxe 2 Single Beds with Balcony,"4,350,001","4,450,001","6,200,001","4,750,000","4,600,001","4,200,000"
 Fusion Resort-Suite,Garden View King Suite,"5,338,931","₫ 3,798,929",5.251.335,"₫ 3,798,929","₫ 3,798,929","₫ 3,798,929"
 Fusion Resort-1bedroom villa,One Bedroom Villa with Private Pool - Spa Inclusive,"₫ 9,708,399","₫ 9,708,399","₫ 9,708,399","11,502,988",9.708.399₫,9.708.399₫
 Fusion Resort-2bedroom villa,Two Bedroom Villa - Spa Inclusive,"21,323,136","18,700,694","21,323,136",18.700.694,"18,673,867","18,700,910"

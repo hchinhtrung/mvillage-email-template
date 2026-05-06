@@ -203,9 +203,9 @@ with st.sidebar:
         col_create_date = st.text_input("Booking Create Date", value="Create Date")
     
     with st.expander("Lead CSV Column Mapping", expanded=False):
-        lead_col_display_name = st.text_input("Lead: Display Name", value="Display Name")
+        lead_col_company = st.text_input("Lead: Company", value="Display Name")
+        lead_col_display_name = st.text_input("Lead: Contact", value="Agent")
         lead_col_email = st.text_input("Lead: Email", value="Email")
-        lead_col_company = st.text_input("Lead: Company", value="Company")
         lead_col_created_on = st.text_input("Lead: Created on", value="Created on")
         lead_col_phone = st.text_input("Lead: Phone", value="Phone")
         lead_col_country = st.text_input("Lead: Country", value="Country")
@@ -287,16 +287,26 @@ with st.expander("📋 Preview uploaded lead CSV", expanded=False):
 # Build leads list from CSV rows
 leads = []
 for _, row in lead_df.iterrows():
-    email_raw = str(row.get(lead_col_email, "") or "").strip().lower()
+    email_val = row.get(lead_col_email, "")
+    email_raw = "" if pd.isna(email_val) else str(email_val).strip().lower()
     # Clean email — extract valid email if there's extra text
     email_match = re.search(r'[\w.+-]+@[\w.-]+\.\w+', email_raw)
     email = email_match.group(0) if email_match else ""
     
-    company = str(row.get(lead_col_company, "") or "").strip()
-    contact = str(row.get(lead_col_display_name, "") or "").strip()
-    create_date = str(row.get(lead_col_created_on, "") or "").strip()
-    phone = str(row.get(lead_col_phone, "") or "").strip()
-    country = str(row.get(lead_col_country, "") or "").strip()
+    company_val = row.get(lead_col_company, "")
+    company = "" if pd.isna(company_val) else str(company_val).strip()
+    
+    contact_val = row.get(lead_col_display_name, "")
+    contact = "" if pd.isna(contact_val) else str(contact_val).strip()
+    
+    create_date_val = row.get(lead_col_created_on, "")
+    create_date = "" if pd.isna(create_date_val) else str(create_date_val).strip()
+    
+    phone_val = row.get(lead_col_phone, "")
+    phone = "" if pd.isna(phone_val) else str(phone_val).strip()
+    
+    country_val = row.get(lead_col_country, "")
+    country = "" if pd.isna(country_val) else str(country_val).strip()
     
     # Skip rows with no email AND no company
     if not email and not company:
@@ -414,6 +424,39 @@ with k4:
 st.markdown("<br>", unsafe_allow_html=True)
 st.dataframe(display_summary, use_container_width=True, hide_index=True)
 
+# ── Booking Breakdown ───────────────────────
+st.markdown("---")
+st.subheader("📋 Booking Breakdown")
+
+breakdown_rows = []
+for row in summary_rows:
+    if row["Reservations"] > 0:
+        all_matched = row["_all_matched"]
+        for _, match_row in all_matched.iterrows():
+            breakdown_rows.append({
+                "Lead No.": row["No."],
+                "Lead Email": row["Email"],
+                "Lead Company": row["Company"],
+                "Lead Status": row["Status"],
+                "Reservation No": match_row.get(col_res_no, "—"),
+                "Company (VAT)": match_row.get(col_company, "—"),
+                "Hotel Name": match_row.get(col_hotel, "—"),
+                "City": match_row.get(col_city, "—"),
+                "Guest Email": match_row.get(col_guest_email, "—"),
+                "Company Email (VAT)": match_row.get(col_company_email, "—"),
+                "Create Date": match_row.get(col_create_date, "—"),
+                "Checkin": match_row.get(col_checkin, "—"),
+                "Room Night": match_row.get(col_room_night, "—"),
+                "Revenue": match_row.get(col_revenue, "—"),
+                "Booking Type": match_row.get(col_booking_type, "—")
+            })
+
+if breakdown_rows:
+    breakdown_df = pd.DataFrame(breakdown_rows)
+    st.dataframe(breakdown_df, use_container_width=True, hide_index=True)
+else:
+    st.info("No bookings found for any leads.")
+
 # ── Detail per lead ─────────────────────────
 st.markdown("---")
 st.subheader("🔎 Lead Details")
@@ -476,10 +519,25 @@ for row in summary_rows:
 
 # ── Export all ──────────────────────────────
 st.markdown("---")
-export_summary = display_summary.to_csv(index=False).encode("utf-8-sig")
-st.download_button(
-    "⬇️ Export Summary (CSV)",
-    data=export_summary,
-    file_name="lead_check_summary.csv",
-    mime="text/csv",
-)
+col_exp1, col_exp2 = st.columns(2)
+
+with col_exp1:
+    export_summary = display_summary.to_csv(index=False).encode("utf-8-sig")
+    st.download_button(
+        "⬇️ Export Summary (CSV)",
+        data=export_summary,
+        file_name="lead_check_summary.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+
+with col_exp2:
+    if 'breakdown_df' in locals() and not breakdown_df.empty:
+        export_breakdown = breakdown_df.to_csv(index=False).encode("utf-8-sig")
+        st.download_button(
+            "⬇️ Export Booking Breakdown (CSV)",
+            data=export_breakdown,
+            file_name="booking_breakdown.csv",
+            mime="text/csv",
+            use_container_width=True
+        )

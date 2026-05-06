@@ -422,6 +422,34 @@ with k4:
 st.markdown("<br>", unsafe_allow_html=True)
 st.dataframe(display_summary, use_container_width=True, hide_index=True)
 
+# ── Breakdown by Booking ────────────────────
+st.markdown("---")
+st.subheader("📋 Booking Breakdown")
+
+breakdown_dfs = []
+for row in summary_rows:
+    if row["Reservations"] > 0:
+        matched = row["_all_matched"].copy()
+        matched["Lead No."] = row["No."]
+        matched["Lead Email"] = row["Email"]
+        matched["Lead Company"] = row["Company"]
+        matched["Lead Status"] = row["Status"]
+        breakdown_dfs.append(matched)
+
+if breakdown_dfs:
+    breakdown_df = pd.concat(breakdown_dfs, ignore_index=True)
+    lead_cols = ["Lead No.", "Lead Email", "Lead Company", "Lead Status"]
+    matched_cols = [c for c in display_cols_list if c in breakdown_df.columns]
+    breakdown_df = breakdown_df[lead_cols + matched_cols]
+    
+    # Drop duplicates by Reservation No if you want to avoid double counting
+    breakdown_df = breakdown_df.drop_duplicates(subset=[col_res_no], keep="first")
+    
+    st.dataframe(breakdown_df, use_container_width=True, hide_index=True)
+else:
+    breakdown_df = pd.DataFrame()
+    st.info("No bookings found across all leads.")
+
 # ── Detail per lead ─────────────────────────
 st.markdown("---")
 st.subheader("🔎 Lead Details")
@@ -484,10 +512,21 @@ for row in summary_rows:
 
 # ── Export all ──────────────────────────────
 st.markdown("---")
-export_summary = display_summary.to_csv(index=False).encode("utf-8-sig")
-st.download_button(
-    "⬇️ Export Summary (CSV)",
-    data=export_summary,
-    file_name="lead_check_summary.csv",
-    mime="text/csv",
-)
+col_exp1, col_exp2 = st.columns(2)
+with col_exp1:
+    export_summary = display_summary.to_csv(index=False).encode("utf-8-sig")
+    st.download_button(
+        "⬇️ Export Summary (CSV)",
+        data=export_summary,
+        file_name="lead_check_summary.csv",
+        mime="text/csv",
+    )
+with col_exp2:
+    if 'breakdown_df' in locals() and not breakdown_df.empty:
+        export_breakdown = breakdown_df.to_csv(index=False).encode("utf-8-sig")
+        st.download_button(
+            "⬇️ Export Booking Breakdown (CSV)",
+            data=export_breakdown,
+            file_name="lead_booking_breakdown.csv",
+            mime="text/csv",
+        )

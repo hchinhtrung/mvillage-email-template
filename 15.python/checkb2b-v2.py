@@ -120,9 +120,11 @@ def search_reservations(res_df: pd.DataFrame, parsed: dict,
     Search reservation DB for matches.
     Returns dict with match details.
     """
-    email = parsed["email"].lower().strip()
-    domain = extract_domain(email)
-    company = parsed["company"].strip()
+    email = parsed.get("email", "").lower().strip()
+    domain = parsed.get("domain", "").lower().strip()
+    if not domain and email:
+        domain = extract_domain(email)
+    company = parsed.get("company", "").strip()
     
     matches = {"email": pd.DataFrame(), "domain": pd.DataFrame(), "company": pd.DataFrame()}
     
@@ -212,6 +214,7 @@ with st.sidebar:
 
     with st.expander("Tab 2: Rate Plan Column Mapping", expanded=False):
         rp_col_company = st.text_input("Rate Plan: Company", value="List company")
+        rp_col_domain = st.text_input("Rate Plan: Domain Email", value="Domain email")
         rp_col_added_date = st.text_input("Rate Plan: Added Date", value="added date - rate plan")
     
     fuzzy_threshold = st.slider("Fuzzy match threshold (%)", 60, 100, 80)
@@ -226,6 +229,7 @@ def render_checker_ui(
     col_map_company,
     col_map_date,
     col_map_email=None,
+    col_map_domain=None,
     col_map_contact=None,
     col_map_phone=None,
     col_map_country=None,
@@ -259,6 +263,14 @@ def render_checker_ui(
             email_raw = "" if pd.isna(email_val) else str(email_val).strip().lower()
             email_match = re.search(r'[\w.+-]+@[\w.-]+\.\w+', email_raw)
             email = email_match.group(0) if email_match else ""
+            
+        domain = ""
+        if col_map_domain:
+            domain_val = row.get(col_map_domain, "")
+            domain_raw = "" if pd.isna(domain_val) else str(domain_val).strip().lower()
+            domain_raw = domain_raw.replace("@", "")
+            if domain_raw and domain_raw not in {"gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "live.com", "ymail.com", "protonmail.com", "noemail.mvillage.vn", "mail.com", "aol.com", "qq.com", "163.com", "126.com", "yeah.net"}:
+                domain = domain_raw
         
         company_val = row.get(col_map_company, "")
         company = "" if pd.isna(company_val) else str(company_val).strip()
@@ -281,11 +293,13 @@ def render_checker_ui(
             country_val = row.get(col_map_country, "")
             country = "" if pd.isna(country_val) else str(country_val).strip()
         
-        # Skip rows with no email AND no company
-        if not email and not company:
+        if not domain and email:
+            domain = extract_domain(email)
+
+        # Skip rows with no email AND no domain AND no company
+        if not email and not domain and not company:
             continue
         
-        domain = extract_domain(email)
         leads.append({
             "email": email,
             "domain": domain,
@@ -570,6 +584,7 @@ with tab1:
         col_map_company=lead_col_company,
         col_map_date=lead_col_created_on,
         col_map_email=lead_col_email,
+        col_map_domain=None,
         col_map_contact=lead_col_display_name,
         col_map_phone=lead_col_phone,
         col_map_country=lead_col_country,
@@ -585,6 +600,7 @@ with tab2:
         col_map_company=rp_col_company,
         col_map_date=rp_col_added_date,
         col_map_email=None,
+        col_map_domain=rp_col_domain,
         col_map_contact=None,
         col_map_phone=None,
         col_map_country=None,

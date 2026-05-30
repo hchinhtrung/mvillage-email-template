@@ -1,24 +1,15 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
-M Village ĐN Centre,Superior Cozy Room for 2 People,886.707₫,1.262.631,"1,254,443",1.298.597,"1,221,696","1,399,471"
-M Village Living Nguyen Van Huong,Superior - 1 Queen Bed,845.633₫,"926,764",858.092,"936,784","866,107","916,745"
-President Maison,Deluxe - 1 King Bed,"3,490,741","3,490,741","3,462,667","3,116,710","3,330,167","3,050,277"
-M Village Beachfront,Deluxe City View,2.467.677,"2,910,880","2,810,523","2,792,132","2,794,517","₫ 2,165,700"
-M Village Express 46 Thao Dien,Standard Room (Non View),"995,992",997.583,"964,461",946.019,"873,433","945,069"
-M Village Living Vo Thi Sau,Standard Studio,"887,739","1,078,235","998,707",1.089.837,"1,007,989",1.212.875
-MV Thi sách,Superior with Bathtub,"3,422,134","2,109,347","2,352,734","2,109,347","2,109,347","2,109,347"
-M Village Living Tran Nao,Studio Room,"₫ 748,331","1,001,940",896.473,"896,473","1,001,940",1.039.212
-M Village ĐN Heritage,Standard Room,"₫ 850,026","1,365,802",850.026₫,"₫ 850,026","1,365,802","1,260,335"
-M Village Express Dien Bien Phu Q3,Standard Room without Window,"₫ 723,950","1,001,940","896,473","896,473","896,473","1,212,875"
-Savvy by M Village Hai Bà Trưng,"Phòng cao cấp Giường Lớn, Hướng Thành Phố (Superior King Bed, City View)",2.215.745,2.013.252,1.931.872,1.982.196,"Giá Gốc: 783 HK$783 HK$-19%632HK$Mỗi đêm, chưa có thuế","808HK$Mỗi đêm, chưa có thuế"
-Express NBK,Deluxe Room,"₫ 838,166","935,139","855,880","₫ 838,166","863,474","934,665"
-Grand Signature by M Village Hoi An-Phòng Premier Hướng Vườn 2 Giường Đơn (Premier Garden View Twin Room),Phòng Premier Hướng Vườn 2 Giường Đơn (Premier Garden View Twin Room),NA,NA,NA,NA,NA,NA
-Living Kỳ Đồng,Superior Room with Window,1.054.674,"1,160,141","1,160,141","1,160,141","1,160,141","1,160,141"
-M Village Hotel Nguyễn Du,Superior Room with Window - No View,"2,454,145","2,125,573","1,809,171","1,809,171","1,809,171",1.809.171
-Living 59 Thảo Điền,Standard Studio,"1,001,940","1,054,674","1,054,674","1,054,674",1.054.674,"1,054,674"
-Grand Signature by M Village Hoi An-Phòng Đẳng Cấp Loại Sang Hướng Vườn (Premier Deluxe Garden View),Phòng Đẳng Cấp Loại Sang Hướng Vườn (Premier Deluxe Garden View),NA,NA,NA,NA,NA,NA
-Signature by M Village HBT,Studio Room City View,"₫ 2,201,063","2,897,898","3,311,539","3,306,947","3,306,947","3,622,080"
-Grand Signature by M Village Hoi An-Phòng Duplex Có Ban Công Riêng (Duplex Room with Private Balcony),Phòng Duplex Có Ban Công Riêng (Duplex Room with Private Balcony),2.886.498,"2,739,330",2.365.785,"2,540,036","2,739,330",3.084.765
-M Village Kim Mã,Superior No Window,NA,NA,NA,NA,NA,NA
-Grand Signature by M Village Hoi An-Phòng Grand Suite giường King (Grand Suite King),Phòng Grand Suite giường King (Grand Suite King),"3,917,706","4,011,078","3,270,547","3,711,453","3,711,453","4,309,609"
-Grand Signature by M Village Hoi An-Deluxe Garden View Twin Room,Deluxe Garden View Twin Room,NA,NA,NA,NA,NA,NA
-M Village Hotel Thợ Nhuộm,Hot TN - Trip com bao gồm 2 pax ăn sáng + thuế Superior,NA,NA,NA,NA,NA,NA
+Le Récit - Suite Deluxe (Deluxe Suite),Suite Deluxe (Deluxe Suite),1.656.260,1.669.595,1.647.193,1.974.491,1.971.685,2.028.219
+Le Récit - Phòng Deluxe 2 Giường đơn (Deluxe Twin),Phòng Deluxe 2 Giường đơn (Deluxe Twin),NA,NA,NA,NA,NA,NA
+Tui ba gang - Deluxe Plus,Deluxe Plus,1.347.247,1.347.247,1.347.247,1.347.247,1.347.247,1.347.247
+Le Récit - Căn Hộ Áp Mái Hướng Thành Phố Giường Đôi (Penthouse City View Double),Căn Hộ Áp Mái Hướng Thành Phố Giường Đôi (Penthouse City View Double),2.178.744,2.317.610,2.523.033,2.523.033,2.519.446,2.592.593
+Le Récit - Deluxe giường đôi (Deluxe Double),Deluxe giường đôi (Deluxe Double),1.375.996,1.499.118,1.499.118,1.499.118,1.499.118,1.499.118
+Le Récit - Suite dạng Căn hộ áp mái 2 Phòng ngủ (Penthouse 2 Bedroom Suite),Suite dạng Căn hộ áp mái 2 Phòng ngủ (Penthouse 2 Bedroom Suite),4.254.213,4.460.062,4.453.666,4.460.062,4.453.718,4.498.334
+Le Récit - Suite Giường Lớn (King Suite),Suite Giường Lớn (King Suite),2.743.085,2.745.325,2.741.389,2.745.325,2.745.357,2.768.301
+Le Récit - Suite Căn Hộ Áp Mái 1 Phòng Ngủ (Penthouse 1 Bedroom Suite),Suite Căn Hộ Áp Mái 1 Phòng Ngủ (Penthouse 1 Bedroom Suite),2.745.325,2.745.325,2.741.389,2.745.325,2.741.421,2.768.301
+Le Récit - Penthouse,Penthouse,4.454.966,1.924.917₫,1.924.917₫,2.523.033,2.519.446,2.592.593
+Tui ba gang - Phòng Loại Sang - 1 Giường (Deluxe Room -- 1 Bed),Phòng Loại Sang - 1 Giường (Deluxe Room -- 1 Bed),794.058₫,794.058₫,794.058₫,1.102.293,1.102.293,1.102.293
+Tui ba gang - Phòng Gia Đình Loại Sang (Deluxe Family Room),Phòng Gia Đình Loại Sang (Deluxe Family Room),1.573.196₫,1.573.196₫,2.141.036,2.144.086,1.573.196₫,2.144.086
+Tui ba gang - Phòng Trip (Trip Room),Phòng Trip (Trip Room),1.775.916,1.361.682₫,1.775.916,1.775.916,1.775.916,1.775.916
+Tui ba gang - Phòng Đẳng Cấp – 1 Giường (Premier Room - 1 Bed),Phòng Đẳng Cấp – 1 Giường (Premier Room - 1 Bed),1.592.201,1.009.084₫,1.592.201,1.592.201,1.592.201,1.592.201
+Tui ba gang - Phòng Gia đình với Ban công Riêng (Family Room with Private Balcony),Phòng Gia đình với Ban công Riêng (Family Room with Private Balcony),1.838.468₫,1.838.468₫,2.378.373,1.838.468₫,2.381.790,2.381.790

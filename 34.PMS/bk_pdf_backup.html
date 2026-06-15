@@ -1,0 +1,453 @@
+<?xml version="1.0"?>
+<t t-name="mvillage_hotel.report_template_confirm_booking">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.basic_layout">
+
+                <head>
+                    <link rel="preconnect" href="https://fonts.googleapis.com" />
+                    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+                    <link
+                        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+                        rel="stylesheet" />
+                </head>
+                <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px">
+                    <!-- Header Section -->
+                    <div style="text-align: center; padding-top: 16px">
+                        <img src="https://cdn-v2.mvillage.vn/cms/Banner_Email_1_5ec699a94c.jpg" alt=""
+                            style="width: 100%" />
+                    </div>
+
+                    <!-- Title Section -->
+
+                    <div style="text-align: center; margin: 24px;">
+                        <h4 style="color: #e24d14; margin-bottom: 0; text-align: center;">
+                            <b>Reservation Confirmation</b>
+                        </h4>
+                        <h4 style="color: #666; margin: 0; text-align: center">
+                            <b><i>Xác nhận đặt phòng</i></b>
+                        </h4>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="content">
+                        <!-- Basic Info -->
+                        <p>
+                            Date/<i style="color: #666">Ngày</i>:
+                            <span t-field="o.date_order" t-options="{'widget': 'date'}" />
+                        </p>
+                        <p>
+                            Dear/<i style="color: #666">Kính gửi</i>: Mr/Ms
+                            <t t-esc="o.tenant_id.name" />
+                        </p>
+                        <p>
+                            We are delighted that you have chosen
+                            <t t-esc="o.hotel_id.name" />, the next generation of hotel, and
+                            pleased to confirm your reservation as below./<i style="color: #666">Chúng tôi rất vui
+                                vì bạn đã chọn
+                                <t t-esc="o.hotel_id.name" /> và chúng tôi xin xác nhận đặt
+                                phòng của bạn như sau.
+                            </i>
+                        </p>
+
+                        <!-- Booking Details Table -->
+                        <table class="table table-bordered" style="border: 2px solid black;" width="100%"
+                            name="invoice_line_table">
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Booking Number
+                                    <br />
+                                    <i style="color: #666;">Mã đặt phòng</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.reservation_no" />
+                                </td>
+                            </tr>
+                            <tr t-if="not o.is_b2b">
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Company name
+                                    <br />
+                                    <i style="color: #666;">Tên công ty</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="company_vat" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Name of the booker
+                                    <br />
+                                    <i style="color: #666;">Tên khách đặt</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.tenant_id.name" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Name of the guest
+                                    <br />
+                                    <i style="color: #666;">Tên khách ở</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.reservation_line.tenant_id.name" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Number of the guest
+                                    <br />
+                                    <i style="color: #666;">Số lượng khách</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.adults + o.childs" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Number of room
+                                    <br />
+                                    <i style="color: #666;">Số lượng phòng</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="len(o.reservation_line)" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Room Category
+                                    <br />
+                                    <i style="color: #666;">Loại phòng</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.reservation_line.original_room_type.cat_id.name" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Arrival date
+                                    <br />
+                                    <i style="color: #666;">Ngày nhận phòng</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-if="o.expected_checkin_time">
+                                        <t t-esc="o.expected_checkin_time.strftime('%d/%m/%Y')" />
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Departure date
+                                    <br />
+                                    <i style="color: #666;">Ngày trả phòng</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-if="o.expected_checkout_time">
+                                        <t t-if="o.expected_checkout_time">
+                                            <t t-esc="o.expected_checkout_time.strftime('%d/%m/%Y')" />
+                                        </t>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Number of nights
+                                    <br />
+                                    <i style="color: #666;">Số lượng đêm ở</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="date_range_count" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Total
+                                    <br />
+                                    <i style="color: #666;">Tổng số tiền</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <span t-field="o.total_cost"
+                                        t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Paid
+                                    <br />
+                                    <i style="color: #666;">Đã thanh toán</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <span t-field="o.total_advance"
+                                        t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Payment Method
+                                    <br />
+                                    <i style="color: #666;">Hình thức thanh toán</i>
+                                </td>
+                                <td>
+                                    <span
+                                        t-esc="o.account_move_ids.filtered(lambda x: x.state != 'cancel') and ', '.join(o.account_move_ids.filtered(lambda x: x.state != 'cancel').mapped('journal_id.name')) or ''" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Remaining
+                                    <br />
+                                    <i style="color: #666;">Tiền còn lại cần thanh toán</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <span t-field="o.remaining_amt"
+                                        t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Special requirement
+                                    <br />
+                                    <i style="color: #666;">Yêu cầu đặc biệt</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.note" />
+                                </td>
+                            </tr>
+
+                            <tr t-if="o.is_b2b">
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Company name
+                                    <br />
+                                    <i style="color: #666;">Tên công ty</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.company_vat_id.name" />
+                                </td>
+                            </tr>
+                            <!-- Company info B2B -->
+                            <tr t-if="o.is_b2b">
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Company VAT
+                                    <br />
+                                    <i style="color: #666;">Mã số thuế</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.code_vat" />
+                                </td>
+                            </tr>
+
+                            <tr t-if="o.is_b2b">
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Company Address
+                                    <br />
+                                    <i style="color: #666;">Địa chỉ công ty</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.address_vat" />
+                                </td>
+                            </tr>
+
+                            <tr t-if="o.is_b2b">
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 40%;padding-top: 0;padding-bottom: 0;">
+                                    Receiver Email
+                                    <br />
+                                    <i style="color: #666;">Email nhận hóa đơn</i>
+                                </td>
+                                <td
+                                    style="border: 2px solid black;height: 10px;width: 60%;padding-top: 0;padding-bottom: 0;">
+                                    <t t-esc="o.email_vat" />
+                                </td>
+                            </tr>
+
+                        </table>
+
+                        <!-- VAT Invoice Section -->
+                        <div class="vat-section">
+                            <h3 style="color: #e24d14;font-size: 20px">Request for a VAT invoice/Yêu cầu xuất hoá đơn
+                                VAT:</h3>
+
+                            <!-- b2b thì show cục này -->
+                            <div style="margin-bottom: 16px; font-weight: 500" t-if="o.is_b2b">
+                                To request receipt of a VAT invoice, please reach out to booking@mvillage.vn before the
+                                check-out date.
+                                <br />
+                                <i style="margin-top: 0; color: #666; font-weight: 400;">
+                                    Trong trường hợp cần xuất hóa đơn VAT, vui lòng gửi thông tin đến
+                                    booking@mvillage.vn trước thời gian trả phòng.
+                                </i>
+                            </div>
+
+                            <!-- khác b2b-->
+                             <div style="margin-bottom: 16px; font-weight: 500" t-if="not o.is_b2b">
+                                To request receipt of a VAT invoice, please reach out to booking@mvillage.vn before the
+                                check-out date.
+                                <br />
+                                <i style="margin-top: 0; color: #666; font-weight: 400;">
+                                    Trong trường hợp cần xuất hóa đơn VAT, vui lòng gửi thông tin đến
+                                    booking@mvillage.vn trước thời gian trả phòng.
+                                </i>
+                                <ul>
+                                    <li>Your company name/<i style="color: #666">Tên công ty</i>
+                                    </li>
+                                    <li>Company address/<i style="color: #666">Địa chỉ công ty</i>
+                                    </li>
+                                    <li>Tax Identification Number/<i style="color: #666">Mã số thuế</i>
+                                    </li>
+                                </ul>
+                            </div>
+
+
+                            <p>
+                                <b>Notice/Lưu ý</b>: VAT Invoice issuance is only supported if
+                                customers make payments directly to M Village/<i style="color: #666">Chỉ hỗ trợ
+                                    xuất hoá đơn với trường hợp khách hàng thanh toán trực tiếp với M
+                                    Village</i>
+                            </p>
+                        </div>
+
+                        <!-- App Download -->
+                        <div class="app-download">
+                            <div style="text-align: center; padding-top: 16px">
+                                <img src="https://cdn-v2.mvillage.vn/cms/CTA_BANNER_9770f98de5.png" alt=""
+                                    style="width: 100%" />
+                                <p style="color: #e24d14;">Download here/Tải app ngay:
+                                    <a href="https://apps.apple.com/vn/app/m-village/id6458690802">App Store</a> / <a
+                                        href="https://play.google.com/store/apps/details?id=com.mvillage.app">CH Play</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Check-in/Check-out Policies -->
+                        <div class="policies-section">
+                            <h3 style="color: #e24d14; font-size: 20px;">
+                                Arrival và Departure Policy/Quy định nhận và trả phòng:
+                            </h3>
+                            <ul>
+                                <li>Check-in/<i style="color: #666">Nhận phòng</i>: 2pm/<i style="color: #666">14h</i>
+                                </li>
+                                <li>Check-out/<i style="color: #666">Trả phòng</i>: 12pm/<i style="color: #666">12h</i>
+                                </li>
+                                <li>
+                                    Early check-in is subject to availability./<i style="color: #666">Việc nhận
+                                        phòng sớm tùy theo tình
+                                        trạng phòng trống tại M Village</i>
+                                </li>
+                                <li>All extras or incidental charges will be charged at the time of check-out/<i
+                                        style="color: #666">Mọi
+                                        chi phí phát sinh trong thời gian lưu trú, quý khách vui lòng thanh toán khi
+                                        trả phòng</i>
+                                </li>
+                                <li>
+                                    Infants under 2 years old may share their parent's room at no extra charge/<i
+                                        style="color: #666">Trẻ
+                                        em dưới 2 tuổi khi đi cùng bố mẹ không cần trả thêm phí</i>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Deposit Policy -->
+                        <div class="deposit-section">
+                            <h3 style="color: #e24d14; font-size: 20px;">Deposit Policy/Chính sách Đặt cọc: </h3>
+                            <ul>
+                                <li>A one-night deposit is required to secure your reservation, the remaining balance is due at check-in./<i style="color: #666;">Để đảm bảo giữ chỗ, quý khách vui lòng thanh toán trước một khoản đặt cọc tương đương với giá trị của một đêm lưu trú. Phần chi phí còn lại sẽ được thanh toán khi nhận phòng.</i></li>
+                                <li>Room Change, Refund, and Cancellation Policy/<i style="color: #666;">Chính sách
+                                        đổi phòng, hoàn tiền và
+                                        huỷ phòng</i></li>
+                                <li>For more details, please refer to this link: <a
+                                        href="https://mvillage.vn/en/cancel-policy/">Click here</a>/<i
+                                        style="color: #666;">Quý khách vui lòng tham khảo chi tiết thông
+                                        tin tại đây: <a href="https://mvillage.vn/vi/chinh-sach-huy-phong/">Bấm vào
+                                            đây</a></i></li>
+                            </ul>
+                        </div>
+
+                        <!-- Welcome Message -->
+                        <div class="welcome-section">
+                            <p style="margin-bottom: 0;">We look forward to welcoming you at
+                                <t t-esc="o.hotel_id.name" />/
+                                <i style="color: #666; margin-top: 0;">Chúng tôi rất mong đợi chuyến ghé thăm của
+                                    Anh/Chị tại
+                                    <t t-esc="o.hotel_id.name" />
+                                </i>
+                            </p>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div style="margin-top: 24pt">
+                            Should you have any queries, please contact us/<i style="color: #666">Nếu quý khách cần
+                                hỗ trợ, vui lòng liên hệ M Village.</i>
+                        </div>
+
+                        <!-- Hotel Details -->
+                        <div style="text-align: center; margin: 24pt 0;">
+                            <b style="margin: 0;">
+                                <t t-esc="o.hotel_id.name" />
+                            </b>
+                            <p style="margin: 0;">Address:
+                                <t t-esc="o.hotel_id.street" />,
+                                <t t-esc="o.hotel_id.city" />,
+                                <t t-esc="o.hotel_id.state_id.name" />
+                            </p>
+                            <p style="margin: 0;">Hotline:
+                                <t t-esc="o.hotel_id.phone" />
+                            </p>
+                        </div>
+
+                        <!-- Bottom Image -->
+                        <div class="bottom-image" style="margin-top: 20pt">
+                            <div style="text-align: center; padding-top: 16px">
+                                <img src="https://cdn-v2.mvillage.vn/cms/Banner_Email_b41bcbab56.jpg" alt=""
+                                    style="width: 100%" />
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="footer" style="font-family: be vietnam pro, sans-serif; font-size: 12px;">
+                            <p style="color: #666">
+                                <b style="color: #e24d14">Note: </b>You are not authorized to
+                                upload this format to any online/offline medium without the
+                                permission of mvillage.vn
+                            </p>
+                        </div>
+                    </div> <!-- End of content div -->
+                </div> <!-- End of main-container div -->
+            </t> <!-- End of t-call web.basic_layout -->
+        </t> <!-- End of t-foreach -->
+    </t> <!-- End of t-call web.html_container -->
+</t> <!-- End of t-name -->

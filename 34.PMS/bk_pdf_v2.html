@@ -358,9 +358,12 @@
                                 Arrival và Departure Policy/Quy định nhận và trả phòng:
                             </h3>
                             <ul>
-                                <li>Check-in/<i style="color: #666">Nhận phòng</i>: 2pm/<i style="color: #666">14h</i>
+                                <t t-set="checkout_cfg" t-value="o.env['checkout.configuration'].sudo().search([('hotel_id','=',o.hotel_id.id)], limit=1)" />
+                                <t t-set="ci_h" t-value="int(checkout_cfg.checkin_time) if (checkout_cfg and checkout_cfg.checkin_time) else 14" />
+                                <t t-set="co_h" t-value="int(checkout_cfg.time) if (checkout_cfg and checkout_cfg.time) else 12" />
+                                <li>Check-in/<i style="color: #666">Nhận phòng</i>: <t t-esc="(ci_h % 12) or 12" /><t t-esc="'am' if ci_h &lt; 12 else 'pm'" />/<i style="color: #666"><t t-esc="ci_h" />h</i>
                                 </li>
-                                <li>Check-out/<i style="color: #666">Trả phòng</i>: 12pm/<i style="color: #666">12h</i>
+                                <li>Check-out/<i style="color: #666">Trả phòng</i>: <t t-esc="(co_h % 12) or 12" /><t t-esc="'am' if co_h &lt; 12 else 'pm'" />/<i style="color: #666"><t t-esc="co_h" />h</i>
                                 </li>
                                 <li>
                                     Early check-in is subject to availability./<i style="color: #666">Việc nhận

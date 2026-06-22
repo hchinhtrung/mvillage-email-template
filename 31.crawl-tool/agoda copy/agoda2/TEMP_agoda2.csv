@@ -1,27 +1,20 @@
 hotel_name,room_type,price_w1,price_w2,price_w3,price_w4,price_w5,price_w6
-The mist boutique - Executive Suite Mountain View,Executive Suite Mountain View,"2,281,592","2,809,806","2,027,335","2,522,929","2,548,413","2,522,929"
-The mist boutique - Suite Executive (Executive Suite),Suite Executive (Executive Suite),"2,004,145","2,001,170","2,027,335","2,614,961","2,641,270","₫ 1,956,064"
-The mist boutique - Phòng Đôi Loại Sang (Deluxe Double Room),Phòng Đôi Loại Sang (Deluxe Double Room),1.786.885,"1,611,589","1,178,458","1,215,500","₫ 1,020,126","1,227,778"
-The mist boutique - Suite đặc biệt (Signature Suite),Suite đặc biệt (Signature Suite),"2,152,573","2,001,170","2,027,335","2,927,628","2,955,508","2,927,628"
-The mist boutique - Phòng Deluxe hướng núi (Deluxe Mountain View),Phòng Deluxe hướng núi (Deluxe Mountain View),"1,676,286","1,906,292","2,053,594",2.093.928,2.115.079,2.093.928
-The mist boutique - Phòng Đôi (Double Room),Phòng Đôi (Double Room),"₫ 1,020,126",1.020.126₫,"1,178,458","1,215,500","₫ 1,020,126","₫ 1,020,126"
-The mist boutique - Deluxe hướng thành phố (Deluxe City View),Deluxe hướng thành phố (Deluxe City View),"₫ 1,256,029","1,562,785",1.578.571,"1,562,785","₫ 1,256,029","1,562,785"
-The mist boutique - Phòng 3 người Có Ban Công (Triple Balcony),Phòng 3 người Có Ban Công (Triple Balcony),"1,970,571","₫ 1,761,379",2.156.349,"2,134,786","2,156,349","2,134,786"
-The mist boutique - Phòng Suite Hướng Thành Phố (Suite City View Room),Phòng Suite Hướng Thành Phố (Suite City View Room),"₫ 1,435,368",1.910.071,"1,929,365","1,910,071","1,929,365",1.910.071
-The mist boutique - Phòng Suite Hướng núi (Suite Mountain View),Phòng Suite Hướng núi (Suite Mountain View),"1,870,939","2,522,929","2,548,413","2,522,929","2,548,413",2.522.929
-Valley - Deluxe Double Room with Balcony,Deluxe Double Room with Balcony,"3,480,423","3,883,951","3,409,806","3,829,474","3,986,850","3,829,474"
-Valley - Suite Room,Suite Room,"2,774,250","2,684,890","2,514,021","2,488,881","2,825,605","2,767,379"
-Valley - Deluxe Queen Room,Deluxe Queen Room,SOLD OUT,NA,NA,NA,NA,NA
-Valley - Deluxe Room,Deluxe Room,"₫ 1,054,766","1,415,246","₫ 1,054,766","1,220,039","1,610,453","1,626,720"
-Valley - Deluxe Studio,Deluxe Studio,"2,219,400","2,622,928","2,269,841","2,360,635","1,940,966","2,518,011"
-Valley - Deluxe City View,Deluxe City View,"₫ 1,235,421","₫ 1,235,421","1,478,836","1,464,048","1,854,460","₫ 1,235,421"
-Valley - Grand Deluxe City View Room,Grand Deluxe City View Room,"1,851,435","2,044,946","1,789,554","1,873,192","1,854,460","2,204,562"
-The mist boutique - Deluxe 3 người (Triple Deluxe),Deluxe 3 người (Triple Deluxe),"1,847,619",1.536.657₫,"₫ 1,536,657","₫ 1,536,657","₫ 1,536,657",2.001.588
-Valley - Junior Suite with Balcony,Junior Suite with Balcony,SOLD OUT,NA,NA,NA,NA,NA
-Valley - King Room,King Room,"3,984,832","4,388,360","4,186,596","4,354,060","3,934,392","4,354,060"
-Valley - Deluxe Double Room,Deluxe Double Room,"4,136,155","3,883,951","3,682,187","3,409,806","3,409,806","3,829,474"
-Valley - Double Room,Double Room,"4,136,155","3,883,951","3,682,187","3,829,474","3,986,850","3,829,474"
-Valley - Grand Deluxe,Grand Deluxe,"2,297,079","2,267,549","2,177,302","2,070,370","₫ 1,579,847","2,218,254"
-Valley - Grand Suite,Grand Suite,"₫ 2,381,829","4,209,693","3,985,705","₫ 2,381,829","₫ 2,381,829","4,016,236"
-Valley - Deluxe King Room,Deluxe King Room,"3,984,832","4,388,360","4,186,596","3,934,392","4,354,060","4,354,060"
-Valley - Suite with Valley View,Suite with Valley View,"4,213,903","3,726,552","3,502,371","3,502,371","3,366,325","2,944,829"
+Moire Hội An -Phòng Loại Sang 1 Giường Lớn Hướng Sông (1 King Deluxe River View) - Phòng Loại Sang 1 Giường Lớn Hướng Sông (1 King Deluxe River View),Phòng Loại Sang 1 Giường Lớn Hướng Sông (1 King Deluxe River View),6.973.684,6.973.684,8.026.316,8.078.947,6.184.211,NA
+Moire Hội An -Moire Pool Villa - Moire Pool Villa,Moire Pool Villa,22.631.579,22.631.579,23.684.211,23.736.842,21.842.105,20.399.123₫
+Moire Hội An -Phòng Deluxe có 2 giường đơn (2 Twin Deluxe) - Phòng Deluxe có 2 giường đơn (2 Twin Deluxe),Phòng Deluxe có 2 giường đơn (2 Twin Deluxe),5.526.316,5.526.316,6.578.947,6.631.579,4.736.842,NA
+Moire Hội An -Phòng Deluxe có giường King (1 King Deluxe) - Phòng Deluxe có giường King (1 King Deluxe),Phòng Deluxe có giường King (1 King Deluxe),5.526.316,5.526.316,6.578.947,6.631.579,4.736.842,NA
+Moire Hội An -2 Twin Deluxe River View - 2 Twin Deluxe River View,2 Twin Deluxe River View,4.993.640₫,6.842.105,7.894.737,7.947.368,6.052.632,6.578.947
+Moire Hội An -1 King Suite River View - 1 King Suite River View,1 King Suite River View,12.631.579,12.631.579,13.157.895,13.736.842,NA,NA
+Moire Hội An -Phòng Loại Sang (Deluxe Room) - Phòng Loại Sang (Deluxe Room),Phòng Loại Sang (Deluxe Room),NA,3.301.316₫,NA,NA,NA,NA
+Moire Hội An -1 King Premium River View - 1 King Premium River View,1 King Premium River View,8.157.895,8.157.895,NA,NA,NA,NA
+Moire Hội An -Phòng Deluxe có giường King - Phù hợp cho người khuyết tật (1 King Deluxe Accessible) - Phòng Deluxe có giường King - Phù hợp cho người khuyết tật (1 King Deluxe Accessible),Phòng Deluxe có giường King - Phù hợp cho người khuyết tật (1 King Deluxe Accessible),NA,NA,NA,NA,NA,NA
+Moire Hội An -1 King Premium Terrace Access - 1 King Premium Terrace Access,1 King Premium Terrace Access,NA,NA,NA,NA,NA,NA
+Almanty - Suite Tổng thống (Presidental Suite) - Suite Tổng thống (Presidental Suite),Suite Tổng thống (Presidental Suite),14.231.690,14.321.669,14.341.316,14.321.669,14.341.316,14.321.669
+Almanty - Phòng Đôi hoặc Hai Giường Đơn Cao Cấp Hướng Thị Trấn (Superior Town Double or Twin) - Phòng Đôi hoặc Hai Giường Đơn Cao Cấp Hướng Thị Trấn (Superior Town Double or Twin),Phòng Đôi hoặc Hai Giường Đơn Cao Cấp Hướng Thị Trấn (Superior Town Double or Twin),2.847.956,2.911.817,2.911.817,2.911.817,2.911.817,2.911.817
+Almanty - Phòng Đôi hoặc Hai Giường Đơn Cao Cấp Hướng Bể Bơi (Superior Pool Double or Twin) - Phòng Đôi hoặc Hai Giường Đơn Cao Cấp Hướng Bể Bơi (Superior Pool Double or Twin),Phòng Đôi hoặc Hai Giường Đơn Cao Cấp Hướng Bể Bơi (Superior Pool Double or Twin),3.121.581,3.191.799,3.191.799,3.191.799,3.191.799,3.191.799
+Almanty - Suite Giường Lớn hoặc Hai Giường Đơn Thương Gia (Executive Suite King or Twin) - Suite Giường Lớn hoặc Hai Giường Đơn Thương Gia (Executive Suite King or Twin),Suite Giường Lớn hoặc Hai Giường Đơn Thương Gia (Executive Suite King or Twin),4.653.423,4.683.271,4.689.640,4.935.088₫,4.689.640,4.683.271
+Almanty - Phòng Đôi hoặc Hai Giường Đơn có Gác Xép (Loft Room Double or Twin) - Phòng Đôi hoặc Hai Giường Đơn có Gác Xép (Loft Room Double or Twin),Phòng Đôi hoặc Hai Giường Đơn có Gác Xép (Loft Room Double or Twin),2.407.848,2.407.848,2.407.848,2.407.848,2.407.848,2.407.848
+Almanty - Phòng Đôi hoặc Hai Giường Đơn Loại Sang Hướng Thị Trấn (Deluxe Town Double or Twin) - Phòng Đôi hoặc Hai Giường Đơn Loại Sang Hướng Thị Trấn (Deluxe Town Double or Twin),Phòng Đôi hoặc Hai Giường Đơn Loại Sang Hướng Thị Trấn (Deluxe Town Double or Twin),3.395.403,3.016.009₫,3.471.781,3.417.096,3.016.009₫,3.417.096
+Almanty - Suite có Bồn Sục Trên Tầng Thượng (Rooftop Jacuzzi Suite) - Suite có Bồn Sục Trên Tầng Thượng (Rooftop Jacuzzi Suite),Suite có Bồn Sục Trên Tầng Thượng (Rooftop Jacuzzi Suite),4.215.992,4.243.031,4.248.800,4.243.031,4.248.800,4.243.031
+Almanty - Junior Suite - Junior Suite,Junior Suite,4.434.747,4.463.191,4.469.260,4.463.191,4.469.260,4.463.191
+Almanty - Phòng Đôi hoặc Hai Giường Đơn Loại Sang Hướng Bể Bơi (Deluxe Pool Double or Twin) - Phòng Đôi hoặc Hai Giường Đơn Loại Sang Hướng Bể Bơi (Deluxe Pool Double or Twin),Phòng Đôi hoặc Hai Giường Đơn Loại Sang Hướng Bể Bơi (Deluxe Pool Double or Twin),3.669.227,3.153.289₫,3.697.604,3.692.584,3.697.562,3.692.584

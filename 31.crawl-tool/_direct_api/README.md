@@ -28,10 +28,11 @@ playwright install chromium
 
 ### Gate 0 — Bắt 1 request room-grid thật *(make-or-break)*
 ```bash
-python agoda_direct.py capture --url "https://www.agoda.com/.../hotel/...html"
+python agoda_direct.py capture --url "https://www.agoda.com/.../hotel/...html" --room "Narra Double"
 ```
-Kỳ vọng: in ra `✅ Bắt được room-grid: POST …`, số cookie agoda > 0, lưu `_capture/capture.json`.
-Nếu `❌ KHÔNG bắt được` → bị chặn lúc warm; thử lại, đổi mạng, hoặc `HEADLESS=False`.
+Warm sẽ thử lần lượt nhiều profile (UA↔TLS khớp nhau: chrome131/124/120/116) tới khi bắt được, rồi **ghi lại profile thắng** để replay dùng đúng `impersonate` đó.
+Kỳ vọng: in ra `✅ Bắt được room-grid (profile chromeXXX): POST …`, số cookie agoda > 0, lưu `_capture/capture.json`. `--room` để sanity-check giá ngay.
+Nếu `❌ Mọi profile đều fail` → bị chặn lúc warm; thử lại, đổi mạng (4G), hoặc đặt `HEADLESS=False` trong file.
 
 ### Gate 1 — Chứng minh replay được
 ```bash
@@ -46,6 +47,7 @@ python agoda_direct.py replay
 ```bash
 python agoda_direct.py crawl --input agoda1.csv --max 5 --weeks 2
 ```
+`--input` tự dò trong cây `31.crawl-tool/` nếu không thấy ở thư mục hiện tại (vd `agoda1.csv` → `../agoda/agoda1/agoda1.csv`).
 Chế độ mặc định: **warm 1 lần/khách sạn** (1 page-load) rồi replay các tuần qua `curl_cffi`.
 In ra: % có giá, số NA/SOLD OUT, thời gian/KS. **Bar để nhân rộng:**
 - 5 KS gồm 2 KS dễ + 3 KS lớn (Marriott/Sheraton/MGallery/Vedana — vốn hay bị NA giả).

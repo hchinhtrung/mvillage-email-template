@@ -1,6 +1,8 @@
-# Agoda Direct-API Crawler — Prototype (curl_cffi)
+# Agoda Hybrid Crawler (direct-API curl_cffi + browser fallback)
 
-Hướng đi **mới** thay cho cách "mở 1 Chromium thật cho từng query" của các notebook hiện tại.
+Hướng đi **mới**: direct-API (curl_cffi) lo nhóm KS dễ cho nhanh, **browser fallback** (đúng phương pháp notebook cũ: 7 ngày/tuần + xoay fingerprint + 3 vòng retry) lo nhóm KS khó.
+
+**Mục tiêu: phủ giá chính xác nhiều nhất — coverage không bao giờ thấp hơn bản cũ.** Ô nào direct không ra giá thật (NA *hoặc* SOLD OUT nghi ngờ) đều được browser crawl lại (browser = nguồn tin cậy).
 
 ## Ý tưởng cốt lõi
 

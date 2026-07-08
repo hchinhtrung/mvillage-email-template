@@ -26,10 +26,16 @@ def save_backup_csv(all_week_prices, filename, num_weeks):
                         for i in range(1, num_weeks + 1):
                             old = str(row.get(f"price_w{i}", "NA")).strip()
                             new = str(all_week_prices[k].get(f"Price W{i}", "NA")).strip()
-                            if new in ("NA", "nan", "") and old not in ("NA", "nan", ""):
+                            # only-improve: a real price wins; SOLD OUT may replace a non-real
+                            # value; nothing (NA/SOLD OUT) ever clobbers an existing real price.
+                            if is_real(new):
+                                nr[f"price_w{i}"] = new
+                            elif new.startswith("SOLD OUT") and not is_real(old):
+                                nr[f"price_w{i}"] = new
+                            elif is_real(old) or old.startswith("SOLD OUT"):
                                 nr[f"price_w{i}"] = old
                             else:
-                                nr[f"price_w{i}"] = new if new not in ("nan", "") else "NA"
+                                nr[f"price_w{i}"] = "NA"
                         rows.append(nr)
                     else:
                         rows.append(row.to_dict())

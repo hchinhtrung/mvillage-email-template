@@ -35,14 +35,16 @@ class AdaptivePacer:
         self._lock = asyncio.Lock()
 
     async def acquire(self):
-        # Poll-based gate: robust and simple for IO-bound crawling (no Condition pitfalls).
+        # Pace first, then claim a slot. Doing the jitter sleep before incrementing keeps
+        # acquire exception-safe: a cancellation during any await never leaks the active count
+        # (increment + return happen atomically under the lock with no await between).
+        await asyncio.sleep(random.uniform(*self.jitter))
         while True:
             async with self._lock:
                 if self._active < self.limit and time.monotonic() >= self._cooldown_until:
                     self._active += 1
-                    break
+                    return
             await asyncio.sleep(0.15)
-        await asyncio.sleep(random.uniform(*self.jitter))
 
     async def release(self):
         async with self._lock:

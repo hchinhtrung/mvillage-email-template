@@ -84,6 +84,8 @@ async def _capture_on_context(adapter, ctx, hotel_url, checkin, cfg, stealth):
     url = adapter.update_url_checkin(hotel_url, checkin)
     cap = {"req": None, "resp_json": None, "checkin": checkin.strftime("%Y-%m-%d"), "xhr_urls": []}
     page = await ctx.new_page()
+    with contextlib.suppress(Exception):  # block heavy resources on either engine
+        await page.route("**/*", make_block_route(cfg))
 
     def on_request(req):
         try:
@@ -104,8 +106,15 @@ async def _capture_on_context(adapter, ctx, hotel_url, checkin, cfg, stealth):
         except Exception:
             pass
 
+    _tasks = set()
+
+    def _spawn(coro):
+        t = asyncio.create_task(coro)
+        _tasks.add(t)
+        t.add_done_callback(_tasks.discard)
+
     page.on("request", on_request)
-    page.on("response", lambda r: asyncio.create_task(on_response(r)))
+    page.on("response", lambda r: _spawn(on_response(r)))
     try:
         if stealth is not None:
             with contextlib.suppress(Exception):
@@ -196,7 +205,6 @@ async def _warm_chromium(adapter, browser, hotel_url, checkin, cfg, stealth, ver
         vp = WARM_VIEWPORTS[attempt % len(WARM_VIEWPORTS)]
         ctx = await browser.new_context(viewport={"width": vp[0], "height": vp[1]}, user_agent=ua,
                                         locale="en-GB", timezone_id="Asia/Ho_Chi_Minh")
-        await ctx.route("**/*", make_block_route(cfg))
         try:
             cap = await _capture_on_context(adapter, ctx, hotel_url, checkin, cfg, stealth)
         finally:
@@ -225,10 +233,18 @@ async def warm_capture(adapter, hotel_url, checkin, cfg, chromium=None, stealth=
     """Warm once and return a capture dict {req, resp_json, checkin, apiKey, cookies, ua,
     impersonate, engine, xhr_urls}. Uses Camoufox when cfg.engine=='camoufox', else chromium."""
     if cfg.engine == "camoufox":
-        cap = await _warm_camoufox(adapter, hotel_url, checkin, cfg, verbose)
+        try:
+            cap = await _warm_camoufox(adapter, hotel_url, checkin, cfg, verbose)
+        except Exception as e:
+            # Camoufox installed but crashed at runtime (e.g. Playwright<->Firefox version
+            # mismatch). Degrade to the chromium warm instead of aborting the whole crawl.
+            if verbose:
+                print(f"  ⚠️ Camoufox runtime error ({type(e).__name__}: {e}); "
+                      f"falling back to chromium warm.", flush=True)
+            cap = None
         if cap is not None:
             return cap
-        # Camoufox not installed -> chromium fallback below.
+        # Camoufox unavailable/failed -> chromium fallback below.
     if chromium is not None:
         return await _warm_chromium(adapter, chromium, hotel_url, checkin, cfg, stealth, verbose)
     async with open_chromium(cfg) as (browser, st):
@@ -264,7 +280,14 @@ async def browser_crawl_day(adapter, browser, hotel_url, room_type, checkin, cfg
             except Exception:
                 pass
 
-        page.on("response", lambda r: asyncio.create_task(grab(r)))
+        _tasks = set()
+
+        def _spawn(coro):
+            t = asyncio.create_task(coro)
+            _tasks.add(t)
+            t.add_done_callback(_tasks.discard)
+
+        page.on("response", lambda r: _spawn(grab(r)))
         try:
             if stealth is not None:
                 with contextlib.suppress(Exception):

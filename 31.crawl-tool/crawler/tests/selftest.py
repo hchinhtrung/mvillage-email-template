@@ -545,6 +545,32 @@ def test_export_cookies():
     check("broken jar -> fallback list", out2 == [{"name": "old", "value": "1"}])
 
 
+async def test_iprotate():
+    print("[ip rotation — v4/v6 detection]")
+    from crawler import iprotate
+    real = iprotate._fetch
+    try:
+        async def only_v6(url, timeout):
+            return "2401:abcd::1" if "6" in url else None
+        iprotate._fetch = only_v6
+        v4, v6 = await iprotate.public_ips()
+        check("v6-only network detected", v4 is None and v6 == "2401:abcd::1")
+        check("public_ip falls back to v6", (await iprotate.public_ip()) == "2401:abcd::1")
+
+        async def both(url, timeout):
+            return "203.0.113.5" if ("6" not in url) else "2401:abcd::9"
+        iprotate._fetch = both
+        v4, v6 = await iprotate.public_ips()
+        check("both families detected", v4 == "203.0.113.5" and v6 == "2401:abcd::9")
+        check("public_ip prefers v4", (await iprotate.public_ip()) == "203.0.113.5")
+
+        from crawler.config import Config
+        old, new, changed = await iprotate.rotate(Config())   # rotate_ip_cmd empty
+        check("rotate no-op when unset", changed is False and old is None)
+    finally:
+        iprotate._fetch = real
+
+
 def test_envcheck():
     print("[env preflight]")
     import io
@@ -600,6 +626,7 @@ def main():
     asyncio.run(test_probe_capture())
     asyncio.run(test_shared_prepass())
     test_export_cookies()
+    asyncio.run(test_iprotate())
     test_envcheck()
     test_cli()
     print(f"\n{'='*48}\n  {_PASS} passed, {_FAIL} failed\n{'='*48}")

@@ -34,4 +34,7 @@ crawler.crawl(
     # max=5,               # quick test: only the first 5 hotels
     # shard="1/3",         # split the 90 hotels into 3 runs: 1/3, then 2/3, then 3/3
     # engine="chromium",   # use if you ever upgrade playwright past 1.59
+    # shared_capture=True, # repeat runs: 1 warm prices all hotels via propertyId swap (fastest)
+    # room_match_llm=True, # Claude tie-break for room names the free matcher can't match
+                           #   (needs ANTHROPIC_API_KEY in the environment)
 )

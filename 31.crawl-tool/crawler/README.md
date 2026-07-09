@@ -18,15 +18,32 @@ per hotel**:
    unblocked direct sweep (priced / genuine sold-out / room-mismatch) is final and is NOT
    re-navigated.
 
-Two run-level accelerators cut the remaining warm cost (both on by default):
+Three run-level accelerators cut the remaining warm cost:
 
-* **Capture cache** (`capture_cache`, `captures/<site>/`) — every capture that replay proved
-  alive is persisted with its freshest cookies. A later run loads it and verifies with ONE
-  probe replay (the probe's answer is reused for W1, so a live probe is free); only a dead
+* **Capture cache** (`capture_cache`, on; `captures/<site>/`) — every capture that replay
+  proved alive is persisted with its freshest cookies. A later run loads it and verifies with
+  ONE probe replay (the probe's answer is reused for W1, so a live probe is free); only a dead
   probe pays for a fresh warm. On a daily cadence most hotels skip the browser warm entirely.
-* **Warm pipeline** (`pipeline_warm`) — hotel N+1's warm (or cache load) runs in the
+* **Warm pipeline** (`pipeline_warm`, on) — hotel N+1's warm (or cache load) runs in the
   background while hotel N is still replaying, hiding warm latency behind work the run does
   anyway.
+* **Shared capture** (`shared_capture`, OPT-IN) — LIVE-VALIDATED that Agoda's room-grid
+  answers with the correct hotel's own rooms + identical price when you keep one warm session
+  and only swap `propertyId` in the body (Akamai does not bind propertyId to the page
+  session). So a single donor warm prices every hotel whose propertyId is already cached, in a
+  pre-pass before the main loop. **Trust rule**: only a real *price* is taken from the shared
+  session — SOLD OUT / NA / blocked are discarded (big chains false-sold-out on a cold shared
+  session, the exact bug this crawler exists to prevent), and those hotels fall through to a
+  normal fresh warm + browser. Validate on your own IP first: `python -m crawler shared-gate
+  --url "<hotel A>" --url2 "<hotel B or its numeric propertyId>"`. Biggest win on repeat runs
+  (all propertyIds cached ⇒ whole run ≈ replay-only).
+
+**Room matching** is bilingual and synonym-aware (`crawler/roommatch.py`): it folds Vietnamese
+diacritics to ASCII and collapses VN↔EN room vocabulary ("Phòng Loại Sang" ↔ "Deluxe Room",
+"Giường Lớn" ↔ "King") so a sheet room name in one language still matches an Agoda grid in the
+other — the old exact+Jaccard matcher false-NA'd those. An opt-in Claude tie-break
+(`room_match_llm`, needs `ANTHROPIC_API_KEY`) is consulted only when the free matcher abstains,
+cached per (target, room-list).
 
 After round 1 (steps 1–3 for every hotel) two automatic retry rounds run, same as the old
 notebooks: **round 2** re-crawls every cell still `NA`/`SOLD OUT` via the browser
@@ -120,14 +137,29 @@ shard writes its own `TEMP_<name>_sNofM.csv` checkpoint, so shards never collide
 
 ## Opt-in free IP rotation
 
-For the hardest hotels on one IP, supply a shell command that switches your network (e.g. cycle a
-phone hotspot / toggle airplane mode / a tethering script). It runs between cooldown rounds and is
-**verified** (public IP must actually change) before continuing:
+For the hardest hotels on one IP, supply a shell command that switches your network. It runs
+between cooldown rounds and is **verified before continuing** — the public **IPv4 or IPv6**
+must actually change (Agoda is often reached over IPv6, and an ISP that delegates a `/64` lets
+you rotate the v6 address for free even when v4 is sticky).
+
+A ready-made macOS rotator ships in `crawler/scripts/rotate_ip_macos.sh`:
 
 ```bash
+# MODE=wifi (default, no sudo): cycle Wi-Fi -> DHCP re-lease + fresh SLAAC/RFC-4941 IPv6
 python -m crawler crawl --site agoda --input agoda1.csv \
-    --rotate-ip-cmd "/path/to/toggle_hotspot.sh" --rotate-after-blocks 1
+    --rotate-ip-cmd "bash crawler/scripts/rotate_ip_macos.sh" --rotate-after-blocks 1
+
+# MODE=ipv6 (needs sudo): reassign a random address inside your /64 without dropping the link
+--rotate-ip-cmd "MODE=ipv6 bash crawler/scripts/rotate_ip_macos.sh"
 ```
+
+Any script works (phone hotspot toggle, tethering, etc.) — the crawler only cares that a
+public IP changed afterwards.
+
+> A calendar-API prefilter (skip sold-out days from a month view) was investigated and
+> **dropped**: Agoda's only free calendar endpoint (`GetCalendarExtrasAsync`) returns
+> holidays/demand, not per-day availability. room-grid stays the sole availability source,
+> which already stops at the first priced day and early-breaks on a definitive sold-out.
 
 ## Output (unchanged from the current pipeline)
 

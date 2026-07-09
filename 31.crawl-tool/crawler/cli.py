@@ -35,6 +35,10 @@ def _cfg_from(args):
         cfg.rotate_ip_cmd = args.rotate_ip_cmd
     if getattr(args, "rotate_after_blocks", None):
         cfg.rotate_after_blocks = args.rotate_after_blocks
+    if getattr(args, "shared_capture", None):
+        cfg.shared_capture = True
+    if getattr(args, "room_match_llm", None):
+        cfg.room_match_llm = True
     return cfg
 
 
@@ -58,6 +62,12 @@ def build_parser():
     d.add_argument("--url", required=True)
     d.add_argument("--room", required=True)
 
+    s = sub.add_parser("shared-gate", help="Gate S: prove one warm can price many hotels (propertyId swap)")
+    _add_common(s)
+    s.add_argument("--url", required=True, help="hotel A (warmed)")
+    s.add_argument("--url2", required=True, help="hotel B URL, or B's raw numeric propertyId")
+    s.add_argument("--room", default="")
+
     g = sub.add_parser("crawl", help="Full hybrid crawl (direct + browser fallback)")
     _add_common(g)
     g.add_argument("--input", default="agoda1.csv",
@@ -73,6 +83,10 @@ def build_parser():
                    help="shell command to switch IP (opt-in); verified before continuing")
     g.add_argument("--rotate-after-blocks", dest="rotate_after_blocks", type=int, default=0,
                    help="rotate IP starting at this cooldown round (0 = never)")
+    g.add_argument("--shared-capture", dest="shared_capture", action="store_true", default=None,
+                   help="opt-in: one warm prices many hotels via propertyId swap (repeat runs)")
+    g.add_argument("--room-match-llm", dest="room_match_llm", action="store_true", default=None,
+                   help="opt-in: Claude tie-break when the free room matcher abstains (needs ANTHROPIC_API_KEY)")
     return ap
 
 
@@ -89,6 +103,8 @@ def main(argv=None):
         return asyncio.run(gates.gate_replay(args.site, args.room, cfg))
     if args.cmd == "diag":
         return asyncio.run(gates.gate_diag(args.site, args.url, args.room, cfg))
+    if args.cmd == "shared-gate":
+        return asyncio.run(gates.gate_shared(args.site, args.url, args.url2, args.room, cfg))
     if args.cmd == "crawl":
         return asyncio.run(orchestrate.run(
             site=args.site, input=args.input, sheet=args.sheet, gid=args.gid, shard=args.shard,

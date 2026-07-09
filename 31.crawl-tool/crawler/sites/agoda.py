@@ -6,6 +6,7 @@ from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 from .base import SiteAdapter
 from ..common import to_int, norm, tokens
+from .. import roommatch
 
 JUNK_URL_PARAMS = {"searchrequestid", "ds", "searchtoken", "flightsearchcriteria",
                    "showreviewsubmissionentry", "iscalendarcallout"}
@@ -25,29 +26,10 @@ def fmt_price(v):
     return f"{v:,}"
 
 
-def _best_room(rooms, target):
-    named = [(rm, (rm.get("name") or "").strip()) for rm in rooms]
-    named = [(rm, n) for rm, n in named if n]
-    if not named:
-        return None
-    tnorm = norm(target)
-    ttok = tokens(target)
-    for rm, n in named:
-        if norm(n) == tnorm:
-            return rm
-    tfirst = tnorm.split()[0] if tnorm else ""
-    best, best_score = None, -1.0
-    for rm, n in named:
-        ntok = tokens(n)
-        if not ntok:
-            continue
-        score = len(ttok & ntok) / max(len(ttok | ntok), 1)
-        nfirst = norm(n).split()[0] if norm(n) else ""
-        if tfirst and tfirst == nfirst:
-            score += 0.3
-        if score > best_score:
-            best_score, best = score, rm
-    return best if best_score >= 0.5 else None
+def _best_room(rooms, target, cfg=None):
+    """Bilingual synonym-aware match (see roommatch). Returns the room dict or None."""
+    rm, _method = roommatch.best_room(rooms, target, cfg)
+    return rm
 
 
 def agoda_offer_price(offer, ptype="final"):
@@ -62,7 +44,7 @@ def agoda_offer_price(offer, ptype="final"):
     return parse_amount(node.get("amount") or node.get("text"))
 
 
-def extract_from_agoda(rg, target_room, ptype="final"):
+def extract_from_agoda(rg, target_room, ptype="final", cfg=None):
     """Empty `rooms` = BLOCKED (soft-block), NOT sold-out — unless the response also carries
     isSoldOut + propertyName + searchCriteriaDescription (a genuine full sold-out)."""
     rg = rg or {}
@@ -71,7 +53,7 @@ def extract_from_agoda(rg, target_room, ptype="final"):
         if rg.get("isSoldOut") and rg.get("propertyName") and rg.get("searchCriteriaDescription"):
             return {"found": False, "soldOut": True, "fullSoldOut": True}
         return {"found": False, "soldOut": False, "blocked": True}
-    rm = _best_room(rooms, target_room)
+    rm = _best_room(rooms, target_room, cfg)
     if rm is not None:
         prices = [p for p in (agoda_offer_price(o, ptype) for o in (rm.get("offers") or [])) if p]
         if prices:
@@ -124,4 +106,5 @@ class AgodaAdapter(SiteAdapter):
 
     def extract(self, resp_json, target_room):
         return extract_from_agoda(resp_json, target_room,
-                                  ptype=getattr(self.cfg, "price_type", "final") or "final")
+                                  ptype=getattr(self.cfg, "price_type", "final") or "final",
+                                  cfg=self.cfg)

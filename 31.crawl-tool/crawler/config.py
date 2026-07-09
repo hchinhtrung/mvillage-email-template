@@ -32,6 +32,22 @@ class Config:
     capture_max_age_h: float = 48.0  # older cache entries are ignored outright
     pipeline_warm: bool = True       # warm hotel N+1 while hotel N is still replaying
 
+    # --- shared capture (LIVE-VALIDATED, opt-in): 1 warm prices many hotels by swapping
+    #     propertyId. SOLD OUT/NA from the shared session is UNTRUSTED (big chains false-SO on
+    #     a cold session) -> those hotels fall through to a normal fresh warm + browser. ---
+    shared_capture: bool = False
+    shared_refresh_every: int = 25   # re-warm the donor session after this many hotels
+    shared_max_block_streak: int = 4 # consecutive shared blocks -> donor is cold, re-warm
+
+    # --- room matching (bilingual synonym matcher; see roommatch.py) ---
+    room_match_threshold: float = 0.5
+    room_match_llm: bool = False     # opt-in Claude tie-break when the free matcher abstains
+    room_match_llm_model: str = "claude-haiku-4-5-20251001"
+    # NOTE: a calendar-API prefilter was investigated and dropped — Agoda's only free calendar
+    # endpoint (GetCalendarExtrasAsync) returns holidays/demand, NOT per-day availability, so it
+    # can't skip sold-out days. room-grid stays the sole availability source (already first-hit
+    # + early-break on definitive sold-out).
+
     # --- adaptive pacing (AIMD) for direct replay ---
     pace_start: int = 3              # starting concurrency
     pace_min: int = 1

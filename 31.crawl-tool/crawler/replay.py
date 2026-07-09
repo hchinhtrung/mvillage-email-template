@@ -6,6 +6,27 @@ from datetime import datetime, timedelta
 from .session import build_headers
 
 _DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+_PID_RE = re.compile(r'("propertyId"\s*:\s*)(\d+)')
+
+
+def property_id(cap_req):
+    """The numeric Agoda propertyId carried in the captured room-grid POST body, or None."""
+    body = (cap_req or {}).get("post_data") or ""
+    m = _PID_RE.search(body)
+    return m.group(2) if m else None
+
+
+def swap_property(cap_req, new_property_id):
+    """Return a COPY of cap_req re-pointed at a different propertyId (body only — Agoda's
+    room-grid URL carries no propertyId). LIVE-VALIDATED: the API answers with the swapped
+    property's own rooms + identical price. propertyId is a single clean top-level body key,
+    so a byte-surgical regex swap (leaving the rest of the body identical) is enough."""
+    out = dict(cap_req)
+    body = out.get("post_data") or ""
+    if new_property_id is None or not body:
+        return out
+    out["post_data"] = _PID_RE.sub(lambda m: m.group(1) + str(new_property_id), body, count=1)
+    return out
 
 
 def shift_dates(text, delta_days):

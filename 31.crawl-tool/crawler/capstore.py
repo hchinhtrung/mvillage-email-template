@@ -31,10 +31,12 @@ def save(cfg, site, hotel_url, cap, now=None):
         return
     path = _path(cfg, site, hotel_url)
     try:
+        from .replay import property_id
         os.makedirs(os.path.dirname(path), exist_ok=True)
         slim = {k: v for k, v in cap.items() if k not in _STRIP}
         slim["_saved_at"] = now if now is not None else time.time()
         slim["_url"] = str(hotel_url)
+        slim["property_id"] = cap.get("property_id") or property_id(cap.get("req"))
         tmp = path + ".tmp"
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump(slim, f, ensure_ascii=False)
@@ -59,6 +61,23 @@ def load(cfg, site, hotel_url, now=None):
             return None
         cap["resp_json"] = None          # replay evidence is per-day; never reuse stale JSON
         return cap
+    except Exception:
+        return None
+
+
+def cached_property_id(cfg, site, hotel_url):
+    """The hotel's Agoda propertyId if any past capture recorded it. Ignores the freshness
+    TTL on purpose — a propertyId is permanent, so a stale capture's pid is still valid and
+    lets shared-capture mode price the hotel without ever warming it again."""
+    path = _path(cfg, site, hotel_url)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            cap = json.load(f)
+        pid = cap.get("property_id")
+        if pid:
+            return str(pid)
+        from .replay import property_id
+        return property_id(cap.get("req"))
     except Exception:
         return None
 

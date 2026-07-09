@@ -12,7 +12,7 @@ from datetime import timedelta
 from .config import Config
 from .dates import base_checkin
 from . import warm
-from .replay import query_via_capture
+from .replay import query_via_capture, swap_property, property_id
 from .session import make_session, load_cookies
 from .sites import get_adapter
 
@@ -75,6 +75,53 @@ async def gate_replay(site, room="", cfg=None):
         print(f"     status={st2} | rooms={adapter.response_has_rooms(j2)}", flush=True)
         if room:
             print(f"     '{room}': {adapter.extract(j2 or {}, room)}", flush=True)
+    finally:
+        with contextlib.suppress(Exception):
+            await sess.close()
+
+
+async def gate_shared(site, url, url2, room="", cfg=None):
+    """Gate S — validate shared-capture on THIS IP: warm hotel A, then price hotel B by
+    swapping B's propertyId into A's live session. Confirms one warm can serve many hotels
+    (and that A's session returns B's OWN rooms, not A's)."""
+    cfg = cfg or Config()
+    adapter = get_adapter(site, cfg)
+    bc = base_checkin(cfg)
+    print(f"🔗 GATE S — shared capture: warm A, swap in B's propertyId (checkin={bc.strftime('%Y-%m-%d')})", flush=True)
+    capA = await warm.warm_capture(adapter, url, bc, cfg, verbose=True)
+    if capA.get("req") is None:
+        print("  ❌ warm A failed.", flush=True)
+        return
+    pidA = property_id(capA["req"])
+    print(f"  A propertyId = {pidA}", flush=True)
+    # learn B's propertyId: a quick warm of B (or the user can pass a raw numeric as url2)
+    if str(url2).isdigit():
+        pidB = url2
+    else:
+        capB = await warm.warm_capture(adapter, url2, bc, cfg, verbose=False)
+        pidB = property_id(capB.get("req") or {})
+    print(f"  B propertyId = {pidB}", flush=True)
+    if not pidB:
+        print("  ❌ could not determine B's propertyId.", flush=True)
+        return
+    sess = make_session(capA.get("impersonate"))
+    load_cookies(sess, capA.get("cookies"), default_domain=f".{adapter.name}.com")
+    try:
+        cap = dict(capA)
+        cap["req"] = swap_property(capA["req"], pidB)
+        cap["resp_json"] = None
+        from datetime import datetime
+        base = datetime.strptime(capA["checkin"], "%Y-%m-%d")
+        st, j = await query_via_capture(sess, cap, base, timeout=cfg.query_timeout_s)
+        name = (j or {}).get("propertyName")
+        print(f"  ▶ A-session + B-pid: HTTP {st} | propertyName={name!r} | "
+              f"rooms={adapter.response_has_rooms(j)}", flush=True)
+        if room:
+            print(f"     extract '{room}': {adapter.extract(j or {}, room)}", flush=True)
+        print("  ✅ VERDICT: shared capture works — one warm can price many hotels."
+              if adapter.response_has_rooms(j) else
+              "  ⚠️ B returned no rooms (sold-out shell?). Shared mode will fall back to a "
+              "fresh warm for hotels like this — safe, just not free.", flush=True)
     finally:
         with contextlib.suppress(Exception):
             await sess.close()

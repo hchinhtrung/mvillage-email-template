@@ -299,6 +299,76 @@ async def test_browser_breaker():
           r.get("skipped") and r.get("blocked"))
 
 
+def test_property_swap():
+    print("[shared capture — propertyId swap]")
+    from crawler.replay import property_id, swap_property
+    body = '{"clientApplicationName":"capybara","propertyId":400138,' \
+           '"searchCriteria":{"checkIn":"2026-07-14","checkOut":"2026-07-15"}}'
+    req = {"method": "POST", "url": "https://www.agoda.com/api/v1/property/room-grid",
+           "headers": {}, "post_data": body}
+    check("property_id reads the body pid", property_id(req) == "400138")
+    swapped = swap_property(req, "5945467")
+    check("swap changes ONLY the pid", '"propertyId":5945467' in swapped["post_data"]
+          and '"checkIn":"2026-07-14"' in swapped["post_data"]
+          and "400138" not in swapped["post_data"])
+    check("swap leaves original req untouched", req["post_data"] == body)
+    check("swap with None pid is a no-op", swap_property(req, None)["post_data"] == body)
+    check("property_id None on GET-style body", property_id({"post_data": ""}) is None)
+
+
+def test_capstore_property_id():
+    print("[capture cache — propertyId persistence]")
+    from crawler import capstore
+    from crawler.config import Config
+    cfg = Config()
+    with tempfile.TemporaryDirectory() as td:
+        cfg.capture_dir = os.path.join(td, "captures")
+        cfg.capture_max_age_h = 48.0
+        url = "https://www.agoda.com/x/hotel/hoi-an-vn.html"
+        cap = {"req": {"method": "POST", "url": "u",
+                       "post_data": '{"propertyId":661142,"searchCriteria":{}}'},
+               "checkin": "2026-07-14", "cookies": []}
+        capstore.save(cfg, "agoda", url, cap)
+        check("save records property_id", capstore.cached_property_id(cfg, "agoda", url) == "661142")
+        import time
+        # pid lookup ignores TTL (a propertyId is permanent) even when load() expires it
+        check("cached_property_id ignores TTL",
+              capstore.cached_property_id(cfg, "agoda", url) == "661142")
+        old = capstore.load(cfg, "agoda", url, now=time.time() + 100 * 3600)
+        check("load() still honours TTL", old is None)
+        check("unknown url pid -> None", capstore.cached_property_id(cfg, "agoda", "https://z") is None)
+
+
+def test_roommatch():
+    print("[room matching — bilingual synonym matcher]")
+    from crawler.roommatch import best_room, canon
+
+    def rooms(*names):
+        return [{"name": n, "offers": [{"price": {"final": {"amountNumber": 2000000}}}]} for n in names]
+
+    rm, method = best_room(rooms("Chic Suite", "Standard Double"), "Chic Suite")
+    check("exact still matches", rm and rm["name"] == "Chic Suite" and method == "exact")
+
+    # the real 2026-07-09 false-NA: sheet EN vs a vi-vn grid
+    grid = rooms("Phòng Loại Sang (Deluxe Room)", "Phòng Tiêu Chuẩn", "Phòng Giường Đôi Cao Cấp")
+    rm, method = best_room(grid, "Deluxe Room")
+    check("EN target matches VN 'Loại Sang' grid",
+          rm and "Loại Sang" in rm["name"], )
+
+    rm, _ = best_room(rooms("Superior King Room", "Deluxe Twin"), "Phòng Giường Lớn Cao Cấp")
+    check("VN target 'Giường Lớn Cao Cấp' -> Superior King", rm and rm["name"] == "Superior King Room")
+
+    rm, _ = best_room(rooms("Deluxe Double with Garden View", "Superior Twin"),
+                      "Phòng Loại Sang Giường Đôi Hướng Vườn")
+    check("multi-attribute VN -> Deluxe Double Garden", rm and "Garden" in rm["name"])
+
+    rm, method = best_room(rooms("Presidential Suite", "Royal Villa"), "Standard Twin Room")
+    check("genuine mismatch -> None (never false-match)", rm is None and method.startswith("below"))
+
+    check("canon collapses deluxe synonyms", canon("Phòng Loại Sang") == canon("Deluxe Room"))
+    check("canon collapses view synonyms", "gardenview" in canon("Hướng Vườn"))
+
+
 def test_capstore():
     print("[capture cache]")
     import time
@@ -382,6 +452,75 @@ async def test_probe_capture():
         orchestrate.query_via_capture = real_query
 
 
+async def test_shared_prepass():
+    print("[shared capture — pre-pass trust rule]")
+    from crawler import orchestrate, warm, capstore
+    from crawler.config import Config
+    from crawler.pace import AdaptivePacer
+
+    cfg = Config()
+    cfg.pace_jitter = (0.0, 0.0)
+    cfg.pace_block_cooldown = (0.0, 0.0)
+    cfg.days_per_week = 1
+    with tempfile.TemporaryDirectory() as td:
+        cfg.capture_dir = os.path.join(td, "captures")
+        # two hotels with cached propertyIds, one without
+        priced_url = "https://www.agoda.com/priced/hotel/x.html"
+        so_url = "https://www.agoda.com/soldout/hotel/x.html"
+        cold_url = "https://www.agoda.com/cold/hotel/x.html"
+        for u, pid in [(priced_url, 111), (so_url, 222)]:
+            capstore.save(cfg, "agoda", u, {"req": {"method": "POST", "url": "u",
+                          "post_data": '{"propertyId":%d,"searchCriteria":{"checkIn":"2026-07-14","checkOut":"2026-07-15"}}' % pid},
+                          "checkin": "2026-07-14", "cookies": []})
+        hotels = [("Priced Hotel", priced_url, "Deluxe"),
+                  ("SoldOut Hotel", so_url, "Deluxe"),
+                  ("Cold Hotel", cold_url, "Deluxe")]
+        awp = {}
+
+        real_warm, real_query, real_sess = warm.warm_capture, orchestrate.query_via_capture, orchestrate.make_session
+
+        async def fake_warm(adapter, url, base, cfg_, **kw):
+            return {"req": {"method": "POST", "url": "u",
+                            "post_data": '{"propertyId":999,"searchCriteria":{"checkIn":"2026-07-14","checkOut":"2026-07-15"}}'},
+                    "checkin": "2026-07-14", "cookies": [], "impersonate": "chrome131"}
+
+        def fake_query_factory():
+            async def q(sess, cap, checkin, timeout=30):
+                pid = orchestrate.property_id(cap["req"]) if hasattr(orchestrate, "property_id") else None
+                # hotel 111 -> priced; hotel 222 -> genuine-sold-out shell (must NOT be trusted)
+                from crawler.replay import property_id
+                pid = property_id(cap["req"])
+                if pid == "111":
+                    return 200, {"rooms": [{"name": "Deluxe",
+                                 "offers": [{"price": {"final": {"amountNumber": 3000000}}}]}]}
+                return 200, {"rooms": [], "isSoldOut": True, "propertyName": "Big Chain",
+                             "searchCriteriaDescription": "1 room"}
+            return q
+
+        from datetime import datetime as _dt
+        base = _dt(2026, 7, 14)
+        warm.warm_capture = fake_warm
+        orchestrate.query_via_capture = fake_query_factory()
+        orchestrate.make_session = lambda imp=None: type("S", (), {"close": lambda self: None,
+                                                                    "cookies": object()})()
+        try:
+            filled = await orchestrate._shared_prepass(
+                orchestrate.get_adapter("agoda", cfg), object(), None, None, hotels,
+                base, 6, awp, AdaptivePacer(cfg), cfg, os.path.join(td, "T.csv"))
+        finally:
+            warm.warm_capture, orchestrate.query_via_capture, orchestrate.make_session = \
+                real_warm, real_query, real_sess
+
+        pk = ("Priced Hotel", "Deluxe")
+        sk = ("SoldOut Hotel", "Deluxe")
+        check("priced hotel filled from shared session", awp.get(pk, {}).get("Price W1") == "3,000,000")
+        check("sold-out shell NOT trusted (stays NA)",
+              all(awp.get(sk, {}).get(f"Price W{i}", "NA") == "NA" for i in range(1, 7)))
+        check("cold hotel (no cached pid) skipped by pre-pass",
+              ("Cold Hotel", "Deluxe") not in awp)
+        check("filled count = priced cells only", filled == 6)
+
+
 def test_export_cookies():
     print("[cookie export]")
     from crawler.session import export_cookies
@@ -431,6 +570,13 @@ def test_cli():
     check("capture args + --no-headless", c.cmd == "capture" and c.headless is False)
     d = build_parser().parse_args(["doctor"])
     check("doctor subcommand parses", d.cmd == "doctor")
+    e = build_parser().parse_args(["crawl", "--input", "x.csv", "--shared-capture",
+                                   "--room-match-llm"])
+    from crawler.cli import _cfg_from
+    cfg = _cfg_from(e)
+    check("opt-in flags reach cfg", cfg.shared_capture and cfg.room_match_llm)
+    s = build_parser().parse_args(["shared-gate", "--url", "http://a", "--url2", "12345"])
+    check("shared-gate subcommand parses", s.cmd == "shared-gate" and s.url2 == "12345")
 
 
 def main():
@@ -447,8 +593,12 @@ def main():
     asyncio.run(test_pacer())
     asyncio.run(test_direct_fail_fast())
     asyncio.run(test_browser_breaker())
+    test_roommatch()
+    test_property_swap()
     test_capstore()
+    test_capstore_property_id()
     asyncio.run(test_probe_capture())
+    asyncio.run(test_shared_prepass())
     test_export_cookies()
     test_envcheck()
     test_cli()

@@ -18,7 +18,7 @@ from .config import Config
 from .dates import base_checkin, week_days
 from . import capstore, checkpoint, envcheck, hotels_io, iprotate, warm
 from .pace import AdaptivePacer, is_block_signal
-from .replay import parameterize, query_via_capture
+from .replay import parameterize, query_via_capture, swap_property
 from .session import make_session, load_cookies, export_cookies
 from .sites import get_adapter
 
@@ -117,6 +117,75 @@ async def _live_capture(adapter, url, base, pacer, cfg, capinfo, warm_kw):
     if cap.get("req") is None:
         return cap, None
     return cap, _open_session(adapter, cap)
+
+
+# --------------------------------------------------------------------------- shared capture
+async def _shared_prepass(adapter, browser, stealth, cam, hotels, base, num_weeks, awp,
+                          pacer, cfg, temp_file):
+    """Opt-in fast pre-pass: ONE donor warm prices every hotel whose propertyId we already
+    know (from the capstore cache) by swapping propertyId into the donor's live session.
+
+    Trust rule (see agoda-shared-capture memory): only a REAL PRICE is taken here. SOLD OUT /
+    NA / blocked verdicts from the shared session are discarded — big chains false-sold-out on
+    a cold shared session — so those weeks stay NA and flow through the normal per-hotel path
+    (fresh warm + browser). The donor is re-warmed periodically and whenever it goes cold."""
+    todo = [(str(hn), hu, rt, (str(hn), str(rt)), capstore.cached_property_id(cfg, adapter.name, hu))
+            for (hn, hu, rt) in hotels]
+    todo = [t for t in todo if t[4]]                 # only hotels with a known propertyId
+    if not todo:
+        print("   (shared-capture: no cached propertyIds yet — warming per hotel this run)",
+              flush=True)
+        return 0
+
+    print(f"⚡ shared-capture pre-pass: {len(todo)}/{len(hotels)} hotels have a cached "
+          f"propertyId — pricing them from one donor session", flush=True)
+    donor = None
+    filled = since_refresh = block_streak = warms = 0
+
+    async def new_donor(seed_url):
+        cap = await warm.warm_capture(adapter, seed_url, base, cfg, chromium=browser,
+                                      stealth=stealth, camoufox_browser=cam, verbose=False)
+        return cap if cap.get("req") is not None else None
+
+    for hn, hu, rt, key, pid in todo:
+        awp.setdefault(key, {f"Price W{i}": "NA" for i in range(1, num_weeks + 1)})
+        need = [i for i in range(1, num_weeks + 1) if not is_real(awp[key].get(f"Price W{i}", "NA"))]
+        if not need:
+            continue
+        if (donor is None or since_refresh >= cfg.shared_refresh_every
+                or block_streak >= cfg.shared_max_block_streak):
+            donor = await new_donor(hu)
+            since_refresh = block_streak = 0
+            if donor is None:
+                print("   ⚠️ shared-capture: donor warm failed — handing rest to normal path",
+                      flush=True)
+                break
+            warms += 1
+        cap = dict(donor)
+        cap["req"] = swap_property(donor["req"], pid)
+        cap["resp_json"] = None                      # donor's W1 answer is a DIFFERENT hotel
+        sess = _open_session(adapter, cap)
+        try:
+            direct = await _direct_weeks(adapter, sess, cap, rt, base, need,
+                                         cfg.days_per_week, pacer, cfg)
+        except Exception:
+            direct = []
+        finally:
+            with contextlib.suppress(Exception):
+                await sess.close()
+        got = 0
+        for r in direct:
+            if is_real(r["price"]):                  # trust ONLY real prices
+                awp[key][f"Price W{r['week']}"] = r["price"]
+                got += 1
+                filled += 1
+        since_refresh += 1
+        block_streak = block_streak + 1 if got == 0 else 0
+        print(f"   ⚡ {hn[:34]}: {got}/{len(need)} priced from shared session", flush=True)
+        checkpoint.save_backup_csv(awp, temp_file, num_weeks)
+    print(f"   ⚡ shared pre-pass done: {filled} cells priced with {warms} warm(s) "
+          f"instead of {len(todo)}", flush=True)
+    return filled
 
 
 # --------------------------------------------------------------------------- browser fallback
@@ -290,12 +359,19 @@ async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", week
             cam = await stack.enter_async_context(warm.open_camoufox(cfg))
             if cam is None:
                 cfg.engine = "chromium"
+        # Opt-in shared-capture pre-pass (one warm prices many hotels via propertyId swap).
+        # It fills trusted prices straight into awp, so the work list below shrinks.
+        if cfg.shared_capture and direct_enabled:
+            await _shared_prepass(adapter, browser, stealth, cam, hotels, base, num_weeks,
+                                  awp, pacer, cfg, temp_file)
+
         # The work list is fixed up front (resume state never changes inside round 1), which
-        # lets the warm pipeline see exactly one hotel ahead.
+        # lets the warm pipeline see exactly one hotel ahead. `need` is read from awp so the
+        # pre-pass's fills (and any resume state) both count as done.
         work = []
         for idx, (hn, hu, rt) in enumerate(hotels, 1):
             key = (str(hn), str(rt))
-            need = checkpoint.weeks_needed(prev, key, num_weeks)
+            need = checkpoint.weeks_needed(awp, key, num_weeks)
             if not need:
                 print(f"✔️  {idx}/{len(hotels)} {hn} — complete, skip", flush=True)
             else:

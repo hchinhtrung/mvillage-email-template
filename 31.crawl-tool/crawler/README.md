@@ -18,6 +18,16 @@ per hotel**:
    unblocked direct sweep (priced / genuine sold-out / room-mismatch) is final and is NOT
    re-navigated.
 
+Two run-level accelerators cut the remaining warm cost (both on by default):
+
+* **Capture cache** (`capture_cache`, `captures/<site>/`) — every capture that replay proved
+  alive is persisted with its freshest cookies. A later run loads it and verifies with ONE
+  probe replay (the probe's answer is reused for W1, so a live probe is free); only a dead
+  probe pays for a fresh warm. On a daily cadence most hotels skip the browser warm entirely.
+* **Warm pipeline** (`pipeline_warm`) — hotel N+1's warm (or cache load) runs in the
+  background while hotel N is still replaying, hiding warm latency behind work the run does
+  anyway.
+
 After round 1 (steps 1–3 for every hotel) two automatic retry rounds run, same as the old
 notebooks: **round 2** re-crawls every cell still `NA`/`SOLD OUT` via the browser
 (`auto_retry_na_soldout`, probing `retry_days_per_week` days), and **round 3** retries hotels

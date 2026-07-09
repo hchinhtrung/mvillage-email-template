@@ -106,6 +106,20 @@ def load_cookies(sess, cookies, default_domain=".agoda.com"):
             pass
 
 
+def export_cookies(sess, fallback=None):
+    """Best-effort dump of the session's jar back to capture format. Replay responses roll
+    the Akamai cookies forward; persisting the FRESHEST ones keeps a cached capture alive
+    run after run. Any jar-shape surprise falls back to the original list."""
+    try:
+        jar = getattr(sess.cookies, "jar", None) or sess.cookies
+        out = [{"name": c.name, "value": c.value,
+                "domain": getattr(c, "domain", "") or "",
+                "path": getattr(c, "path", "/") or "/"} for c in jar]
+        return out or list(fallback or [])
+    except Exception:
+        return list(fallback or [])
+
+
 def build_headers(cap_headers):
     """Drop HTTP/2 pseudo-headers (:authority, ...) and the headers curl owns."""
     h = {}

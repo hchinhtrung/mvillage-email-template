@@ -26,6 +26,12 @@ class Config:
     impersonate: str = ""            # "" = auto-pick from captured UA / engine
     query_timeout_s: float = 30.0
 
+    # --- capture cache + warm pipeline (kills most of the per-hotel warm cost) ---
+    capture_cache: bool = True       # persist live captures; later runs probe & reuse them
+    capture_dir: str = "captures"    # relative to the run's working directory
+    capture_max_age_h: float = 48.0  # older cache entries are ignored outright
+    pipeline_warm: bool = True       # warm hotel N+1 while hotel N is still replaying
+
     # --- adaptive pacing (AIMD) for direct replay ---
     pace_start: int = 3              # starting concurrency
     pace_min: int = 1

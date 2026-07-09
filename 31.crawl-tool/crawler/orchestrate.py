@@ -16,10 +16,10 @@ from datetime import datetime, timedelta
 from .common import is_real
 from .config import Config
 from .dates import base_checkin, week_days
-from . import checkpoint, envcheck, hotels_io, iprotate, warm
+from . import capstore, checkpoint, envcheck, hotels_io, iprotate, warm
 from .pace import AdaptivePacer, is_block_signal
-from .replay import query_via_capture
-from .session import make_session, load_cookies
+from .replay import parameterize, query_via_capture
+from .session import make_session, load_cookies, export_cookies
 from .sites import get_adapter
 
 
@@ -71,6 +71,54 @@ async def _direct_weeks(adapter, sess, cap, room_type, base, weeks, days, pacer,
     return await asyncio.gather(*[one_week(w) for w in weeks])
 
 
+# --------------------------------------------------------------------------- capture reuse
+def _open_session(adapter, cap):
+    sess = make_session(cap.get("impersonate"))
+    load_cookies(sess, cap.get("cookies"), default_domain=f".{adapter.name}.com")
+    return sess
+
+
+async def _probe_capture(adapter, sess, cap, base, pacer, cfg):
+    """One replay against W1 day 1 decides whether a CACHED capture still answers.
+
+    Success re-dates cap['req'] to today's window and seeds resp_json, so the sweep reuses
+    the probe's answer — a live probe costs zero extra queries. A dead probe does NOT ding
+    the pacer: a stale cookie says nothing about how hot the IP is."""
+    checkin = week_days(base, 1, 1)[0]
+    ci = checkin.strftime("%Y-%m-%d")
+    async with pacer.slot():
+        st, j = await query_via_capture(sess, cap, checkin, timeout=cfg.query_timeout_s)
+    if is_block_signal(st, adapter.extract(j or {}, "")):
+        return False
+    pacer.record_ok()
+    m, u, h, d = parameterize(cap["req"], cap["checkin"], ci)
+    cap["req"] = {"method": m, "url": u, "headers": h, "post_data": d}
+    cap["checkin"], cap["resp_json"] = ci, j
+    return True
+
+
+async def _live_capture(adapter, url, base, pacer, cfg, capinfo, warm_kw):
+    """Resolve a replayable (cap, sess) for a hotel: prewarmed/cached capture first (cached
+    ones are probe-verified), else one fresh browser warm. sess is None => direct is dead."""
+    cap = (capinfo or {}).get("cap")
+    cached = bool((capinfo or {}).get("cached"))
+    if cap is not None and cap.get("req") is not None:
+        sess = _open_session(adapter, cap)
+        if not cached:
+            return cap, sess
+        if await _probe_capture(adapter, sess, cap, base, pacer, cfg):
+            print("   ♻️ cached capture alive — warm skipped", flush=True)
+            return cap, sess
+        capstore.invalidate(cfg, adapter.name, url)
+        with contextlib.suppress(Exception):
+            await sess.close()
+        print("   ♻️→🔥 cached capture stale — warming fresh", flush=True)
+    cap = await warm.warm_capture(adapter, url, base, cfg, **warm_kw)
+    if cap.get("req") is None:
+        return cap, None
+    return cap, _open_session(adapter, cap)
+
+
 # --------------------------------------------------------------------------- browser fallback
 async def _browser_week(adapter, browser, url, room_type, wn, base, cfg, stealth, days,
                         breaker=None, tag=""):
@@ -100,7 +148,7 @@ async def _browser_week(adapter, browser, url, room_type, wn, base, cfg, stealth
 # --------------------------------------------------------------------------- per hotel
 async def crawl_hotel(adapter, browser, stealth, hotel_name, url, room_type,
                       base, num_weeks, want, pacer, cfg, direct_enabled=True,
-                      camoufox_browser=None):
+                      camoufox_browser=None, capinfo=None):
     prices = {f"Price W{i}": "NA" for i in range(1, num_weeks + 1)}
     want = want or list(range(1, num_weeks + 1))
     direct_got = 0
@@ -109,15 +157,15 @@ async def crawl_hotel(adapter, browser, stealth, hotel_name, url, room_type,
 
     # PHASE A+B — direct replay (only for sites where capture->replay is proven)
     if adapter.direct_replay and direct_enabled:
-        cap = await warm.warm_capture(adapter, url, base, cfg, chromium=browser,
-                                      stealth=stealth, camoufox_browser=camoufox_browser,
-                                      verbose=False)
-        if cap.get("req") is not None:
-            sess = make_session(cap.get("impersonate"))
-            load_cookies(sess, cap.get("cookies"), default_domain=f".{adapter.name}.com")
+        warm_kw = dict(chromium=browser, stealth=stealth,
+                       camoufox_browser=camoufox_browser, verbose=False)
+        cap, sess = await _live_capture(adapter, url, base, pacer, cfg, capinfo, warm_kw)
+        if sess is not None:
             try:
                 direct = await _direct_weeks(adapter, sess, cap, room_type, base,
                                              want, cfg.days_per_week, pacer, cfg)
+                if cfg.capture_cache:
+                    cap["cookies"] = export_cookies(sess, cap.get("cookies"))
             finally:
                 try:
                     await sess.close()
@@ -134,6 +182,11 @@ async def crawl_hotel(adapter, browser, stealth, hotel_name, url, room_type,
                 elif str(r["price"]).startswith("SOLD OUT"):
                     prices[f"Price W{r['week']}"] = r["price"]
             direct_dead = not direct_got and not clean_weeks   # every replay came back blocked
+            if cfg.capture_cache:
+                if direct_dead:
+                    capstore.invalidate(cfg, adapter.name, url)
+                else:
+                    capstore.save(cfg, adapter.name, url, cap)  # alive: roll the cache forward
         else:
             direct_dead = True                                 # warm never captured the API req
 
@@ -237,17 +290,49 @@ async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", week
             cam = await stack.enter_async_context(warm.open_camoufox(cfg))
             if cam is None:
                 cfg.engine = "chromium"
+        # The work list is fixed up front (resume state never changes inside round 1), which
+        # lets the warm pipeline see exactly one hotel ahead.
+        work = []
         for idx, (hn, hu, rt) in enumerate(hotels, 1):
             key = (str(hn), str(rt))
             need = checkpoint.weeks_needed(prev, key, num_weeks)
             if not need:
                 print(f"✔️  {idx}/{len(hotels)} {hn} — complete, skip", flush=True)
-                continue
+            else:
+                work.append((idx, hn, hu, rt, key, need))
+
+        async def _prepare(hu_):
+            """Capture for one hotel: disk cache first, else browser warm. Never raises —
+            a None result just means crawl_hotel resolves the capture itself."""
+            try:
+                if not direct_enabled:
+                    return None
+                if cfg.capture_cache:
+                    c = capstore.load(cfg, adapter.name, hu_)
+                    if c is not None:
+                        return {"cap": c, "cached": True}
+                c = await warm.warm_capture(adapter, hu_, base, cfg, chromium=browser,
+                                            stealth=stealth, camoufox_browser=cam,
+                                            verbose=False)
+                return {"cap": c, "cached": False}
+            except Exception:
+                return None
+
+        prewarm = None
+        for j, (idx, hn, hu, rt, key, need) in enumerate(work):
             print(f"\n🏨 {idx}/{len(hotels)} {hn} | {rt} | need weeks {need}", flush=True)
+            capinfo = None
+            if direct_enabled:
+                capinfo = (await prewarm) if prewarm is not None else await _prepare(hu)
+            prewarm = None
+            if cfg.pipeline_warm and direct_enabled and j + 1 < len(work):
+                # warm the NEXT hotel while this one replays/falls back — hides most of
+                # the per-hotel warm cost behind work we do anyway
+                prewarm = asyncio.create_task(_prepare(work[j + 1][2]))
             try:
                 prices, dgot, nfb, blk, ddead = await crawl_hotel(
                     adapter, browser, stealth, hn, hu, rt, base, num_weeks, need, pacer, cfg,
-                    direct_enabled=direct_enabled, camoufox_browser=cam)
+                    direct_enabled=direct_enabled, camoufox_browser=cam, capinfo=capinfo)
             except Exception as e:
                 print(f"   ❌ {e}", flush=True)
                 prices = awp.get(key) or {f"Price W{i}": "NA" for i in range(1, num_weeks + 1)}
@@ -259,6 +344,9 @@ async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", week
                 dead_streak = dead_streak + 1 if ddead else 0
                 if dead_streak >= cfg.disable_direct_after:
                     direct_enabled = False
+                    if prewarm is not None:
+                        prewarm.cancel()
+                        prewarm = None
                     print(f"   🔻 direct replay dead for {dead_streak} hotels in a row — "
                           f"switching to browser-only for the rest of the run", flush=True)
             cur = awp.get(key) or {f"Price W{i}": "NA" for i in range(1, num_weeks + 1)}

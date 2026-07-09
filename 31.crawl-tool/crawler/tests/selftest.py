@@ -299,6 +299,113 @@ async def test_browser_breaker():
           r.get("skipped") and r.get("blocked"))
 
 
+def test_capstore():
+    print("[capture cache]")
+    import time
+    from crawler import capstore
+    from crawler.config import Config
+    cfg = Config()
+    with tempfile.TemporaryDirectory() as td:
+        cfg.capture_dir = os.path.join(td, "captures")
+        url = "https://www.agoda.com/some-hotel/hotel/hoi-an-vn.html?cid=1"
+        cap = {"req": {"method": "POST", "url": "https://agoda.com/api?x=1",
+                       "headers": {"h": "1"}, "post_data": "{}"},
+               "checkin": "2026-07-14", "cookies": [{"name": "_abck", "value": "v"}],
+               "impersonate": "firefox147", "engine": "camoufox",
+               "resp_json": {"rooms": [1]}, "xhr_urls": ["u"]}
+        capstore.save(cfg, "agoda", url, cap)
+        got = capstore.load(cfg, "agoda", url)
+        check("roundtrip keeps req/cookies/impersonate",
+              got is not None and got["req"]["url"].endswith("x=1")
+              and got["cookies"][0]["name"] == "_abck" and got["impersonate"] == "firefox147")
+        check("bulky fields stripped, resp_json reset",
+              got is not None and got.get("resp_json") is None and "xhr_urls" not in got)
+        check("unknown url -> None", capstore.load(cfg, "agoda", "https://other") is None)
+        check("expired -> None",
+              capstore.load(cfg, "agoda", url, now=time.time() + 49 * 3600) is None)
+        check("within max age -> served",
+              capstore.load(cfg, "agoda", url, now=time.time() + 24 * 3600) is not None)
+        capstore.invalidate(cfg, "agoda", url)
+        check("invalidate removes", capstore.load(cfg, "agoda", url) is None)
+        capstore.invalidate(cfg, "agoda", url)   # second call must not raise
+        check("invalidate idempotent", True)
+        capstore.save(cfg, "agoda", "https://agoda.com/y", {"req": None})
+        check("dead capture never saved",
+              capstore.load(cfg, "agoda", "https://agoda.com/y") is None)
+
+
+async def test_probe_capture():
+    print("[capture probe — cached sessions verified before trust]")
+    from crawler import orchestrate
+    from crawler.config import Config
+    from crawler.pace import AdaptivePacer
+    from crawler.sites import get_adapter
+
+    cfg = Config()
+    cfg.pace_jitter = (0.0, 0.0)
+    cfg.pace_block_cooldown = (0.0, 0.0)
+    adapter = get_adapter("agoda", cfg)
+    base = datetime(2026, 7, 14)
+
+    def cap():
+        return {"req": {"method": "POST", "url": "https://x/api?checkIn=2026-07-01",
+                        "headers": {}, "post_data": '{"checkIn":"2026-07-01","checkOut":"2026-07-02"}'},
+                "checkin": "2026-07-01"}
+
+    real_query = orchestrate.query_via_capture
+
+    def fake(payload, status=200):
+        async def q(sess, cap_, checkin, timeout=30):
+            return status, payload
+        return q
+
+    try:
+        live = {"rooms": [{"name": "Deluxe", "offers": []}]}
+        orchestrate.query_via_capture = fake(live)
+        c = cap()
+        ok = await orchestrate._probe_capture(adapter, None, c, base, AdaptivePacer(cfg), cfg)
+        check("live probe -> True", ok)
+        check("probe re-dates req to W1 day 1",
+              "2026-07-14" in c["req"]["post_data"] and c["checkin"] == "2026-07-14")
+        check("probe seeds resp_json (no extra query for W1D1)", c.get("resp_json") == live)
+
+        orchestrate.query_via_capture = fake({"rooms": []})   # Akamai rejected: empty skeleton
+        c2 = cap()
+        check("soft-blocked probe -> False",
+              not await orchestrate._probe_capture(adapter, None, c2, base, AdaptivePacer(cfg), cfg))
+        check("dead probe leaves req untouched", c2["checkin"] == "2026-07-01")
+
+        orchestrate.query_via_capture = fake(live, status=403)
+        check("HTTP 403 probe -> False",
+              not await orchestrate._probe_capture(adapter, None, cap(), base, AdaptivePacer(cfg), cfg))
+    finally:
+        orchestrate.query_via_capture = real_query
+
+
+def test_export_cookies():
+    print("[cookie export]")
+    from crawler.session import export_cookies
+
+    class _C:
+        def __init__(self, n, v):
+            self.name, self.value, self.domain, self.path = n, v, ".agoda.com", "/"
+
+    class _Cookies:
+        jar = [_C("_abck", "fresh")]
+
+    class _Sess:
+        cookies = _Cookies()
+
+    out = export_cookies(_Sess(), fallback=[{"name": "old", "value": "1"}])
+    check("reads freshest jar", out and out[0]["name"] == "_abck" and out[0]["value"] == "fresh")
+
+    class _Bad:
+        cookies = object()
+
+    out2 = export_cookies(_Bad(), fallback=[{"name": "old", "value": "1"}])
+    check("broken jar -> fallback list", out2 == [{"name": "old", "value": "1"}])
+
+
 def test_envcheck():
     print("[env preflight]")
     import io
@@ -340,6 +447,9 @@ def main():
     asyncio.run(test_pacer())
     asyncio.run(test_direct_fail_fast())
     asyncio.run(test_browser_breaker())
+    test_capstore()
+    asyncio.run(test_probe_capture())
+    test_export_cookies()
     test_envcheck()
     test_cli()
     print(f"\n{'='*48}\n  {_PASS} passed, {_FAIL} failed\n{'='*48}")

@@ -27,6 +27,15 @@ class SiteAdapter:
         """True if the raw HTTP JSON carries an actual room list (not an empty skeleton)."""
         raise NotImplementedError
 
+    def response_is_definitive(self, resp_json):
+        """True if this response already carries the day's final verdict (rooms present, or an
+        unambiguous full-property sold-out) — waiting longer cannot improve it. Lets the browser
+        wait loops stop early instead of burning the full api_wait_timeout_s on sold-out days."""
+        try:
+            return self.response_has_rooms(resp_json)
+        except NotImplementedError:
+            return False
+
     def extract(self, resp_json, target_room):
         """Classify a raw HTTP JSON response for target_room. Returns one of:
           {found:True, price:<str>, room:<name>}         # priced

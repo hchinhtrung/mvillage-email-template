@@ -115,5 +115,13 @@ class AgodaAdapter(SiteAdapter):
     def response_has_rooms(self, resp_json):
         return bool((resp_json or {}).get("rooms"))
 
+    def response_is_definitive(self, resp_json):
+        j = resp_json or {}
+        if j.get("rooms"):
+            return True
+        # Same signature extract_from_agoda() accepts as a GENUINE full sold-out.
+        return bool(j.get("isSoldOut") and j.get("propertyName") and j.get("searchCriteriaDescription"))
+
     def extract(self, resp_json, target_room):
-        return extract_from_agoda(resp_json, target_room, ptype="final")
+        return extract_from_agoda(resp_json, target_room,
+                                  ptype=getattr(self.cfg, "price_type", "final") or "final")

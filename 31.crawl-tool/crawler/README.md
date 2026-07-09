@@ -13,8 +13,34 @@ per hotel**:
    *real* room-API request (method/url/headers/body) + cookies + `apiKey`.
 2. **Replay** every week × day directly with **`curl_cffi`** (TLS/JA3/HTTP2 impersonation) —
    ~1 s per query instead of 30–60 s.
-3. **Browser fallback** (chromium + stealth) for any cell direct replay couldn't price. A
-   soft-block is **retried, never recorded as a price**.
+3. **Browser fallback** (chromium + stealth) only for weeks direct replay couldn't answer
+   **without a block signal**. A soft-block is **retried, never recorded as a price**; an
+   unblocked direct sweep (priced / genuine sold-out / room-mismatch) is final and is NOT
+   re-navigated.
+
+After round 1 (steps 1–3 for every hotel) two automatic retry rounds run, same as the old
+notebooks: **round 2** re-crawls every cell still `NA`/`SOLD OUT` via the browser
+(`auto_retry_na_soldout`, probing `retry_days_per_week` days), and **round 3** retries hotels
+whose circuit breaker tripped, after a long cooldown and without the breaker
+(`retry_blocked_hotels`). Both rounds only ever *improve* a cell: a real price wins over
+anything; `SOLD OUT` wins over `NA` only.
+
+### Fail-fast guarantees (bounds worst-case time per hotel)
+
+The happy path was always fast; these stop the *bad* paths from costing 20-40 min/hotel:
+
+* **Dead-capture abort** — if the first `direct_abort_blocks` (2) replays of a hotel are all
+  soft-blocked with zero successes, the capture is dead (Akamai rejected the session); the
+  direct phase aborts instead of grinding weeks×days queries through 20-45 s pacer cooldowns.
+* **Run-level direct disable** — `disable_direct_after` (3) consecutive dead-direct hotels ⇒
+  the IP/TLS pairing is burned; the run stops paying warm+replay per hotel and switches to
+  browser-only (exactly the proven old pipeline).
+* **Per-hotel browser circuit breaker** (ported from the old notebook's `BLOCK_CIRCUIT_LIMIT`) —
+  `block_circuit_limit` (2) consecutive fully-blocked browser days ⇒ the rest of the hotel
+  answers NA instantly; the cooldown rounds retry it later without the breaker.
+* **Definitive early-break** — browser wait loops stop as soon as a response carries the final
+  verdict (rooms present *or* a genuine full-property sold-out) instead of always burning the
+  full `api_wait_timeout_s` (25 s) on sold-out days.
 
 ## The one rule that makes it work: Firefox↔Firefox TLS pairing
 
@@ -28,14 +54,21 @@ same machine** — a capture from another machine is useless.
 ## Install (once)
 
 ```bash
-pip install -r crawler/requirements.txt   # pins playwright==1.59.0 (1.60+ crashes Camoufox)
+pip install -r crawler/requirements.txt
 python -m playwright install chromium
 python -m camoufox fetch                   # ~300 MB anti-detect Firefox
+python -m crawler doctor                   # verify THIS interpreter has everything
 ```
 
-> If you later `pip install --upgrade playwright` past 1.59, Camoufox warm will crash
-> (daijro/camoufox#617). Either keep 1.59 pinned, or run Agoda with `--engine chromium`
-> (no Camoufox needed — validated live, slightly weaker stealth).
+> **Packages are per-interpreter, not per-folder.** Run `python -m crawler doctor` with the
+> exact python you crawl with (e.g. `.venv/bin/python -m crawler doctor`): it checks every
+> package, both browser binaries, and warns if you're not on the project `.venv`.
+> `crawl` runs the same preflight automatically and aborts early if a required package is
+> missing (a missing optional package like camoufox degrades loudly, once).
+
+> playwright note: 1.60 crashed Camoufox's Firefox (daijro/camoufox#617); playwright 1.61 +
+> camoufox 0.4.11 passed a live smoke test (2026-07-09). If Camoufox ever crashes at launch,
+> the run degrades to the chromium warm by itself — or force it with `--engine chromium`.
 
 ## Run — on YOUR machine (captures are IP-bound)
 
@@ -117,9 +150,11 @@ crawler.crawl(site="agoda", input="agoda1.csv", weeks=6)   # applies nest_asynci
 Adaptive pacing (AIMD) replaces fixed sleeps: concurrency starts at `pace_start=3`, ramps by +1
 after `pace_ramp_after` clean replays, and **halves + cools down** on any block. Other knobs:
 `num_weeks`, `days_per_week`, `weeks_parallel`, `engine`, `impersonate`, `headless`.
+Fail-fast knobs: `direct_abort_blocks`, `disable_direct_after`, `block_circuit_limit`,
+`trust_direct_clean` (set False to force the browser to re-verify every non-priced week).
 
 ## Self-test (no network)
 
 ```bash
-python -m crawler.tests.selftest    # 37 checks: parsers, date-shift, pacing, checkpoint, sharding, CLI
+python -m crawler.tests.selftest    # parsers, date-shift, pacing, fail-fast, checkpoint, sharding, CLI
 ```

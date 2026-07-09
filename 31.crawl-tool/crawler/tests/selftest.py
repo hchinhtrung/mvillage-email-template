@@ -63,6 +63,15 @@ def test_agoda_parser():
     check("room mismatch -> NA (not found, not blocked)",
           not r.get("found") and not r.get("blocked"))
 
+    from crawler.config import Config
+    from crawler.sites import get_adapter
+    a = get_adapter("agoda", Config())
+    check("definitive: rooms present", a.response_is_definitive(priced))
+    check("definitive: genuine full sold-out (no rooms will ever come)",
+          a.response_is_definitive(genuine_soldout))
+    check("NOT definitive: bare empty payload (soft-block, keep waiting)",
+          not a.response_is_definitive(soft_block) and not a.response_is_definitive(None))
+
 
 def test_trip_parser():
     print("[trip parser]")
@@ -131,6 +140,19 @@ def test_shard():
     check("shard sizes near-equal", max(len(p) for p in parts) - min(len(p) for p in parts) <= 1)
 
 
+def test_gsheet_parse():
+    print("[google sheet URL parsing]")
+    from crawler.hotels_io import _parse_gsheet, _gsheet_url, is_gsheet
+    full = "https://docs.google.com/spreadsheets/d/ABC123_-x/edit?gid=1289817800#gid=1289817800"
+    sid, gid = _parse_gsheet(full)
+    check("extracts spreadsheet id", sid == "ABC123_-x")
+    check("extracts gid (tab id) from URL", gid == "1289817800")
+    check("is_gsheet detects full URL", is_gsheet(full) and not is_gsheet("agoda1.csv"))
+    check("gviz url uses gid", "gid=1289817800" in _gsheet_url(full))
+    sid2, gid2 = _parse_gsheet("gsheet:XYZ:456")
+    check("gsheet:<id>:<gid> form", sid2 == "XYZ" and gid2 == "456")
+
+
 def test_dates():
     print("[date generation]")
     from crawler.config import Config
@@ -188,6 +210,110 @@ async def test_pacer():
     check("not a block: priced 200", not is_block_signal(200, {"found": True}))
 
 
+async def test_direct_fail_fast():
+    print("[direct replay — dead-capture abort + clean-sweep trust]")
+    from crawler import orchestrate
+    from crawler.config import Config
+    from crawler.pace import AdaptivePacer
+    from crawler.sites import get_adapter
+
+    cfg = Config()
+    cfg.pace_jitter = (0.0, 0.0)
+    cfg.pace_block_cooldown = (0.0, 0.0)
+    adapter = get_adapter("agoda", cfg)
+    base = datetime(2026, 7, 13)
+    cap = {"req": {"method": "GET", "url": "u", "headers": {}}, "checkin": "1900-01-01"}
+    weeks = list(range(1, 7))
+    calls = {"n": 0}
+    real_query = orchestrate.query_via_capture
+
+    def fake(payload):
+        async def q(sess, cap_, checkin, timeout=30):
+            calls["n"] += 1
+            return 200, payload
+        return q
+
+    try:
+        # 1) dead capture: every replay soft-blocked -> abort after ~pace_start queries, not 42
+        calls["n"] = 0
+        orchestrate.query_via_capture = fake({"rooms": []})
+        res = await orchestrate._direct_weeks(
+            adapter, None, cap, "Deluxe", base, weeks, 7, AdaptivePacer(cfg), cfg)
+        check("dead capture aborts fast (queries << weeks*days)",
+              calls["n"] <= cfg.pace_start + cfg.direct_abort_blocks)
+        check("aborted weeks are NA and NOT clean (browser will handle them)",
+              all(r["price"] == "NA" and not r["clean"] for r in res))
+
+        # 2) clean sold-out sweep: definitive verdicts all week -> SOLD OUT trusted, clean=True
+        calls["n"] = 0
+        orchestrate.query_via_capture = fake(
+            {"rooms": [], "isSoldOut": True, "propertyName": "X",
+             "searchCriteriaDescription": "1 room 2 adults"})
+        res = await orchestrate._direct_weeks(
+            adapter, None, cap, "Deluxe", base, weeks, 7, AdaptivePacer(cfg), cfg)
+        check("unblocked sold-out sweep -> SOLD OUT + clean (skips browser re-verify)",
+              all(r["price"] == "SOLD OUT" and r["clean"] for r in res))
+
+        # 3) priced day 1 -> one query per week, real price, clean
+        calls["n"] = 0
+        orchestrate.query_via_capture = fake(
+            {"rooms": [{"name": "Deluxe", "offers": [{"price": {"final": {"amountNumber": 2000000}}}]}]})
+        res = await orchestrate._direct_weeks(
+            adapter, None, cap, "Deluxe", base, weeks, 7, AdaptivePacer(cfg), cfg)
+        check("priced sweep: 1 query/week", calls["n"] == len(weeks))
+        check("priced sweep: real + clean", all(r["price"] == "2,000,000" and r["clean"] for r in res))
+
+        # 4) warm response reuse: cap already holds the answer for W1 day 1 -> no query for it
+        calls["n"] = 0
+        cap2 = dict(cap, checkin="2026-07-13",
+                    resp_json={"rooms": [{"name": "Deluxe", "offers": [
+                        {"price": {"final": {"amountNumber": 3000000}}}]}]})
+        res = await orchestrate._direct_weeks(
+            adapter, None, cap2, "Deluxe", base, weeks, 7, AdaptivePacer(cfg), cfg)
+        check("W1 day1 answered from warm capture (no extra query)",
+              calls["n"] == len(weeks) - 1 and res[0]["price"] == "3,000,000")
+    finally:
+        orchestrate.query_via_capture = real_query
+
+
+async def test_browser_breaker():
+    print("[browser fallback — per-hotel circuit breaker]")
+    from crawler import warm
+    from crawler.config import Config
+    cfg = Config()
+    b = warm.new_breaker()
+    warm.breaker_note_block(b, cfg.block_circuit_limit, tag="t")
+    check("one blocked day does not trip", not b["tripped"])
+    warm.breaker_note_block(b, cfg.block_circuit_limit, tag="t")
+    check(f"trips after {cfg.block_circuit_limit} consecutive blocked days", b["tripped"])
+
+    b2 = warm.new_breaker()
+    warm.breaker_note_ok(b2)
+    for _ in range(5):
+        warm.breaker_note_block(b2, cfg.block_circuit_limit, tag="t")
+    check("a hotel that responded once NEVER trips", not b2["tripped"])
+
+    r = await warm.browser_crawl_day(None, None, "http://x", "Deluxe",
+                                     datetime(2026, 7, 13), cfg, None, breaker=b)
+    check("tripped breaker -> instant skipped-blocked (no nav, no timeout burned)",
+          r.get("skipped") and r.get("blocked"))
+
+
+def test_envcheck():
+    print("[env preflight]")
+    import io
+    import contextlib as _ctx
+    from crawler import envcheck
+    check("has(): stdlib import visible", envcheck.has("json"))
+    check("has(): nonsense import invisible", not envcheck.has("definitely_not_a_pkg_xyz"))
+    buf = io.StringIO()
+    with _ctx.redirect_stdout(buf):
+        missing = envcheck.check(verbose=False)
+    check("this interpreter has every REQUIRED package", missing == [])
+    check("pip hint targets THIS interpreter, never a bare `pip`",
+          envcheck.pip_hint(["x"]).startswith(sys.executable))
+
+
 def test_cli():
     print("[cli parsing]")
     from crawler.cli import build_parser
@@ -196,6 +322,8 @@ def test_cli():
     check("crawl args parse", a.cmd == "crawl" and a.site == "trip" and a.shard == "2/5" and a.engine == "chromium")
     c = build_parser().parse_args(["capture", "--site", "agoda", "--url", "http://x", "--no-headless"])
     check("capture args + --no-headless", c.cmd == "capture" and c.headless is False)
+    d = build_parser().parse_args(["doctor"])
+    check("doctor subcommand parses", d.cmd == "doctor")
 
 
 def main():
@@ -206,9 +334,13 @@ def main():
     test_impersonate_pairing()
     test_adapters_url()
     test_shard()
+    test_gsheet_parse()
     test_dates()
     test_checkpoint_and_merge()
     asyncio.run(test_pacer())
+    asyncio.run(test_direct_fail_fast())
+    asyncio.run(test_browser_breaker())
+    test_envcheck()
     test_cli()
     print(f"\n{'='*48}\n  {_PASS} passed, {_FAIL} failed\n{'='*48}")
     return 1 if _FAIL else 0

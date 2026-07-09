@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
-"""Per-hotel hybrid crawl + the full run loop (resume, adaptive pacing, cooldown rounds)."""
+"""Per-hotel hybrid crawl + the full run loop (resume, adaptive pacing, retry rounds).
+
+Round 1: crawl every hotel (direct replay + browser fallback).
+Round 2: browser re-crawl of every cell still NA / SOLD OUT (auto_retry_na_soldout).
+Round 3: long-cooldown browser retry of hotels whose breaker tripped (retry_blocked_hotels).
+"""
 import asyncio
+import contextlib
 import os
 import random
 import time
+from dataclasses import replace as _cfg_replace
 from datetime import datetime, timedelta
 
 from .common import is_real
 from .config import Config
 from .dates import base_checkin, week_days
-from . import checkpoint, hotels_io, iprotate, warm
+from . import checkpoint, envcheck, hotels_io, iprotate, warm
 from .pace import AdaptivePacer, is_block_signal
 from .replay import query_via_capture
 from .session import make_session, load_cookies
@@ -18,51 +25,93 @@ from .sites import get_adapter
 
 # --------------------------------------------------------------------------- direct replay
 async def _direct_weeks(adapter, sess, cap, room_type, base, weeks, days, pacer, cfg):
+    """Replay every (week, day) via curl_cffi. Two fail-fast properties bound the cost:
+
+    * dead-capture abort — a capture whose replays only ever return block signals is dead
+      (Akamai rejected the session); more queries cannot heal it, they only burn 20-45s pacer
+      cooldowns each. After `direct_abort_blocks` blocks with zero successes the whole phase
+      aborts (worst case ~1 cooldown instead of weeks*days of them).
+    * clean flag — a week whose probed days ALL answered without a block signal carries the
+      same evidence a browser sweep would (same API, same extract); the caller may trust its
+      SOLD OUT/NA verdict and skip the browser re-verify.
+    """
+    health = {"oks": 0, "blocks": 0}
+
+    def dead():
+        return health["oks"] == 0 and health["blocks"] >= cfg.direct_abort_blocks
+
     async def one_week(wn):
         sold = False
+        clean = True
         for checkin in week_days(base, wn, days):
-            async with pacer.slot():
-                st, j = await query_via_capture(sess, cap, checkin, timeout=cfg.query_timeout_s)
+            if dead():
+                return {"week": wn, "price": "SOLD OUT" if sold else "NA", "clean": False}
+            ci = checkin.strftime("%Y-%m-%d")
+            if ci == cap.get("checkin") and adapter.response_is_definitive(cap.get("resp_json")):
+                st, j = 200, cap["resp_json"]     # warm nav already answered this exact day
+            else:
+                async with pacer.slot():
+                    if dead():                    # may have died while waiting out a cooldown
+                        return {"week": wn, "price": "SOLD OUT" if sold else "NA", "clean": False}
+                    st, j = await query_via_capture(sess, cap, checkin, timeout=cfg.query_timeout_s)
             res = adapter.extract(j or {}, room_type)
             if is_block_signal(st, res):
+                health["blocks"] += 1
                 pacer.record_block()
+                clean = False
                 continue                      # blocked -> never a price; try next day / re-verified later
+            health["oks"] += 1
             pacer.record_ok()
             if res.get("found"):
-                return {"week": wn, "price": res["price"]}
+                return {"week": wn, "price": res["price"], "clean": clean}
             if res.get("soldOut"):
                 sold = True
-        return {"week": wn, "price": "SOLD OUT" if sold else "NA"}
+        return {"week": wn, "price": "SOLD OUT" if sold else "NA", "clean": clean}
 
     return await asyncio.gather(*[one_week(w) for w in weeks])
 
 
 # --------------------------------------------------------------------------- browser fallback
-async def _browser_week(adapter, browser, url, room_type, wn, base, cfg, stealth, days):
+async def _browser_week(adapter, browser, url, room_type, wn, base, cfg, stealth, days,
+                        breaker=None, tag=""):
     sold = False
     day_list = week_days(base, wn, days)
     for i, checkin in enumerate(day_list):
-        res = await warm.browser_crawl_day(adapter, browser, url, room_type, checkin, cfg, stealth)
+        day_tag = f"[{tag[:18]}] W{wn} {checkin.strftime('%m/%d')}" if tag else ""
+        res = await warm.browser_crawl_day(adapter, browser, url, room_type, checkin, cfg,
+                                           stealth, breaker, tag=day_tag)
         if res.get("found"):
+            if tag:
+                print(f"      ✅ [{tag[:22]}] W{wn}: {res['price']} "
+                      f"({checkin.strftime('%m/%d')}, {str(res.get('room', ''))[:20]})", flush=True)
             return {"week": wn, "price": res["price"]}
         if res.get("soldOut"):
             sold = True
+        if res.get("skipped"):                # breaker tripped: no nav happened, no pause needed
+            continue
         if i < len(day_list) - 1:
             await asyncio.sleep(random.uniform(*cfg.intra_week_delay))
-    return {"week": wn, "price": "SOLD OUT" if sold else "NA"}
+    price = "SOLD OUT" if sold else "NA"
+    if tag:
+        print(f"      {'🚫' if sold else '❌'} [{tag[:22]}] W{wn}: {price}", flush=True)
+    return {"week": wn, "price": price}
 
 
 # --------------------------------------------------------------------------- per hotel
 async def crawl_hotel(adapter, browser, stealth, hotel_name, url, room_type,
-                      base, num_weeks, want, pacer, cfg):
+                      base, num_weeks, want, pacer, cfg, direct_enabled=True,
+                      camoufox_browser=None):
     prices = {f"Price W{i}": "NA" for i in range(1, num_weeks + 1)}
     want = want or list(range(1, num_weeks + 1))
     direct_got = 0
+    clean_weeks = set()
+    direct_dead = False
 
     # PHASE A+B — direct replay (only for sites where capture->replay is proven)
-    if adapter.direct_replay:
-        cap = await warm.warm_capture(adapter, url, base, cfg,
-                                      chromium=browser, stealth=stealth, verbose=False)
+    if adapter.direct_replay and direct_enabled:
+        cap = await warm.warm_capture(adapter, url, base, cfg, chromium=browser,
+                                      stealth=stealth, camoufox_browser=camoufox_browser,
+                                      verbose=False)
         if cap.get("req") is not None:
             sess = make_session(cap.get("impersonate"))
             load_cookies(sess, cap.get("cookies"), default_domain=f".{adapter.name}.com")
@@ -77,23 +126,33 @@ async def crawl_hotel(adapter, browser, stealth, hotel_name, url, room_type,
             for r in direct:
                 if r["week"] not in want:
                     continue
+                if r.get("clean"):
+                    clean_weeks.add(r["week"])
                 if is_real(r["price"]):
                     prices[f"Price W{r['week']}"] = r["price"]
                     direct_got += 1
                 elif str(r["price"]).startswith("SOLD OUT"):
-                    prices[f"Price W{r['week']}"] = r["price"]   # tentative; browser verifies
+                    prices[f"Price W{r['week']}"] = r["price"]
+            direct_dead = not direct_got and not clean_weeks   # every replay came back blocked
+        else:
+            direct_dead = True                                 # warm never captured the API req
 
-    # PHASE C — browser fallback for weeks still lacking a REAL price (browser = source of truth)
-    need = [w for w in want if not is_real(prices[f"Price W{w}"])]
+    # PHASE C — browser fallback ONLY for weeks direct could not answer without a block signal.
+    # A clean direct sweep saw the same API payloads a browser nav would, so its SOLD OUT/NA
+    # verdict is final; re-navigating those weeks was pure duplicate work.
+    need = [w for w in want if not is_real(prices[f"Price W{w}"])
+            and not (cfg.trust_direct_clean and w in clean_weeks)]
     fallback_count = len(need)
     still_blocked = []
     if need:
         sem = asyncio.Semaphore(cfg.weeks_parallel)
+        breaker = warm.new_breaker()   # shared across this hotel's weeks: fast-NA when hard-blocked
 
         async def one(wn):
             async with sem:
                 return await _browser_week(adapter, browser, url, room_type, wn, base, cfg,
-                                           stealth, cfg.days_per_week)
+                                           stealth, cfg.days_per_week, breaker,
+                                           tag=str(hotel_name))
 
         for r in await asyncio.gather(*[one(w) for w in need]):
             wn, new = r["week"], r["price"]
@@ -106,7 +165,7 @@ async def crawl_hotel(adapter, browser, stealth, hotel_name, url, room_type,
                 still_blocked.append(wn)
                 if not str(old).startswith("SOLD OUT"):
                     prices[f"Price W{wn}"] = "NA"
-    return prices, direct_got, fallback_count, still_blocked
+    return prices, direct_got, fallback_count, still_blocked, direct_dead
 
 
 # --------------------------------------------------------------------------- run
@@ -118,7 +177,7 @@ def _merge_only_improve(cur, prices, num_weeks):
     return cur
 
 
-async def run(site="agoda", input="agoda1.csv", sheet="", shard="", weeks=0, max=0,
+async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", weeks=0, max=0,
               out="", temp="", cfg=None, **overrides):
     """Full crawl. Returns the output CSV path."""
     cfg = cfg or Config()
@@ -129,7 +188,7 @@ async def run(site="agoda", input="agoda1.csv", sheet="", shard="", weeks=0, max
     num_weeks = weeks or cfg.num_weeks
     t0 = time.time()
 
-    hotels = hotels_io.read_hotels(input, sheet)
+    hotels = hotels_io.read_hotels(input, sheet, gid)
     shard_t = hotels_io.parse_shard(shard)
     if shard_t:
         hotels = hotels_io.apply_shard(hotels, shard_t)
@@ -139,7 +198,7 @@ async def run(site="agoda", input="agoda1.csv", sheet="", shard="", weeks=0, max
     base = base_checkin(cfg)
     today = datetime.today().strftime("%Y%m%d")
     base_name = os.path.splitext(os.path.basename(str(input)))[0] or site
-    if str(input).startswith("gsheet:") or "docs.google.com" in str(input):
+    if hotels_io.is_gsheet(input):
         base_name = site
     if shard_t:
         base_name = f"{base_name}_s{shard_t[0]}of{shard_t[1]}"
@@ -151,13 +210,33 @@ async def run(site="agoda", input="agoda1.csv", sheet="", shard="", weeks=0, max
     if prev:
         print(f"📂 Resume: {len(prev)} rows from {temp_file}", flush=True)
 
+    # Preflight THIS interpreter before spending hours crawling: a missing required package
+    # aborts with the exact install command; a missing optional one (e.g. camoufox) degrades
+    # loudly ONCE instead of silently per hotel.
+    missing = envcheck.check(verbose=False)
+    if missing:
+        raise SystemExit("❌ missing required packages — run:\n   " + envcheck.pip_hint(missing))
+    if cfg.engine == "camoufox" and not envcheck.has("camoufox"):
+        print("⚠️ Camoufox not installed — using chromium warm. For stronger stealth:\n"
+              "   pip install -U 'camoufox[geoip]' && python -m camoufox fetch", flush=True)
+        cfg.engine = "chromium"
+
     pacer = AdaptivePacer(cfg)
-    mode = "direct+fallback" if adapter.direct_replay else "browser-only"
+    direct_enabled = adapter.direct_replay
+    dead_streak = 0
+    mode = "direct+fallback" if direct_enabled else "browser-only"
     print(f"🚀 {site.upper()} crawl | {len(hotels)} hotels × {num_weeks}w | {mode} | "
           f"engine={cfg.engine} | W1={base.strftime('%Y-%m-%d')}", flush=True)
 
     blocked_keys = set()
-    async with warm.open_chromium(cfg) as (browser, stealth):
+    async with contextlib.AsyncExitStack() as stack:
+        browser, stealth = await stack.enter_async_context(warm.open_chromium(cfg))
+        cam = None
+        if direct_enabled and cfg.engine == "camoufox":
+            # ONE Camoufox for the whole run (launching it per hotel cost 5-10 s each).
+            cam = await stack.enter_async_context(warm.open_camoufox(cfg))
+            if cam is None:
+                cfg.engine = "chromium"
         for idx, (hn, hu, rt) in enumerate(hotels, 1):
             key = (str(hn), str(rt))
             need = checkpoint.weeks_needed(prev, key, num_weeks)
@@ -166,12 +245,22 @@ async def run(site="agoda", input="agoda1.csv", sheet="", shard="", weeks=0, max
                 continue
             print(f"\n🏨 {idx}/{len(hotels)} {hn} | {rt} | need weeks {need}", flush=True)
             try:
-                prices, dgot, nfb, blk = await crawl_hotel(
-                    adapter, browser, stealth, hn, hu, rt, base, num_weeks, need, pacer, cfg)
+                prices, dgot, nfb, blk, ddead = await crawl_hotel(
+                    adapter, browser, stealth, hn, hu, rt, base, num_weeks, need, pacer, cfg,
+                    direct_enabled=direct_enabled, camoufox_browser=cam)
             except Exception as e:
                 print(f"   ❌ {e}", flush=True)
                 prices = awp.get(key) or {f"Price W{i}": "NA" for i in range(1, num_weeks + 1)}
-                dgot, nfb, blk = 0, 0, need
+                dgot, nfb, blk, ddead = 0, 0, need, False
+            if direct_enabled:
+                # Direct replay dying hotel after hotel means the IP/TLS pairing is burned for
+                # this run: stop paying warm+replay per hotel and go straight to the browser
+                # (exactly the proven old pipeline), instead of losing minutes on every hotel.
+                dead_streak = dead_streak + 1 if ddead else 0
+                if dead_streak >= cfg.disable_direct_after:
+                    direct_enabled = False
+                    print(f"   🔻 direct replay dead for {dead_streak} hotels in a row — "
+                          f"switching to browser-only for the rest of the run", flush=True)
             cur = awp.get(key) or {f"Price W{i}": "NA" for i in range(1, num_weeks + 1)}
             awp[key] = _merge_only_improve(cur, prices, num_weeks)
             if blk:
@@ -183,9 +272,48 @@ async def run(site="agoda", input="agoda1.csv", sheet="", shard="", weeks=0, max
             checkpoint.save_backup_csv(awp, temp_file, num_weeks)
             await asyncio.sleep(random.uniform(*cfg.between_hotels))
 
-        # ---- cooldown rounds for still-blocked hotels ----
+        ki = {(str(h), str(r)): (h, u, r) for (h, u, r) in hotels}
+        # Rounds 2/3 navigate more patiently than the fail-fast round 1 (ported: 50-55 s
+        # page timeout vs 45 s) — these are the last shots at a cell, so patience > speed.
+        rcfg = _cfg_replace(cfg, page_timeout_ms=cfg.retry_page_timeout_ms)
+
+        # ---- round 2: browser re-crawl of every NA / SOLD OUT cell ----
+        if cfg.auto_retry_na_soldout:
+            retry = {k: [i for i in range(1, num_weeks + 1)
+                         if not is_real(awp[k].get(f"Price W{i}", "NA"))]
+                     for k in awp if k in ki}
+            retry = {k: v for k, v in retry.items() if v}
+            if retry:
+                print(f"\n🔄 Round 2: {sum(len(v) for v in retry.values())} cells / "
+                      f"{len(retry)} hotels still NA/SOLD OUT — browser retry…", flush=True)
+                updated = 0
+                for k, wk in retry.items():
+                    hn, hu, rt = ki[k]
+                    sem = asyncio.Semaphore(cfg.weeks_parallel)
+                    breaker = warm.new_breaker()   # tripped here -> hotel joins the cooldown rounds
+
+                    async def one(wn):
+                        async with sem:
+                            return await _browser_week(adapter, browser, hu, rt, wn, base, rcfg,
+                                                       stealth, cfg.retry_days_per_week, breaker,
+                                                       tag=str(hn))
+
+                    res = await asyncio.gather(*[one(w) for w in wk])
+                    if breaker.get("tripped"):
+                        blocked_keys.add(k)
+                    for r in res:
+                        new, old = r["price"], awp[k].get(f"Price W{r['week']}", "NA")
+                        if is_real(new) and new != old:
+                            awp[k][f"Price W{r['week']}"] = new
+                            updated += 1
+                        elif str(new).startswith("SOLD OUT") and not is_real(old):
+                            awp[k][f"Price W{r['week']}"] = new
+                    checkpoint.save_backup_csv(awp, temp_file, num_weeks)
+                    await asyncio.sleep(random.uniform(*cfg.between_hotels))
+                print(f"   🔄 Round 2 done: {updated} cells recovered", flush=True)
+
+        # ---- round 3: cooldown rounds for still-blocked hotels ----
         if cfg.retry_blocked_hotels and blocked_keys:
-            ki = {(str(h), str(r)): (h, u, r) for (h, u, r) in hotels}
             for rnd in range(1, cfg.max_block_rounds + 1):
                 still = {k: [i for i in range(1, num_weeks + 1)
                              if not is_real(awp[k].get(f"Price W{i}", "NA"))]
@@ -205,8 +333,9 @@ async def run(site="agoda", input="agoda1.csv", sheet="", shard="", weeks=0, max
 
                     async def one(wn):
                         async with sem:
-                            return await _browser_week(adapter, browser, hu, rt, wn, base, cfg,
-                                                       stealth, cfg.days_per_week)
+                            return await _browser_week(adapter, browser, hu, rt, wn, base, rcfg,
+                                                       stealth, cfg.retry_days_per_week,
+                                                       tag=str(hn))
 
                     for r in await asyncio.gather(*[one(w) for w in wk]):
                         new, old = r["price"], awp[k].get(f"Price W{r['week']}", "NA")

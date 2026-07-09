@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Command-line interface.
 
+  python -m crawler doctor
   python -m crawler capture --site agoda --url "<hotel url>" [--room "Deluxe"]
   python -m crawler replay  --site agoda [--room "Deluxe"]
   python -m crawler diag    --site agoda --url "<url>" --room "Deluxe"
@@ -41,6 +42,8 @@ def build_parser():
     ap = argparse.ArgumentParser(prog="crawler", description="Free direct-API price crawler (Agoda/Trip)")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
+    sub.add_parser("doctor", help="check THIS interpreter: packages + browser binaries + venv match")
+
     c = sub.add_parser("capture", help="Gate 0: warm + capture one real room-API request")
     _add_common(c)
     c.add_argument("--url", required=True)
@@ -58,8 +61,9 @@ def build_parser():
     g = sub.add_parser("crawl", help="Full hybrid crawl (direct + browser fallback)")
     _add_common(g)
     g.add_argument("--input", default="agoda1.csv",
-                   help="CSV/XLSX path, 'gsheet:<id>', or a Google Sheets URL")
-    g.add_argument("--sheet", default="", help="worksheet/tab name (gsheet/xlsx)")
+                   help="CSV/XLSX path, 'gsheet:<id>', or a full Google Sheets URL (gid auto-parsed)")
+    g.add_argument("--sheet", default="", help="worksheet/tab name (gsheet by name / xlsx)")
+    g.add_argument("--gid", default="", help="worksheet tab id (gsheet); overrides gid in the URL")
     g.add_argument("--shard", default="", help="'N/M' — crawl only shard N of M")
     g.add_argument("--weeks", type=int, default=0, help="0 = 6")
     g.add_argument("--max", type=int, default=0, help="cap number of hotels (0 = all)")
@@ -75,6 +79,9 @@ def build_parser():
 def main(argv=None):
     from . import gates, orchestrate
     args = build_parser().parse_args(argv)
+    if args.cmd == "doctor":
+        from . import envcheck
+        return 1 if envcheck.check(verbose=True) else 0
     cfg = _cfg_from(args)
     if args.cmd == "capture":
         return asyncio.run(gates.gate_capture(args.site, args.url, args.room, cfg))
@@ -84,7 +91,7 @@ def main(argv=None):
         return asyncio.run(gates.gate_diag(args.site, args.url, args.room, cfg))
     if args.cmd == "crawl":
         return asyncio.run(orchestrate.run(
-            site=args.site, input=args.input, sheet=args.sheet, shard=args.shard,
+            site=args.site, input=args.input, sheet=args.sheet, gid=args.gid, shard=args.shard,
             weeks=args.weeks, max=args.max, out=args.out, temp=args.temp, cfg=cfg))
 
 

@@ -11,6 +11,7 @@ host is preserved so returned room names match the language of room_type in the 
 """
 import glob
 import os
+import re
 from urllib.parse import quote
 
 
@@ -19,7 +20,15 @@ def _norm_cols(df):
     if not all(c in df.columns for c in req):
         df.columns = req + list(df.columns[3:])
     df = df[df["hotel_url"].notna() & (df["hotel_url"].astype(str).str.strip() != "")]
-    return df[req]
+    df = df[req]
+    bad = df[~df["hotel_url"].astype(str).str.strip().str.startswith(("http://", "https://"))]
+    if len(bad):
+        raise ValueError(
+            f"column 2 (hotel_url) is not a URL in {len(bad)}/{len(df)} rows "
+            f"(e.g. {str(bad.iloc[0]['hotel_url'])[:60]!r}). Input needs the first three columns "
+            f"to be (hotel_name, hotel_url, room_type) — TEMP_*/FINAL_* files are crawl OUTPUT, "
+            f"not input.")
+    return df
 
 
 def _resolve_local(path):
@@ -31,28 +40,45 @@ def _resolve_local(path):
     return cands[0] if cands else path
 
 
-def _gsheet_url(spec, sheet_name=""):
-    sid = spec
+def is_gsheet(spec):
+    spec = str(spec)
+    return spec.startswith("gsheet:") or "docs.google.com" in spec
+
+
+def _parse_gsheet(spec):
+    """Return (spreadsheet_id, gid) from a full Sheets URL, a 'gsheet:<id>[:<gid>]', or a bare id."""
+    sid, gid = spec, ""
     if spec.startswith("gsheet:"):
-        sid = spec.split(":", 1)[1]
+        rest = spec.split(":", 1)[1]
+        sid, _, gid = rest.partition(":")
     elif "docs.google.com" in spec:
-        # .../spreadsheets/d/<ID>/...
-        parts = spec.split("/d/")
-        if len(parts) > 1:
-            sid = parts[1].split("/")[0]
+        m = re.search(r"/d/([A-Za-z0-9_-]+)", spec)
+        if m:
+            sid = m.group(1)
+        g = re.search(r"[?#&]gid=(\d+)", spec)      # the specific tab (worksheet id)
+        if g:
+            gid = g.group(1)
+    return sid, gid
+
+
+def _gsheet_url(spec, sheet_name="", gid=""):
+    sid, url_gid = _parse_gsheet(spec)
+    gid = gid or url_gid
     url = f"https://docs.google.com/spreadsheets/d/{sid}/gviz/tq?tqx=out:csv"
-    if sheet_name:
+    if gid:
+        url += f"&gid={gid}"          # gid takes precedence — it targets the exact tab
+    elif sheet_name:
         url += f"&sheet={quote(sheet_name)}"
     return url
 
 
-def read_hotels(input_spec, sheet_name=""):
+def read_hotels(input_spec, sheet_name="", gid=""):
     """Return a list of (hotel_name, hotel_url, room_type) tuples."""
     import pandas as pd
 
     spec = str(input_spec)
-    if spec.startswith("gsheet:") or "docs.google.com" in spec:
-        df = _norm_cols(pd.read_csv(_gsheet_url(spec, sheet_name)))
+    if is_gsheet(spec):
+        df = _norm_cols(pd.read_csv(_gsheet_url(spec, sheet_name, gid)))
     elif spec.endswith(".xlsx"):
         df = _read_xlsx(_resolve_local(spec), sheet_name or "Hotel Link")
     else:

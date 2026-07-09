@@ -1,7 +1,9 @@
 # Modern free crawl stack — no paid proxies, no paid APIs.
 curl_cffi>=0.11          # TLS/JA3/HTTP2 impersonation for direct replay (Firefox + Chrome targets)
-camoufox[geoip]>=0.4     # anti-detect Firefox for the once-per-hotel warm (run: `camoufox fetch`)
-playwright==1.59.0       # PINNED: 1.60+ crashes Camoufox's Firefox (pageError.location.url); see daijro/camoufox#617
+camoufox[geoip]>=0.4.11  # anti-detect Firefox for the once-per-run warm (run: `camoufox fetch`)
+playwright>=1.59,!=1.60.*,<1.62   # 1.60 crashed Camoufox (daijro/camoufox#617); 1.59 and 1.61+camoufox
+                         # 0.4.11 are both live-validated. After upgrading, verify with
+                         # `python -m crawler doctor` + a `--max 2` smoke run.
 playwright-stealth>=1.0.6
 pandas>=1.5
 openpyxl>=3.0            # .xlsx hotel lists
@@ -10,3 +12,5 @@ nest-asyncio>=1.5        # notebook driver (re-entrant event loop)
 # After install also run:
 #   python -m playwright install chromium
 #   python -m camoufox fetch
+# Then verify the interpreter you'll crawl with:
+#   python -m crawler doctor

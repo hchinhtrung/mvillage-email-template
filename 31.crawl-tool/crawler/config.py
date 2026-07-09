@@ -13,12 +13,14 @@ class Config:
     currency: str = "VND"
     adults: int = 2
     rooms: int = 1
+    price_type: str = "final"        # final (all-in) | original (struck-through) | cashback
 
     # --- browser warm ---
     engine: str = "camoufox"         # "camoufox" (default, Firefox) | "chromium" (fallback)
     headless: bool = True
     page_timeout_ms: int = 45000
     api_wait_timeout_s: float = 25.0
+    cookies_file: str = "cookies.json"   # optional; loaded into browser contexts when present
 
     # --- direct replay (curl_cffi) ---
     impersonate: str = ""            # "" = auto-pick from captured UA / engine
@@ -32,6 +34,12 @@ class Config:
     pace_jitter: Tuple[float, float] = (0.6, 1.6)
     pace_block_cooldown: Tuple[float, float] = (20.0, 45.0)
 
+    # --- fail-fast (bounds worst-case time per hotel; see orchestrate.py) ---
+    direct_abort_blocks: int = 2     # direct blocks with 0 successes -> capture is dead, abort phase
+    disable_direct_after: int = 3    # consecutive dead-direct hotels -> browser-only for rest of run
+    block_circuit_limit: int = 2     # consecutive fully-blocked browser days -> skip hotel (NA fast)
+    trust_direct_clean: bool = True  # an unblocked direct week sweep is final (no browser re-verify)
+
     # --- general cadence (ported) ---
     between_hotels: Tuple[float, float] = (2.0, 5.0)
     nav_jitter: Tuple[float, float] = (0.3, 1.2)
@@ -42,6 +50,11 @@ class Config:
     weeks_parallel: int = 2          # weeks crawled concurrently in browser fallback
     nav_attempts: int = 2            # fresh-context nav retries when blocked
 
+    # --- round 2: auto re-crawl NA / SOLD OUT cells after round 1 ---
+    auto_retry_na_soldout: bool = True
+    retry_days_per_week: int = 5     # days probed per week during retry rounds
+    retry_page_timeout_ms: int = 55000   # rounds 2/3 navigate more patiently than round 1
+
     # --- round 3: cooldown retry of still-blocked hotels ---
     retry_blocked_hotels: bool = True
     max_block_rounds: int = 2
@@ -50,7 +63,7 @@ class Config:
 
     # --- fingerprint pools (chromium fallback engine only) ---
     warm_backoff: Tuple[float, float] = (1.5, 3.5)
-    warm_attempts: int = 4
+    warm_attempts: int = 2           # a failed warm is rescued by the browser fallback anyway
 
     # --- opt-in IP rotation ---
     rotate_ip_cmd: str = ""          # shell command run to switch IP (e.g. toggle hotspot)

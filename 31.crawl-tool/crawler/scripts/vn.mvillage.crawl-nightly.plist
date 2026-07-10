@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  launchd LaunchAgent: run the crawl at 01:00 every Wednesday (Weekday 3) and Friday (5).
+  Runs as the logged-in user with the user's real network/IP (required — Agoda binds cookies
+  to TLS+IP; a cloud runner would be useless). Install / reload with:
+      cp crawler/scripts/vn.mvillage.crawl-nightly.plist ~/Library/LaunchAgents/
+      launchctl unload ~/Library/LaunchAgents/vn.mvillage.crawl-nightly.plist 2>/dev/null
+      launchctl load  ~/Library/LaunchAgents/vn.mvillage.crawl-nightly.plist
+  If the Mac is asleep at 01:00, launchd runs the job when it next wakes.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>vn.mvillage.crawl-nightly</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/hchinhtrung/Documents/GitHub/mvillage-email-template/31.crawl-tool/crawler/scripts/nightly_crawl.sh</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/hchinhtrung/Documents/GitHub/mvillage-email-template/31.crawl-tool</string>
+
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict>
+            <key>Weekday</key><integer>3</integer>
+            <key>Hour</key><integer>1</integer>
+            <key>Minute</key><integer>0</integer>
+        </dict>
+        <dict>
+            <key>Weekday</key><integer>5</integer>
+            <key>Hour</key><integer>1</integer>
+            <key>Minute</key><integer>0</integer>
+        </dict>
+    </array>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/bin</string>
+        <key>LANG</key>
+        <string>en_US.UTF-8</string>
+        <!-- Browsers live outside ~/Library/Caches so cache cleaners don't wipe them. -->
+        <key>PLAYWRIGHT_BROWSERS_PATH</key>
+        <string>/Users/hchinhtrung/Library/Application Support/ms-playwright</string>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/hchinhtrung/Documents/GitHub/mvillage-email-template/31.crawl-tool/logs/launchd.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/hchinhtrung/Documents/GitHub/mvillage-email-template/31.crawl-tool/logs/launchd.err.log</string>
+</dict>
+</plist>

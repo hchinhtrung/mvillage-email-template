@@ -15,6 +15,18 @@ Public entry points:
   crawler.arun(...)    -> async coroutine
   python -m crawler ... -> CLI (capture / replay / diag / crawl)
 """
+import os as _os
+import sys as _sys
+
+# Keep Playwright's browser binaries OUT of ~/Library/Caches, which cache cleaners
+# (e.g. `npx mac-cleaner-cli`) wipe — otherwise every clear forces a re-download and the
+# "run playwright install" banner returns. setdefault semantics: an explicit
+# PLAYWRIGHT_BROWSERS_PATH from the shell/launchd still wins. Playwright reads this at
+# browser-launch time, so setting it here (before any warm.py import) is enough.
+if not _os.environ.get("PLAYWRIGHT_BROWSERS_PATH") and _sys.platform == "darwin":
+    _os.environ["PLAYWRIGHT_BROWSERS_PATH"] = _os.path.expanduser(
+        "~/Library/Application Support/ms-playwright")
+
 from .config import Config
 
 __version__ = "0.4.0"

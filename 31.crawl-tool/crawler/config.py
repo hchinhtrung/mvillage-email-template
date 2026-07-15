@@ -72,6 +72,9 @@ class Config:
     weeks_parallel: int = 2          # weeks crawled concurrently in browser fallback
     nav_attempts: int = 2            # fresh-context nav retries when blocked
 
+    # --- resume ordering (round 1) ---
+    resume_new_first: bool = True    # on restart, never-crawled hotels run before NA/SOLD-OUT retries
+
     # --- round 2: auto re-crawl NA / SOLD OUT cells after round 1 ---
     auto_retry_na_soldout: bool = True
     retry_days_per_week: int = 5     # days probed per week during retry rounds

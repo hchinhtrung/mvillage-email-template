@@ -187,6 +187,22 @@ def test_checkpoint_and_merge():
     check("real overwrites SOLD OUT", merged["Price W3"] == "3,000")
 
 
+def test_resume_order():
+    print("[resume order: fresh hotels before NA/SOLD-OUT retries]")
+    from crawler.config import Config
+    from crawler.orchestrate import _resume_order
+    # simulate: hotels 1-3 already in checkpoint (partial), 4-5 never crawled
+    prev = {("H1", "R"): {}, ("H2", "R"): {}, ("H3", "R"): {}}
+    work = [(i, f"H{i}", f"u{i}", "R", (f"H{i}", "R"), [1]) for i in range(1, 6)]
+    fresh, redo = _resume_order(work, prev)
+    check("never-crawled hotels come first", [w[1] for w in fresh] == ["H4", "H5"])
+    check("checkpointed hotels retry after", [w[1] for w in redo] == ["H1", "H2", "H3"])
+    check("input order kept inside each group", [w[0] for w in fresh + redo] == [4, 5, 1, 2, 3])
+    fresh2, redo2 = _resume_order(work, {})
+    check("fresh run (no checkpoint) keeps input order", [w[0] for w in fresh2 + redo2] == [1, 2, 3, 4, 5])
+    check("resume_new_first defaults on", Config().resume_new_first is True)
+
+
 async def test_pacer():
     print("[adaptive pacer AIMD]")
     from crawler.config import Config
@@ -616,6 +632,7 @@ def main():
     test_gsheet_parse()
     test_dates()
     test_checkpoint_and_merge()
+    test_resume_order()
     asyncio.run(test_pacer())
     asyncio.run(test_direct_fail_fast())
     asyncio.run(test_browser_breaker())

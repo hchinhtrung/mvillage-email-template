@@ -299,6 +299,18 @@ def _merge_only_improve(cur, prices, num_weeks):
     return cur
 
 
+def _resume_order(work, prev):
+    """Split the round-1 work list into (fresh, redo), each keeping input order.
+
+    fresh = hotels with NO row in the checkpoint yet (never attempted); redo = hotels that
+    already have a row but still show NA/SOLD OUT cells. A restarted run crawls fresh first
+    so it reaches new hotels immediately instead of re-fighting blocked/sold-out ones.
+    `work` items are (idx, hotel_name, hotel_url, room_type, key, need)."""
+    fresh = [w for w in work if w[4] not in prev]
+    redo = [w for w in work if w[4] in prev]
+    return fresh, redo
+
+
 async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", weeks=0, max=0,
               out="", temp="", cfg=None, **overrides):
     """Full crawl. Returns the output CSV path."""
@@ -376,6 +388,12 @@ async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", week
                 print(f"✔️  {idx}/{len(hotels)} {hn} — complete, skip", flush=True)
             else:
                 work.append((idx, hn, hu, rt, key, need))
+        if cfg.resume_new_first and prev:
+            fresh, redo = _resume_order(work, prev)
+            if fresh and redo:
+                print(f"⏭️  Resume order: {len(fresh)} new hotels first, "
+                      f"{len(redo)} NA/SOLD-OUT retries after", flush=True)
+            work = fresh + redo
 
         async def _prepare(hu_):
             """Capture for one hotel: disk cache first, else browser warm. Never raises —

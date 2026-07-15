@@ -1,2 +1,4 @@
 shell-init: error retrieving current directory: getcwd: cannot access parent directories: Operation not permitted
 /bin/bash: /Users/hchinhtrung/Documents/GitHub/mvillage-email-template/31.crawl-tool/crawler/scripts/nightly_crawl.sh: Operation not permitted
+shell-init: error retrieving current directory: getcwd: cannot access parent directories: Operation not permitted
+/bin/bash: /Users/hchinhtrung/Documents/GitHub/mvillage-email-template/31.crawl-tool/crawler/scripts/nightly_crawl.sh: Operation not permitted

@@ -164,7 +164,10 @@ public IP changed afterwards.
 ## Output (unchanged from the current pipeline)
 
 - Checkpoint: `TEMP_<input>.csv` (written after every hotel; safe to kill & resume — only weeks
-  without a real price are re-crawled).
+  without a real price are re-crawled). On resume, hotels with **no checkpoint row yet** run
+  first and hotels that still show NA/`SOLD OUT` retry after them (console prints
+  `⏭️ Resume order: …`) — so a restart reaches untouched hotels immediately instead of
+  re-fighting blocked ones. Set `resume_new_first=False` to restore plain top-down order.
 - Final: `FINAL_<YYYYMMDD>.csv`.
 - Columns: `hotel_name, room_type, price_w1 … price_w6`. Agoda cells are plain numbers
   (`4,671,429`); Trip cells are `VND 1,070,809`. Missing = `NA`; genuinely unavailable = `SOLD OUT`.
@@ -194,6 +197,8 @@ after `pace_ramp_after` clean replays, and **halves + cools down** on any block.
 `num_weeks`, `days_per_week`, `weeks_parallel`, `engine`, `impersonate`, `headless`.
 Fail-fast knobs: `direct_abort_blocks`, `disable_direct_after`, `block_circuit_limit`,
 `trust_direct_clean` (set False to force the browser to re-verify every non-priced week).
+Resume: `resume_new_first` (default True — never-crawled hotels before NA/SOLD-OUT retries;
+pass `crawler.crawl(..., resume_new_first=False)` for the old top-down order).
 
 ## Self-test (no network)
 

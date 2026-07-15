@@ -190,16 +190,26 @@ def test_checkpoint_and_merge():
 def test_resume_order():
     print("[resume order: fresh hotels before NA/SOLD-OUT retries]")
     from crawler.config import Config
-    from crawler.orchestrate import _resume_order
-    # simulate: hotels 1-3 already in checkpoint (partial), 4-5 never crawled
-    prev = {("H1", "R"): {}, ("H2", "R"): {}, ("H3", "R"): {}}
-    work = [(i, f"H{i}", f"u{i}", "R", (f"H{i}", "R"), [1]) for i in range(1, 6)]
-    fresh, redo = _resume_order(work, prev)
-    check("never-crawled hotels come first", [w[1] for w in fresh] == ["H4", "H5"])
-    check("checkpointed hotels retry after", [w[1] for w in redo] == ["H1", "H2", "H3"])
-    check("input order kept inside each group", [w[0] for w in fresh + redo] == [4, 5, 1, 2, 3])
-    fresh2, redo2 = _resume_order(work, {})
-    check("fresh run (no checkpoint) keeps input order", [w[0] for w in fresh2 + redo2] == [1, 2, 3, 4, 5])
+    from crawler.orchestrate import _build_work
+    hotels = [(f"H{i}", f"u{i}", "R") for i in range(1, 6)]
+    # checkpoint: H1 complete, H2 partial (W2 missing), H3 attempted but fully blocked;
+    # H4/H5 have no row (never crawled)
+    prev = {("H1", "R"): {"Price W1": "1,000", "Price W2": "2,000"},
+            ("H2", "R"): {"Price W1": "1,000", "Price W2": "NA"},
+            ("H3", "R"): {"Price W1": "NA", "Price W2": "SOLD OUT"}}
+    awp = {k: dict(v) for k, v in prev.items()}
+    work, skipped, nf, nr = _build_work(hotels, awp, prev, 2, resume_new_first=True)
+    check("complete hotel is skipped", [hn for _, hn in skipped] == ["H1"])
+    check("never-crawled hotels crawl first", [w[1] for w in work] == ["H4", "H5", "H2", "H3"])
+    check("fresh/redo counts reported for banner", (nf, nr) == (2, 2))
+    check("partial hotel only needs its missing weeks",
+          [w[5] for w in work if w[1] == "H2"] == [[2]])
+    work_off, _, nf0, nr0 = _build_work(hotels, awp, prev, 2, resume_new_first=False)
+    check("flag off keeps input order", [w[1] for w in work_off] == ["H2", "H3", "H4", "H5"])
+    check("flag off reports no re-order", (nf0, nr0) == (0, 0))
+    work_first, _, _, _ = _build_work(hotels, {}, {}, 2, resume_new_first=True)
+    check("fresh run (no checkpoint) keeps input order",
+          [w[1] for w in work_first] == ["H1", "H2", "H3", "H4", "H5"])
     check("resume_new_first defaults on", Config().resume_new_first is True)
 
 
@@ -530,8 +540,8 @@ async def test_shared_prepass():
         pk = ("Priced Hotel", "Deluxe")
         sk = ("SoldOut Hotel", "Deluxe")
         check("priced hotel filled from shared session", awp.get(pk, {}).get("Price W1") == "3,000,000")
-        check("sold-out shell NOT trusted (stays NA)",
-              all(awp.get(sk, {}).get(f"Price W{i}", "NA") == "NA" for i in range(1, 7)))
+        check("sold-out shell NOT trusted — no checkpoint row (stays fresh on restart)",
+              sk not in awp)
         check("cold hotel (no cached pid) skipped by pre-pass",
               ("Cold Hotel", "Deluxe") not in awp)
         check("filled count = priced cells only", filled == 6)

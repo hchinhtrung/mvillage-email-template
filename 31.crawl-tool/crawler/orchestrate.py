@@ -148,8 +148,11 @@ async def _shared_prepass(adapter, browser, stealth, cam, hotels, base, num_week
         return cap if cap.get("req") is not None else None
 
     for hn, hu, rt, key, pid in todo:
-        awp.setdefault(key, {f"Price W{i}": "NA" for i in range(1, num_weeks + 1)})
-        need = [i for i in range(1, num_weeks + 1) if not is_real(awp[key].get(f"Price W{i}", "NA"))]
+        # No awp row is created up front: a checkpoint row must mean "this hotel has real
+        # data", otherwise a restart would misread untouched hotels as already-attempted
+        # and resume_new_first would silently degrade to plain input order.
+        row = awp.get(key) or {}
+        need = [i for i in range(1, num_weeks + 1) if not is_real(row.get(f"Price W{i}", "NA"))]
         if not need:
             continue
         if (donor is None or since_refresh >= cfg.shared_refresh_every
@@ -176,6 +179,7 @@ async def _shared_prepass(adapter, browser, stealth, cam, hotels, base, num_week
         got = 0
         for r in direct:
             if is_real(r["price"]):                  # trust ONLY real prices
+                awp.setdefault(key, {f"Price W{i}": "NA" for i in range(1, num_weeks + 1)})
                 awp[key][f"Price W{r['week']}"] = r["price"]
                 got += 1
                 filled += 1
@@ -311,6 +315,27 @@ def _resume_order(work, prev):
     return fresh, redo
 
 
+def _build_work(hotels, awp, prev, num_weeks, resume_new_first):
+    """Round-1 work list in final crawl order, plus the complete hotels to skip.
+
+    Returns (work, skipped, n_fresh, n_redo). `need` is read from awp so pre-pass fills and
+    resume state both count as done. With resume_new_first and a non-empty checkpoint the
+    list is re-ordered never-crawled-first (see _resume_order); n_fresh/n_redo are 0 when no
+    re-ordering was applied."""
+    work, skipped = [], []
+    for idx, (hn, hu, rt) in enumerate(hotels, 1):
+        key = (str(hn), str(rt))
+        need = checkpoint.weeks_needed(awp, key, num_weeks)
+        if not need:
+            skipped.append((idx, hn))
+        else:
+            work.append((idx, hn, hu, rt, key, need))
+    if resume_new_first and prev:
+        fresh, redo = _resume_order(work, prev)
+        return fresh + redo, skipped, len(fresh), len(redo)
+    return work, skipped, 0, 0
+
+
 async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", weeks=0, max=0,
               out="", temp="", cfg=None, **overrides):
     """Full crawl. Returns the output CSV path."""
@@ -378,22 +403,14 @@ async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", week
                                   awp, pacer, cfg, temp_file)
 
         # The work list is fixed up front (resume state never changes inside round 1), which
-        # lets the warm pipeline see exactly one hotel ahead. `need` is read from awp so the
-        # pre-pass's fills (and any resume state) both count as done.
-        work = []
-        for idx, (hn, hu, rt) in enumerate(hotels, 1):
-            key = (str(hn), str(rt))
-            need = checkpoint.weeks_needed(awp, key, num_weeks)
-            if not need:
-                print(f"✔️  {idx}/{len(hotels)} {hn} — complete, skip", flush=True)
-            else:
-                work.append((idx, hn, hu, rt, key, need))
-        if cfg.resume_new_first and prev:
-            fresh, redo = _resume_order(work, prev)
-            if fresh and redo:
-                print(f"⏭️  Resume order: {len(fresh)} new hotels first, "
-                      f"{len(redo)} NA/SOLD-OUT retries after", flush=True)
-            work = fresh + redo
+        # lets the warm pipeline see exactly one hotel ahead.
+        work, skipped, n_fresh, n_redo = _build_work(hotels, awp, prev, num_weeks,
+                                                     cfg.resume_new_first)
+        for idx, hn in skipped:
+            print(f"✔️  {idx}/{len(hotels)} {hn} — complete, skip", flush=True)
+        if n_fresh and n_redo:
+            print(f"⏭️  Resume order: {n_fresh} new hotels first, "
+                  f"{n_redo} NA/SOLD-OUT retries after", flush=True)
 
         async def _prepare(hu_):
             """Capture for one hotel: disk cache first, else browser warm. Never raises —
@@ -435,7 +452,16 @@ async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", week
                 # Direct replay dying hotel after hotel means the IP/TLS pairing is burned for
                 # this run: stop paying warm+replay per hotel and go straight to the browser
                 # (exactly the proven old pipeline), instead of losing minutes on every hotel.
-                dead_streak = dead_streak + 1 if ddead else 0
+                # A hotel whose checkpoint row has zero real prices is a known repeat offender
+                # (deterministic dead warm, e.g. dead URL) — resume_new_first clusters those
+                # consecutively, so their deaths hold the streak instead of feeding it.
+                known_bad = key in prev and not any(
+                    is_real(prev[key].get(f"Price W{i}", "NA")) for i in range(1, num_weeks + 1))
+                if ddead:
+                    if not known_bad:
+                        dead_streak += 1
+                else:
+                    dead_streak = 0
                 if dead_streak >= cfg.disable_direct_after:
                     direct_enabled = False
                     if prewarm is not None:

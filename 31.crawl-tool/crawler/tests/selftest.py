@@ -75,7 +75,10 @@ def test_agoda_parser():
 
 def test_trip_parser():
     print("[trip parser]")
+    from crawler.config import Config
+    from crawler.sites import get_adapter
     from crawler.sites.trip import extract_from_api
+    from crawler.warm import locale_for_url
     priced = {"data": {
         "physicRoomMap": {"11": {"name": "Superior Room"}},
         "saleRoomMap": {"s1": {"physicalRoomId": 11,
@@ -90,6 +93,19 @@ def test_trip_parser():
     block = {"data": {}}  # no maps, no flag
     r = extract_from_api(block, "Superior")
     check("empty data, no flag -> BLOCKED", r.get("blocked"))
+
+    a = get_adapter("trip", Config())
+    check("definitive: rooms-bearing", a.response_is_definitive(priced))
+    check("definitive: isRoomListSoldOut", a.response_is_definitive(soldout))
+    check("NOT definitive: empty skeleton (keep scrolling)",
+          not a.response_is_definitive(block) and not a.response_is_definitive(None))
+    check("locale vn.trip.com -> vi-VN", locale_for_url("https://vn.trip.com/hotels/x") == "vi-VN")
+    check("locale www.trip.com -> en-US", locale_for_url("https://www.trip.com/hotels/x") == "en-US")
+
+    tcfg = Config.with_site_defaults("trip")
+    check("trip site profile: patient wait + 3 nav attempts",
+          tcfg.nav_attempts >= 3 and tcfg.api_wait_timeout_s >= 32
+          and tcfg.camoufox_humanize and tcfg.camoufox_geoip)
 
 
 def test_date_shift():
@@ -610,6 +626,8 @@ def test_envcheck():
     check("this interpreter has every REQUIRED package", missing == [])
     check("pip hint targets THIS interpreter, never a bare `pip`",
           envcheck.pip_hint(["x"]).startswith(sys.executable))
+    pw_ok, pw_ver = envcheck.playwright_camoufox_ok()
+    check(f"playwright {pw_ver} is Camoufox-compatible (1.59.x)", pw_ok)
 
 
 def test_cli():

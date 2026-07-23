@@ -43,7 +43,7 @@ jw marriott hotel & suites saigon,"Deluxe Guest room, 1 King","5,600,000","5,600
 Khách sạn Awaken Đà Nẵng,Deluxe giường đôi Hướng biển một phần (Deluxe Double Partial Sea View),"2,349,206","1,809,430","2,507,937","2,111,111","2,111,111","2,111,111"
 Khách sạn Dalat Palace,Phòng Superior (Superior Room),"2,473,941","2,705,627","2,705,627","2,705,627","2,705,627","3,571,428"
 kin wander tan binh,Phòng Tiêu chuẩn có ban công (Standard with Balcony),"2,870,370","2,870,370","2,870,370","2,870,370","2,870,370","2,870,370"
-La siesta - Suite Junior Tiêu Chuẩn (Junior Suite Standard),Suite Junior Tiêu Chuẩn (Junior Suite Standard),"8,709,678",SOLD OUT,"8,527,263",NA,NA,NA
+La siesta - Suite Junior Tiêu Chuẩn (Junior Suite Standard),Suite Junior Tiêu Chuẩn (Junior Suite Standard),NA,SOLD OUT,NA,NA,NA,NA
 Le Récit - Deluxe giường đôi (Deluxe Double) - 25,Deluxe giường đôi (Deluxe Double),"966,490","966,490","966,490","1,287,478","966,490","2,151,675"
 Le Récit - Penthouse - 38,Penthouse,"2,380,952","2,856,579","2,380,952","2,380,952","2,380,952","3,915,344"
 Le Récit - Phòng Deluxe 2 Giường đơn (Deluxe Twin) - 25,Phòng Deluxe 2 Giường đơn (Deluxe Twin),"966,490","966,490","966,490","1,287,478","966,490","2,151,675"
@@ -52,7 +52,7 @@ Le Récit - Suite dạng Căn hộ áp mái 2 Phòng ngủ (Penthouse 2 Bedroom 
 Le Récit - Suite Deluxe (Deluxe Suite) - 30,Suite Deluxe (Deluxe Suite),"1,816,578","1,816,578","1,816,578","1,816,578","1,816,578","2,927,690"
 Le Récit - Suite Giường Lớn (King Suite) - 40,Suite Giường Lớn (King Suite),"2,610,229","2,610,229","2,610,229","2,610,229","2,610,229","4,303,351"
 liberty,Deluxe Room Only,"1,711,111","1,629,630","1,629,630","1,792,593","1,466,667","1,629,630"
-Marriott Resort & Spa,"Deluxe Garden, Guest room, 2 Twin, Garden view, Balcony (Deluxe Garden, Guest Room, 2 Twin, Garden View, Balcony)","7,300,000","5,900,000","7,000,000","4,500,000","4,200,000","3,900,000"
+Marriott Resort & Spa,"Deluxe Garden, Guest room, 2 Twin, Garden view, Balcony (Deluxe Garden, Guest Room, 2 Twin, Garden View, Balcony)",SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
 Meliá Vinpearl Riverfront,Phòng Loại Sang (Deluxe Room),"2,362,857","1,700,658","2,274,732","2,186,607","2,186,607","2,450,982"
 memory,Phòng Loại Sang Giường Đôi (Deluxe Double Room),"993,421","993,421","993,421","993,421","1,313,783","1,587,196"
 mia q2,Deluxe 2 giường Hướng sông (Deluxe Twin River View),"6,214,286","6,943,122","6,490,476","6,248,810","6,586,376","6,586,376"
@@ -63,7 +63,7 @@ MV Nguyễn Kiệm,Studio không có Cửa sổ (Studio without Window),"791,005
 Nesta,Deluxe giường đôi Có ban công (Deluxe Balcony Double),"1,454,740","1,458,786","1,458,786","1,460,135","1,460,135","1,460,135"
 paragon,Junior Deluxe,"1,711,108","1,711,108","1,711,108","1,711,108","1,711,108","1,711,108"
 Penisula,Phòng Deluxe Giường Đôi Hướng Phố (Deluxe City View Double Room),"1,705,702","1,705,702","1,705,702","1,705,702","2,741,755","2,741,755"
-Radisson Hotel Danang,Phòng Loại Sang (Deluxe Room),"4,206,349","3,015,873","3,293,651","2,460,317","2,265,351","2,063,492"
+Radisson Hotel Danang,Phòng Loại Sang (Deluxe Room),SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
 The Concept Hotel HCMC - D1,Suite giường Queen (Queen Suite),"1,666,667","1,851,852","1,851,852","1,851,852","1,851,852","1,851,852"
 The Hammock Hotel Fine Arts Museum,Phòng 2 Giường Đơn (Cozy Twin Nest),"1,187,302","1,187,302","1,187,302","1,187,302","1,187,302","1,187,302"
 The mist boutique - Deluxe 3 người (Triple Deluxe),Deluxe 3 người (Triple Deluxe),"1,847,619","1,525,219","1,847,619","1,847,619","1,847,619","1,525,219"
@@ -91,9 +91,9 @@ Valley - Deluxe Studio,Deluxe Studio,"1,074,342","1,074,342","1,074,342","1,429,
 Valley - Grand Deluxe City View Room,Grand Deluxe City View Room,"1,266,667","1,700,658","1,676,014","1,873,192","1,873,192","2,514,021"
 Valley - Grand Suite,Grand Suite,"3,005,820","2,711,199","3,992,857","3,894,268","3,894,268","3,204,145"
 Valley - Junior Suite with Balcony,Junior Suite with Balcony,"3,005,820","2,711,199","2,711,199","2,249,342","2,711,199","3,204,145"
-Valley - King Room,King Room,"1,836,049","1,416,381","1,836,049","1,836,049","2,360,635","1,101,630"
+Valley - King Room,King Room,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
 Valley - Suite Room,Suite Room,"3,005,820","2,711,199","2,711,199","2,711,199","2,711,199","3,204,145"
 Valley - Suite with Valley View,Suite with Valley View,"3,902,293","3,549,206","3,233,772","3,401,323","3,401,323","3,233,772"
 vissai,Deluxe giường đôi (Deluxe Double),"1,855,238","1,855,238","1,855,238","1,855,238","1,855,238","1,855,238"
-Wink Hotel Danang Riverside,Phòng có giường Queen (1 Queen Bed),"1,400,000","1,200,000","1,200,000","1,150,000","1,150,000","950,000"
-Wyndham Soleil Danang Hotel,"Deluxe Studio, 2 Single Beds, with Balcony and City View","2,246,711","2,246,711","2,468,550","2,098,268","2,098,268","2,098,268"
+Wink Hotel Danang Riverside,Phòng có giường Queen (1 Queen Bed),SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT
+Wyndham Soleil Danang Hotel,"Deluxe Studio, 2 Single Beds, with Balcony and City View",SOLD OUT,SOLD OUT,SOLD OUT,SOLD OUT,"2,098,268",SOLD OUT

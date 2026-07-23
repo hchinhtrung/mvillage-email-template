@@ -1,9 +1,12 @@
 # Modern free crawl stack — no paid proxies, no paid APIs.
 curl_cffi>=0.11          # TLS/JA3/HTTP2 impersonation for direct replay (Firefox + Chrome targets)
 camoufox[geoip]>=0.4.11  # anti-detect Firefox for the once-per-run warm (run: `camoufox fetch`)
-playwright>=1.59,!=1.60.*,<1.62   # 1.60 crashed Camoufox (daijro/camoufox#617); 1.59 and 1.61+camoufox
-                         # 0.4.11 are both live-validated. After upgrading, verify with
-                         # `python -m crawler doctor` + a `--max 2` smoke run.
+# Playwright pin is LOAD-BEARING for Camoufox:
+#   * 1.60.* crashed Camoufox Firefox (daijro/camoufox#617)
+#   * 1.61+ sends viewport.isMobile that Camoufox Juggler rejects
+#     (daijro/camoufox#653: "Found property ... isMobile ... not described in this scheme")
+# Stay on 1.59.x until Camoufox ships a Juggler that accepts isMobile.
+playwright>=1.59,<1.60
 playwright-stealth>=1.0.6
 pandas>=1.5
 openpyxl>=3.0            # .xlsx hotel lists

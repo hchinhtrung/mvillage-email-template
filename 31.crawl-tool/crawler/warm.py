@@ -3,21 +3,37 @@
 
   warm_capture()      — WARM once per hotel with the anti-detect engine (Camoufox by default),
                         capturing the real room-API request + cookies + apiKey for direct replay.
-  browser_crawl_day() — reliable fallback: a normal browser nav that intercepts the room-API
-                        RESPONSE (no request capture needed). Always chromium + stealth with a
-                        fresh rotated context per attempt (proven for parallel week crawling).
+  browser_crawl_day() — browser nav that intercepts the room-API RESPONSE (no request capture).
+                        Prefers Camoufox when available (required for Trip browser-only); falls
+                        back to chromium + playwright-stealth. Fresh context per attempt.
 
-Engine split rationale: Camoufox (Firefox) gives the strongest stealth exactly where blocks
-happen — the one warm nav per hotel. The fallback opens many parallel contexts, which
-chromium does cheaply, so it stays on chromium regardless of the warm engine.
+Engine split:
+  * Camoufox (Firefox, humanize+geoip) — strongest anti-detect. Used for Agoda warm AND for
+    every Trip nav (Trip cannot direct-replay, so stealth quality is the whole game).
+  * Chromium + stealth — cheap parallel fallback when Camoufox is unavailable.
 """
 import asyncio
 import contextlib
 import json
 import os
 import random
+from urllib.parse import urlsplit
 
 from .session import pick_impersonate
+
+
+def locale_for_url(url):
+    """Match browser locale to the hotel host language (vn.trip.com → vi-VN, etc.)."""
+    host = (urlsplit(url or "").hostname or "").lower()
+    if host.startswith("vn.") or ".vn." in host:
+        return "vi-VN"
+    if host.startswith("jp.") or ".jp." in host:
+        return "ja-JP"
+    if host.startswith("kr.") or ".kr." in host:
+        return "ko-KR"
+    if host.startswith("th.") or ".th." in host:
+        return "th-TH"
+    return "en-US"
 
 # --- optional cookies.json (same format the old notebook used) ---
 _cookie_cache = {}
@@ -187,10 +203,10 @@ async def _capture_on_context(adapter, ctx, hotel_url, checkin, cfg, stealth):
     return cap
 
 
-async def _new_camoufox_context(browser):
+async def _new_camoufox_context(browser, locale="en-US", timezone_id="Asia/Ho_Chi_Minh"):
     """Camoufox may run a persistent context; prefer new_context, fall back to the existing one."""
     try:
-        ctx = await browser.new_context(locale="en-GB", timezone_id="Asia/Ho_Chi_Minh")
+        ctx = await browser.new_context(locale=locale, timezone_id=timezone_id)
         return ctx, True
     except Exception:
         try:
@@ -202,21 +218,55 @@ async def _new_camoufox_context(browser):
         raise
 
 
+def _camoufox_launch_kwargs(cfg):
+    """Latest Camoufox anti-detect knobs (humanize + geoip + OS fingerprint pool)."""
+    kw = {"headless": cfg.headless}
+    if getattr(cfg, "camoufox_humanize", True):
+        kw["humanize"] = True
+    if getattr(cfg, "camoufox_geoip", True):
+        kw["geoip"] = True
+    os_fp = getattr(cfg, "camoufox_os", None)
+    if os_fp:
+        kw["os"] = os_fp
+    return kw
+
+
 @contextlib.asynccontextmanager
 async def open_camoufox(cfg):
     """Long-lived Camoufox for a whole run — ONE browser launch instead of one per hotel
     (a Camoufox launch costs 5-10 s; across ~90 hotels that alone was ~10 minutes).
     Yields None when Camoufox is unavailable or crashes at startup; callers then downgrade
-    to the chromium warm."""
+    to the chromium warm.
+
+    Also smoke-tests `new_page()` once: Playwright 1.61+ sends viewport.isMobile that
+    Camoufox Juggler rejects — launch succeeds but every context fails. Detect early and
+    fall back to chromium instead of soft-failing every hotel.
+    """
     cm = browser = None
     try:
         from camoufox.async_api import AsyncCamoufox
-        cm = AsyncCamoufox(headless=cfg.headless)
+        cm = AsyncCamoufox(**_camoufox_launch_kwargs(cfg))
         browser = await cm.__aenter__()
+        # Smoke: one throwaway page proves the Playwright↔Juggler handshake works.
+        try:
+            page = await browser.new_page()
+            with contextlib.suppress(Exception):
+                await page.close()
+        except Exception as e:
+            msg = str(e)
+            hint = ""
+            if "isMobile" in msg or "setDefaultViewport" in msg:
+                hint = (" — Playwright 1.61+ breaks Camoufox; pin 1.59.x:\n"
+                        "     pip install 'playwright>=1.59,<1.60'")
+            print(f"  ⚠️ Camoufox launched but new_page failed ({type(e).__name__}: "
+                  f"{msg[:160]}){hint}\n     → chromium this run.", flush=True)
+            with contextlib.suppress(Exception):
+                await cm.__aexit__(None, None, None)
+            cm = browser = None
     except Exception as e:
-        print(f"  ⚠️ Camoufox unavailable ({type(e).__name__}: {e}) — chromium warm this run.",
+        print(f"  ⚠️ Camoufox unavailable ({type(e).__name__}: {e}) — chromium this run.",
               flush=True)
-        cm = None
+        cm = browser = None
     try:
         yield browser
     finally:
@@ -230,7 +280,7 @@ async def _warm_camoufox_on(adapter, browser, hotel_url, checkin, cfg, verbose):
     stealth = None  # Camoufox is stealthy by itself
     cap = {"req": None, "resp_json": None, "checkin": checkin.strftime("%Y-%m-%d"), "xhr_urls": []}
     for attempt in range(2):
-        ctx, own = await _new_camoufox_context(browser)
+        ctx, own = await _new_camoufox_context(browser, locale=locale_for_url(hotel_url))
         try:
             cap = await _capture_on_context(adapter, ctx, hotel_url, checkin, cfg, stealth)
         finally:
@@ -264,7 +314,7 @@ async def _warm_camoufox(adapter, hotel_url, checkin, cfg, verbose):
         if verbose:
             print(f"  ⚠️ Camoufox unavailable ({e}); falling back to chromium warm.", flush=True)
         return None
-    async with AsyncCamoufox(headless=cfg.headless) as browser:
+    async with AsyncCamoufox(**_camoufox_launch_kwargs(cfg)) as browser:
         return await _warm_camoufox_on(adapter, browser, hotel_url, checkin, cfg, verbose)
 
 
@@ -275,7 +325,8 @@ async def _warm_chromium(adapter, browser, hotel_url, checkin, cfg, stealth, ver
         ua, imp = WARM_PROFILES[attempt]
         vp = WARM_VIEWPORTS[attempt % len(WARM_VIEWPORTS)]
         ctx = await browser.new_context(viewport={"width": vp[0], "height": vp[1]}, user_agent=ua,
-                                        locale="en-GB", timezone_id="Asia/Ho_Chi_Minh")
+                                        locale=locale_for_url(hotel_url),
+                                        timezone_id="Asia/Ho_Chi_Minh")
         await add_cookie_file(ctx, cfg)
         try:
             cap = await _capture_on_context(adapter, ctx, hotel_url, checkin, cfg, stealth)
@@ -355,36 +406,71 @@ def breaker_note_block(breaker, limit, tag=""):
     return False
 
 
-# --- browser fallback (chromium, response-only) ---
-async def _make_fallback_ctx(browser, cfg):
+# --- browser fallback (Camoufox preferred; chromium+stealth otherwise) ---
+async def _make_fallback_ctx(browser, cfg, locale="en-US"):
     res = random.choice(SCREEN_RESOLUTIONS)
     ctx = await browser.new_context(viewport={"width": res[0], "height": res[1]},
                                     user_agent=random.choice(USER_AGENTS),
-                                    locale="en-GB", timezone_id="Asia/Ho_Chi_Minh")
+                                    locale=locale, timezone_id="Asia/Ho_Chi_Minh")
     await ctx.route("**/*", make_block_route(cfg))
     await add_cookie_file(ctx, cfg)
     return ctx
 
 
+async def _open_crawl_context(browser, cfg, hotel_url, camoufox_browser=None):
+    """Fresh context for one nav attempt. Prefers Camoufox; owns=True means caller must close."""
+    locale = locale_for_url(hotel_url)
+    if camoufox_browser is not None:
+        ctx, own = await _new_camoufox_context(camoufox_browser, locale=locale)
+        return ctx, own, None  # Camoufox is stealthy by itself — no playwright-stealth
+    ctx = await _make_fallback_ctx(browser, cfg, locale=locale)
+    return ctx, True, "chromium"
+
+
 async def browser_crawl_day(adapter, browser, hotel_url, room_type, checkin, cfg, stealth,
-                            breaker=None, tag=""):
+                            breaker=None, tag="", camoufox_browser=None):
     """One check-in via a real browser nav. Fresh rotated context per attempt; retries only on
-    a soft-block. Returns an extract verdict."""
+    a soft-block. Returns an extract verdict.
+
+    Trip.com lazy-loads rooms: the FIRST getHotelRoomList is often an empty skeleton
+    (physicRoomMap={}); the real POST fires after scrolling to the room section. We therefore:
+      1) IGNORE empty skeletons (never treat them as the final payload),
+      2) scroll patiently until a rooms-bearing response OR a confirmed sold-out,
+      3) fall back to DOM extract before declaring soft-block.
+    """
     if breaker is not None and breaker.get("tripped"):   # hotel hard-blocked -> NA instantly
         return {"found": False, "soldOut": False, "blocked": True, "skipped": True}
     url = adapter.update_url_checkin(hotel_url, checkin)
     last = {"found": False, "soldOut": False, "blocked": True}
+    scroll_px = int(getattr(cfg, "scroll_step_px", 2500) or 2500)
+    tick = float(getattr(cfg, "scroll_tick_s", 0.6) or 0.6)
+    soldout_after = float(getattr(cfg, "soldout_confirm_s", 8.0) or 8.0)
+
     for attempt in range(cfg.nav_attempts):
-        ctx = await _make_fallback_ctx(browser, cfg)
+        ctx, own, _engine = await _open_crawl_context(
+            browser, cfg, hotel_url, camoufox_browser=camoufox_browser)
         page = await ctx.new_page()
-        cap = {}
+        # Camoufox contexts may not have the route from _make_fallback_ctx — apply per page.
+        with contextlib.suppress(Exception):
+            await page.route("**/*", make_block_route(cfg))
+        # cap["api"] = rooms-bearing JSON only; cap["soldout"] = confirmed sold-out; NEVER
+        # store the empty lazy-load skeleton (that was the main false soft-block source).
+        cap = {"api": None, "soldout": None}
 
         async def grab(resp):
             try:
-                if adapter.api_hint in resp.url and resp.status == 200:
-                    j = await resp.json()
-                    if adapter.response_has_rooms(j) or "j" not in cap:
-                        cap["j"] = j
+                if adapter.api_hint not in resp.url or resp.status != 200 or cap["api"]:
+                    return
+                j = await resp.json()
+                if adapter.response_has_rooms(j):
+                    cap["api"] = j
+                    return
+                # Sold-out flag without room maps — keep separately; don't overwrite later rooms.
+                try:
+                    if (adapter.extract(j, room_type) or {}).get("soldOut"):
+                        cap["soldout"] = j
+                except Exception:
+                    pass
             except Exception:
                 pass
 
@@ -397,35 +483,61 @@ async def browser_crawl_day(adapter, browser, hotel_url, room_type, checkin, cfg
 
         page.on("response", lambda r: _spawn(grab(r)))
         try:
-            if stealth is not None:
+            # Only chromium needs playwright-stealth; Camoufox is patched at C++ level.
+            if camoufox_browser is None and stealth is not None:
                 with contextlib.suppress(Exception):
                     await stealth.apply_stealth_async(page)
             await asyncio.sleep(random.uniform(*cfg.nav_jitter))
             with contextlib.suppress(Exception):
                 await page.goto(url, timeout=cfg.page_timeout_ms, wait_until="domcontentloaded")
             waited = 0.0
-            while waited < cfg.api_wait_timeout_s:
-                await asyncio.sleep(0.3)
-                waited += 0.3
-                with contextlib.suppress(Exception):
-                    await page.mouse.wheel(0, 2200)
-                if adapter.response_is_definitive(cap.get("j")):
-                    await asyncio.sleep(0.6)
+            while waited < cfg.api_wait_timeout_s and not cap["api"]:
+                if cap["soldout"] and waited >= soldout_after:
                     break
+                with contextlib.suppress(Exception):
+                    await page.mouse.wheel(0, scroll_px)
+                await asyncio.sleep(tick)
+                waited += tick
+
+            if cap["api"] is not None:
+                res = adapter.extract(cap["api"], room_type)
+                last = res
+                if not res.get("blocked"):
+                    breaker_note_ok(breaker)
+                    return res
+
+            if cap["soldout"] is not None:
+                breaker_note_ok(breaker)
+                return {"found": False, "soldOut": True}
+
+            # DOM fallback (ported from Trip v3.1 notebook) — scroll already happened.
+            if getattr(adapter, "dom_extract_js", None):
+                with contextlib.suppress(Exception):
+                    await page.wait_for_selector(
+                        "div[class*='commonRoomCard__'], div[class*='saleRoomItemBox__'], "
+                        "div[data-selenium='room-card'], div[class*='RoomGrid']",
+                        timeout=6000)
+                with contextlib.suppress(Exception):
+                    dom = await page.evaluate(adapter.dom_extract_js)
+                    res = adapter.extract_from_dom(dom, room_type)
+                    if res.get("found") or res.get("soldOut") or res.get("rooms"):
+                        last = res
+                        breaker_note_ok(breaker)
+                        return res
         finally:
             with contextlib.suppress(Exception):
                 await page.close()
-            with contextlib.suppress(Exception):
-                await ctx.close()
-        if "j" in cap:
-            res = adapter.extract(cap["j"], room_type)
-            last = res
-            if not res.get("blocked"):
-                breaker_note_ok(breaker)
-                return res
+            if own:
+                with contextlib.suppress(Exception):
+                    await ctx.close()
+            else:
+                with contextlib.suppress(Exception):
+                    await ctx.clear_cookies()
+
         if attempt < cfg.nav_attempts - 1:
             if tag:
-                print(f"      ⟳ {tag}: soft-blocked (empty rooms) — retry "
+                eng = "camoufox" if camoufox_browser is not None else "chromium"
+                print(f"      ⟳ {tag}: soft-blocked (empty rooms/{eng}) — retry "
                       f"{attempt + 2}/{cfg.nav_attempts}…", flush=True)
             await asyncio.sleep(random.uniform(*cfg.retry_backoff))
     if last.get("blocked"):

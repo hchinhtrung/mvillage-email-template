@@ -21,7 +21,7 @@ PACKAGES = [
     ("curl_cffi",          "curl_cffi",         "direct replay (TLS impersonation)", True),
     ("playwright",         "playwright",        "browser warm + fallback",           True),
     ("pandas",             "pandas",            "CSV / Google-Sheet I/O",            True),
-    ("camoufox",           "'camoufox[geoip]'", "anti-detect Firefox warm (Agoda)",  False),
+    ("camoufox",           "'camoufox[geoip]'", "anti-detect Firefox (Agoda warm + Trip browser)", False),
     ("playwright_stealth", "playwright-stealth", "chromium stealth patches",         False),
     ("openpyxl",           "openpyxl",          ".xlsx hotel lists",                 False),
     ("nest_asyncio",       "nest-asyncio",      "running from Jupyter notebooks",    False),
@@ -59,6 +59,23 @@ def venv_hint():
         return (f"running {sys.executable}, not the project venv — packages are "
                 f"per-interpreter; use {os.path.join(venv, 'bin', 'python')}")
     return ""
+
+
+def playwright_camoufox_ok():
+    """Camoufox Juggler is frozen behind Playwright's client.
+
+    * 1.60.* — Firefox crash (daijro/camoufox#617)
+    * 1.61+  — sends viewport.isMobile that Juggler rejects (#653)
+    Only 1.59.x is known-good with camoufox 0.4.11. Returns (ok, installed_version).
+    """
+    try:
+        from importlib.metadata import version
+        ver = version("playwright")
+        parts = [int(x) for x in ver.split(".")[:2]]
+        major, minor = parts[0], parts[1]
+        return (major, minor) == (1, 59), ver
+    except Exception:
+        return True, "?"
 
 
 def camoufox_browser_ok():
@@ -101,6 +118,12 @@ def check(verbose=True):
         problems.append(f"  {mark} {imp:<19}missing ({sev}) — {why} → pip install -U {pipname}")
         if required:
             missing_required.append(pipname)
+    pw_ok, pw_ver = playwright_camoufox_ok()
+    if has("playwright") and has("camoufox") and not pw_ok:
+        problems.append(
+            f"  ❌ playwright {pw_ver} breaks Camoufox (isMobile / 1.60 crash) — pin 1.59.x:\n"
+            f"     {sys.executable} -m pip install 'playwright>=1.59,<1.60'")
+        missing_required.append("'playwright>=1.59,<1.60'")
     if has("camoufox") and not camoufox_browser_ok():
         problems.append("  ⚠️ camoufox browser binary missing → python -m camoufox fetch")
     if has("playwright") and not chromium_browser_ok():

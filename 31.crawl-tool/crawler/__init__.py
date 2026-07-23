@@ -29,7 +29,7 @@ if not _os.environ.get("PLAYWRIGHT_BROWSERS_PATH") and _sys.platform == "darwin"
 
 from .config import Config
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 __all__ = ["Config", "crawl", "arun", "__version__"]
 

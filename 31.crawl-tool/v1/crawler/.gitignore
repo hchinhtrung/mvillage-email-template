@@ -1,7 +1,0 @@
-_capture/
-__pycache__/
-*.pyc
-TEMP_*.csv
-FINAL_*.csv
-DIRECT_*.csv
-cookies.json

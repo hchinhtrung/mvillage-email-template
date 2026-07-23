@@ -158,6 +158,13 @@ class TripAdapter(SiteAdapter):
         d = (resp_json or {}).get("data") or {}
         return bool(d.get("physicRoomMap") or d.get("saleRoomMap"))
 
+    def response_is_definitive(self, resp_json):
+        """Rooms-bearing OR confirmed sold-out. Empty skeleton is NOT definitive — keep scrolling."""
+        if self.response_has_rooms(resp_json):
+            return True
+        d = (resp_json or {}).get("data") or {}
+        return bool(d.get("isRoomListSoldOut"))
+
     def extract(self, resp_json, target_room):
         return extract_from_api(resp_json, target_room, ptype="total_incl_tax")
 

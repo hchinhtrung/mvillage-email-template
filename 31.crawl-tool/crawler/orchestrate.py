@@ -194,13 +194,14 @@ async def _shared_prepass(adapter, browser, stealth, cam, hotels, base, num_week
 
 # --------------------------------------------------------------------------- browser fallback
 async def _browser_week(adapter, browser, url, room_type, wn, base, cfg, stealth, days,
-                        breaker=None, tag=""):
+                        breaker=None, tag="", camoufox_browser=None):
     sold = False
     day_list = week_days(base, wn, days)
     for i, checkin in enumerate(day_list):
         day_tag = f"[{tag[:18]}] W{wn} {checkin.strftime('%m/%d')}" if tag else ""
         res = await warm.browser_crawl_day(adapter, browser, url, room_type, checkin, cfg,
-                                           stealth, breaker, tag=day_tag)
+                                           stealth, breaker, tag=day_tag,
+                                           camoufox_browser=camoufox_browser)
         if res.get("found"):
             if tag:
                 print(f"      ✅ [{tag[:22]}] W{wn}: {res['price']} "
@@ -278,7 +279,8 @@ async def crawl_hotel(adapter, browser, stealth, hotel_name, url, room_type,
             async with sem:
                 return await _browser_week(adapter, browser, url, room_type, wn, base, cfg,
                                            stealth, cfg.days_per_week, breaker,
-                                           tag=str(hotel_name))
+                                           tag=str(hotel_name),
+                                           camoufox_browser=camoufox_browser)
 
         for r in await asyncio.gather(*[one(w) for w in need]):
             wn, new = r["week"], r["price"]
@@ -340,6 +342,7 @@ async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", week
               out="", temp="", cfg=None, **overrides):
     """Full crawl. Returns the output CSV path."""
     cfg = cfg or Config()
+    cfg = Config.with_site_defaults(site, cfg)   # Trip: Camoufox + patient lazy-load knobs
     for k, v in overrides.items():
         if hasattr(cfg, k) and v is not None:
             setattr(cfg, k, v)
@@ -391,11 +394,17 @@ async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", week
     async with contextlib.AsyncExitStack() as stack:
         browser, stealth = await stack.enter_async_context(warm.open_chromium(cfg))
         cam = None
-        if direct_enabled and cfg.engine == "camoufox":
-            # ONE Camoufox for the whole run (launching it per hotel cost 5-10 s each).
+        if cfg.engine == "camoufox":
+            # ONE Camoufox for the whole run (warm for Agoda direct AND every Trip browser nav).
+            # Trip is browser-only — without this, every query used weak chromium-stealth and
+            # soft-blocked on empty lazy-load skeletons.
             cam = await stack.enter_async_context(warm.open_camoufox(cfg))
             if cam is None:
                 cfg.engine = "chromium"
+            else:
+                print(f"🦊 Camoufox ready (humanize={cfg.camoufox_humanize} "
+                      f"geoip={cfg.camoufox_geoip}) — browser navs use anti-detect Firefox",
+                      flush=True)
         # Opt-in shared-capture pre-pass (one warm prices many hotels via propertyId swap).
         # It fills trusted prices straight into awp, so the work list below shrinks.
         if cfg.shared_capture and direct_enabled:
@@ -504,7 +513,7 @@ async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", week
                         async with sem:
                             return await _browser_week(adapter, browser, hu, rt, wn, base, rcfg,
                                                        stealth, cfg.retry_days_per_week, breaker,
-                                                       tag=str(hn))
+                                                       tag=str(hn), camoufox_browser=cam)
 
                     res = await asyncio.gather(*[one(w) for w in wk])
                     if breaker.get("tripped"):
@@ -543,7 +552,7 @@ async def run(site="agoda", input="agoda1.csv", sheet="", gid="", shard="", week
                         async with sem:
                             return await _browser_week(adapter, browser, hu, rt, wn, base, rcfg,
                                                        stealth, cfg.retry_days_per_week,
-                                                       tag=str(hn))
+                                                       tag=str(hn), camoufox_browser=cam)
 
                     for r in await asyncio.gather(*[one(w) for w in wk]):
                         new, old = r["price"], awp[k].get(f"Price W{r['week']}", "NA")

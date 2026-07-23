@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tunable configuration. Defaults ported from the proven notebooks/prototype."""
-from dataclasses import dataclass, field
-from typing import Tuple
+from dataclasses import dataclass, field, replace
+from typing import List, Tuple, Union
 
 
 @dataclass
@@ -21,6 +21,12 @@ class Config:
     page_timeout_ms: int = 45000
     api_wait_timeout_s: float = 25.0
     cookies_file: str = "cookies.json"   # optional; loaded into browser contexts when present
+
+    # --- Camoufox anti-detect (Agoda-proven stack; also drives Trip browser-only navs) ---
+    camoufox_humanize: bool = True   # human-like cursor movement
+    camoufox_geoip: bool = True      # match locale/timezone/WebRTC to egress IP
+    camoufox_os: Union[str, List[str]] = field(
+        default_factory=lambda: ["macos", "windows"])  # fingerprint OS pool
 
     # --- direct replay (curl_cffi) ---
     impersonate: str = ""            # "" = auto-pick from captured UA / engine
@@ -71,6 +77,9 @@ class Config:
     # --- browser fallback ---
     weeks_parallel: int = 2          # weeks crawled concurrently in browser fallback
     nav_attempts: int = 2            # fresh-context nav retries when blocked
+    scroll_step_px: int = 2500       # mouse-wheel delta per tick (Trip lazy-loads on scroll)
+    scroll_tick_s: float = 0.6       # pause between scrolls while waiting for room API
+    soldout_confirm_s: float = 8.0   # accept isRoomListSoldOut only after this wait (avoid early skeleton)
 
     # --- resume ordering (round 1) ---
     resume_new_first: bool = True    # on restart, never-crawled hotels run before NA/SOLD-OUT retries
@@ -96,3 +105,32 @@ class Config:
 
     block_resource_types: frozenset = field(
         default_factory=lambda: frozenset({"image", "media", "font"}))
+
+    @classmethod
+    def with_site_defaults(cls, site, cfg=None):
+        """Apply per-site knobs. Trip is browser-only → Camoufox + patient lazy-load waits.
+
+        Call BEFORE applying caller overrides so `--weeks-parallel` / notebook kwargs still win.
+        """
+        cfg = cfg or cls()
+        if (site or "").lower() != "trip":
+            return cfg
+        return replace(
+            cfg,
+            # Trip soft-blocks hard on chromium-stealth; Camoufox is the Agoda-proven engine.
+            engine="camoufox" if cfg.engine == "camoufox" else cfg.engine,
+            nav_attempts=3,
+            api_wait_timeout_s=max(cfg.api_wait_timeout_s, 32.0),
+            page_timeout_ms=max(cfg.page_timeout_ms, 55000),
+            retry_backoff=(3.0, 8.0),
+            intra_week_delay=(0.8, 2.0),
+            between_hotels=(3.0, 7.0),
+            nav_jitter=(0.5, 1.8),
+            block_circuit_limit=3,
+            weeks_parallel=min(cfg.weeks_parallel, 2),
+            scroll_step_px=2500,
+            scroll_tick_s=0.6,
+            soldout_confirm_s=8.0,
+            camoufox_humanize=True,
+            camoufox_geoip=True,
+        )
